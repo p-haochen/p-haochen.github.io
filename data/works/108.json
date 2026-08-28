@@ -1,0 +1,59 @@
+{
+  "id": 108,
+  "title": "楊臨慧《寶寶抱抱》",
+  "html": "\n\n<div class=\"wp-block-group alignfull work-detail has-global-padding is-layout-constrained wp-block-group-is-layout-constrained\">\n\t\n\t<div class=\"wp-block-group alignwide work-detail__layout is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\n\t\t<div class=\"wp-block-group work-detail__header is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t<h1 class=\"work-detail__title wp-block-post-title\">楊臨慧《寶寶抱抱》</h1>\n\t\t\t<div class=\"taxonomy-work_category work-detail__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\n\t\t\t<p class=\"work-detail__year work-year wp-block-paragraph\">2025</p>\n\t\t\t\n\t\t</div>\n\t\t\n\n\t\t<figure data-cover-orientation=\"square\" class=\"work-detail__hero wp-block-post-featured-image\"><img width=\"2000\" height=\"2000\" src=\"/wp-content/uploads/2026/08/baby-hug-cover.webp\" class=\"attachment-full size-full wp-post-image\" alt=\"楊臨慧《寶寶抱抱》\" style=\"object-fit:cover;\" decoding=\"async\" loading=\"lazy\" srcset=\"/wp-content/uploads/2026/08/baby-hug-cover.webp 2000w, /wp-content/uploads/2026/08/baby-hug-cover-300x300.webp 300w, /wp-content/uploads/2026/08/baby-hug-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/baby-hug-cover-150x150.webp 150w, /wp-content/uploads/2026/08/baby-hug-cover-768x768.webp 768w, /wp-content/uploads/2026/08/baby-hug-cover-1536x1536.webp 1536w\" sizes=\"auto, (max-width: 2000px) 100vw, 2000px\" /></figure>\n\n\t\t\n\t\t<div class=\"wp-block-group work-detail__content has-global-padding is-layout-constrained wp-block-group-is-layout-constrained\">\n\t\t\t<div class=\"entry-content work-detail__post-content wp-block-post-content has-global-padding is-layout-constrained wp-block-post-content-is-layout-constrained\">\n<h2 class=\"wp-block-heading\">Credits</h2>\n\n\n\n<ul class=\"wp-block-list\">\n<li>作詞 | 楊臨慧</li>\n\n<li>作曲 | 楊臨慧</li>\n\n<li>編曲 | 陳柏豪</li>\n\n<li>人聲錄音師 | 張紘慆</li>\n\n<li>人聲錄音室 | 1500錄音室</li>\n\n<li>製作人 | 楊臨慧、陳柏豪</li>\n\n<li>配唱製作人 | 陳柏豪</li>\n\n<li>混音 | 陳柏豪</li>\n\n<li>母帶後製 | 周岳澄</li>\n</ul>\n\n\n</div>\n\t\t\t<div class=\"work-media\"><section class=\"work-media__section work-media-embed work-media-embed--spotify\" aria-labelledby=\"work-media-spotify-108\"><h2 id=\"work-media-spotify-108\" class=\"work-media__heading\">Spotify</h2><div class=\"work-media-embed__frame work-media-embed__frame--spotify\"><iframe src=\"https://open.spotify.com/embed/track/1kNKbsKTAmz5ggJ3NFVhMi\" title=\"楊臨慧《寶寶抱抱》 — Spotify player\" loading=\"lazy\" allow=\"autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture\"></iframe></div></section></div>\n\t\t</div>\n\t\t\n\t</div>\n\t\n</div>\n\n",
+  "canonical_url": "/works/baby-hug/",
+  "work": {
+    "id": 108,
+    "title": "楊臨慧《寶寶抱抱》",
+    "canonical_url": "/works/baby-hug/",
+    "year": "2025",
+    "categories": [
+      {
+        "slug": "music",
+        "name": "MUSIC"
+      }
+    ],
+    "cover": {
+      "id": 109,
+      "src": "/wp-content/uploads/2026/08/baby-hug-cover-1024x1024.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "楊臨慧《寶寶抱抱》",
+      "srcset": "/wp-content/uploads/2026/08/baby-hug-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/baby-hug-cover-300x300.webp 300w, /wp-content/uploads/2026/08/baby-hug-cover-150x150.webp 150w, /wp-content/uploads/2026/08/baby-hug-cover-768x768.webp 768w, /wp-content/uploads/2026/08/baby-hug-cover-1536x1536.webp 1536w, /wp-content/uploads/2026/08/baby-hug-cover.webp 2000w",
+      "sizes": "(max-width: 1024px) 100vw, 1024px"
+    },
+    "tracks": [
+      {
+        "id": 110,
+        "attachment_id": 110,
+        "work_id": 108,
+        "title": "寶寶抱抱 MMA",
+        "artist": "",
+        "release": "楊臨慧《寶寶抱抱》",
+        "length": "3:27",
+        "src": "/wp-content/uploads/2026/08/baby-hug-track-01.mp3",
+        "mime_type": "audio/mpeg",
+        "workId": 108,
+        "artwork": "/wp-content/uploads/2026/08/baby-hug-cover-1024x1024.webp",
+        "artworkAlt": "楊臨慧《寶寶抱抱》",
+        "providerLinks": []
+      },
+      {
+        "id": 111,
+        "attachment_id": 111,
+        "work_id": 108,
+        "title": "寶寶抱抱 MMM (GR 5dB)",
+        "artist": "",
+        "release": "楊臨慧《寶寶抱抱》",
+        "length": "3:27",
+        "src": "/wp-content/uploads/2026/08/baby-hug-track-02.mp3",
+        "mime_type": "audio/mpeg",
+        "workId": 108,
+        "artwork": "/wp-content/uploads/2026/08/baby-hug-cover-1024x1024.webp",
+        "artworkAlt": "楊臨慧《寶寶抱抱》",
+        "providerLinks": []
+      }
+    ]
+  }
+}

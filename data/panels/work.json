@@ -1,0 +1,973 @@
+{
+  "slug": "work",
+  "title": "Work",
+  "html": "\n\n<div class=\"wp-block-group alignfull works-directory has-global-padding is-layout-constrained wp-block-group-is-layout-constrained\">\n\t\n\t<div class=\"wp-block-group alignwide works-directory__header is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\n\t\t<h1 class=\"wp-block-heading works-directory__title\">Works</h1>\n\t\t\n\n\t\t<div class=\"works-directory__filters wp-block-portfolio-theme-works-filter-controls\" aria-label=\"Filter Works by category\" role=\"group\">\n\t<button type=\"button\" class=\"works-directory__filter\" data-work-filter=\"all\" aria-pressed=\"true\">ALL</button>\n\t<button type=\"button\" class=\"works-directory__filter\" data-work-filter=\"music\" aria-pressed=\"false\">MUSIC</button>\n\t<button type=\"button\" class=\"works-directory__filter\" data-work-filter=\"live\" aria-pressed=\"false\">LIVE</button>\n\t<button type=\"button\" class=\"works-directory__filter\" data-work-filter=\"tech\" aria-pressed=\"false\">TECH</button>\n</div>\n\n\t</div>\n\t\n\n\t\n\t<p class=\"works-directory__empty wp-block-paragraph\">No works in this category yet.</p>\n\t\n\n\t\n\t<div class=\"wp-block-query alignwide works-directory__query is-layout-flow wp-block-query-is-layout-flow\">\n\t\t<ul class=\"columns-2 works-grid wp-block-post-template is-layout-grid wp-container-core-post-template-is-layout-1ff5523f wp-block-post-template-is-layout-grid\"><li class=\"wp-block-post post-113 portfolio_work type-portfolio_work status-publish has-post-thumbnail hentry work_category-music\">\n\t\t\t\n\t\t\t<article class=\"wp-block-group works-card is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__media is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<figure class=\"works-card__image wp-block-post-featured-image\"><a href=\"/works/holographic-utopia-after-80/\" target=\"_self\" ><img width=\"1536\" height=\"1024\" src=\"/wp-content/uploads/2026/08/holographic-utopia-after-80-cover.webp\" class=\"attachment-full size-full wp-post-image\" alt=\"全息烏托邦《80之後》\" style=\"object-fit:cover;\" decoding=\"async\" loading=\"lazy\" srcset=\"/wp-content/uploads/2026/08/holographic-utopia-after-80-cover.webp 1536w, /wp-content/uploads/2026/08/holographic-utopia-after-80-cover-300x200.webp 300w, /wp-content/uploads/2026/08/holographic-utopia-after-80-cover-1024x683.webp 1024w, /wp-content/uploads/2026/08/holographic-utopia-after-80-cover-768x512.webp 768w\" sizes=\"auto, (max-width: 1536px) 100vw, 1536px\" /></a></figure>\n\n\t\t\t\t\t\n\t\t\t\t\t<div aria-hidden=\"true\" inert=\"\" class=\"wp-block-group works-card__overlay is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t\t<h2 class=\"works-card__overlay-title wp-block-post-title\">全息烏托邦《80之後》</h2>\n\t\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\t\n\t\t\t\t\t\t<p class=\"works-card__year work-year wp-block-paragraph\">2025</p>\n\t\t\t\t\t\t\n\t\t\t\t\t</div>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__caption is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<h2 class=\"works-card__title wp-block-post-title\"><a href=\"/works/holographic-utopia-after-80/\" target=\"_self\" >全息烏托邦《80之後》</a></h2>\n\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\n\t\t\t\t\t<p class=\"works-card__year work-year wp-block-paragraph\">2025</p>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t</article>\n\t\t\t\n\t\t</li><li class=\"wp-block-post post-108 portfolio_work type-portfolio_work status-publish has-post-thumbnail hentry work_category-music\">\n\t\t\t\n\t\t\t<article class=\"wp-block-group works-card is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__media is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<figure class=\"works-card__image wp-block-post-featured-image\"><a href=\"/works/baby-hug/\" target=\"_self\" ><img width=\"2000\" height=\"2000\" src=\"/wp-content/uploads/2026/08/baby-hug-cover.webp\" class=\"attachment-full size-full wp-post-image\" alt=\"楊臨慧《寶寶抱抱》\" style=\"object-fit:cover;\" decoding=\"async\" loading=\"lazy\" srcset=\"/wp-content/uploads/2026/08/baby-hug-cover.webp 2000w, /wp-content/uploads/2026/08/baby-hug-cover-300x300.webp 300w, /wp-content/uploads/2026/08/baby-hug-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/baby-hug-cover-150x150.webp 150w, /wp-content/uploads/2026/08/baby-hug-cover-768x768.webp 768w, /wp-content/uploads/2026/08/baby-hug-cover-1536x1536.webp 1536w\" sizes=\"auto, (max-width: 2000px) 100vw, 2000px\" /></a></figure>\n\n\t\t\t\t\t\n\t\t\t\t\t<div aria-hidden=\"true\" inert=\"\" class=\"wp-block-group works-card__overlay is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t\t<h2 class=\"works-card__overlay-title wp-block-post-title\">楊臨慧《寶寶抱抱》</h2>\n\t\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\t\n\t\t\t\t\t\t<p class=\"works-card__year work-year wp-block-paragraph\">2025</p>\n\t\t\t\t\t\t\n\t\t\t\t\t</div>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__caption is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<h2 class=\"works-card__title wp-block-post-title\"><a href=\"/works/baby-hug/\" target=\"_self\" >楊臨慧《寶寶抱抱》</a></h2>\n\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\n\t\t\t\t\t<p class=\"works-card__year work-year wp-block-paragraph\">2025</p>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t</article>\n\t\t\t\n\t\t</li><li class=\"wp-block-post post-103 portfolio_work type-portfolio_work status-publish has-post-thumbnail hentry work_category-music\">\n\t\t\t\n\t\t\t<article class=\"wp-block-group works-card is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__media is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<figure class=\"works-card__image wp-block-post-featured-image\"><a href=\"/works/fantasia-sango-nexus/\" target=\"_self\" ><img width=\"1920\" height=\"1358\" src=\"/wp-content/uploads/2026/08/fantasia-sango-nexus-cover.webp\" class=\"attachment-full size-full wp-post-image\" alt=\"風色幻想 NeXus 遊戲主題曲《風色的軌跡》\" style=\"object-fit:cover;\" decoding=\"async\" loading=\"lazy\" srcset=\"/wp-content/uploads/2026/08/fantasia-sango-nexus-cover.webp 1920w, /wp-content/uploads/2026/08/fantasia-sango-nexus-cover-300x212.webp 300w, /wp-content/uploads/2026/08/fantasia-sango-nexus-cover-1024x724.webp 1024w, /wp-content/uploads/2026/08/fantasia-sango-nexus-cover-768x543.webp 768w, /wp-content/uploads/2026/08/fantasia-sango-nexus-cover-1536x1086.webp 1536w\" sizes=\"auto, (max-width: 1920px) 100vw, 1920px\" /></a></figure>\n\n\t\t\t\t\t\n\t\t\t\t\t<div aria-hidden=\"true\" inert=\"\" class=\"wp-block-group works-card__overlay is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t\t<h2 class=\"works-card__overlay-title wp-block-post-title\">風色幻想 NeXus 遊戲主題曲《風色的軌跡》</h2>\n\t\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\t\n\t\t\t\t\t\t<p class=\"works-card__year work-year wp-block-paragraph\">2025</p>\n\t\t\t\t\t\t\n\t\t\t\t\t</div>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__caption is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<h2 class=\"works-card__title wp-block-post-title\"><a href=\"/works/fantasia-sango-nexus/\" target=\"_self\" >風色幻想 NeXus 遊戲主題曲《風色的軌跡》</a></h2>\n\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\n\t\t\t\t\t<p class=\"works-card__year work-year wp-block-paragraph\">2025</p>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t</article>\n\t\t\t\n\t\t</li><li class=\"wp-block-post post-98 portfolio_work type-portfolio_work status-publish has-post-thumbnail hentry work_category-music\">\n\t\t\t\n\t\t\t<article class=\"wp-block-group works-card is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__media is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<figure class=\"works-card__image wp-block-post-featured-image\"><a href=\"/works/tsg-hawks-take-wing/\" target=\"_self\" ><img width=\"1254\" height=\"1254\" src=\"/wp-content/uploads/2026/08/tsg-hawks-take-wing-cover.webp\" class=\"attachment-full size-full wp-post-image\" alt=\"台鋼天鷹主題曲《Take Wing》\" style=\"object-fit:cover;\" decoding=\"async\" loading=\"lazy\" srcset=\"/wp-content/uploads/2026/08/tsg-hawks-take-wing-cover.webp 1254w, /wp-content/uploads/2026/08/tsg-hawks-take-wing-cover-300x300.webp 300w, /wp-content/uploads/2026/08/tsg-hawks-take-wing-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/tsg-hawks-take-wing-cover-150x150.webp 150w, /wp-content/uploads/2026/08/tsg-hawks-take-wing-cover-768x768.webp 768w\" sizes=\"auto, (max-width: 1254px) 100vw, 1254px\" /></a></figure>\n\n\t\t\t\t\t\n\t\t\t\t\t<div aria-hidden=\"true\" inert=\"\" class=\"wp-block-group works-card__overlay is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t\t<h2 class=\"works-card__overlay-title wp-block-post-title\">台鋼天鷹主題曲《Take Wing》</h2>\n\t\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\t\n\t\t\t\t\t\t<p class=\"works-card__year work-year wp-block-paragraph\">2025</p>\n\t\t\t\t\t\t\n\t\t\t\t\t</div>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__caption is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<h2 class=\"works-card__title wp-block-post-title\"><a href=\"/works/tsg-hawks-take-wing/\" target=\"_self\" >台鋼天鷹主題曲《Take Wing》</a></h2>\n\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\n\t\t\t\t\t<p class=\"works-card__year work-year wp-block-paragraph\">2025</p>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t</article>\n\t\t\t\n\t\t</li><li class=\"wp-block-post post-93 portfolio_work type-portfolio_work status-publish has-post-thumbnail hentry work_category-music\">\n\t\t\t\n\t\t\t<article class=\"wp-block-group works-card is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__media is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<figure class=\"works-card__image wp-block-post-featured-image\"><a href=\"/works/tsg-falcons-fly-fast/\" target=\"_self\" ><img width=\"2000\" height=\"2000\" src=\"/wp-content/uploads/2026/08/tsg-falcons-fly-fast-cover.webp\" class=\"attachment-full size-full wp-post-image\" alt=\"台鋼獵鷹主題曲《鷹速飛翔》\" style=\"object-fit:cover;\" decoding=\"async\" loading=\"lazy\" srcset=\"/wp-content/uploads/2026/08/tsg-falcons-fly-fast-cover.webp 2000w, /wp-content/uploads/2026/08/tsg-falcons-fly-fast-cover-300x300.webp 300w, /wp-content/uploads/2026/08/tsg-falcons-fly-fast-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/tsg-falcons-fly-fast-cover-150x150.webp 150w, /wp-content/uploads/2026/08/tsg-falcons-fly-fast-cover-768x768.webp 768w, /wp-content/uploads/2026/08/tsg-falcons-fly-fast-cover-1536x1536.webp 1536w\" sizes=\"auto, (max-width: 2000px) 100vw, 2000px\" /></a></figure>\n\n\t\t\t\t\t\n\t\t\t\t\t<div aria-hidden=\"true\" inert=\"\" class=\"wp-block-group works-card__overlay is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t\t<h2 class=\"works-card__overlay-title wp-block-post-title\">台鋼獵鷹主題曲《鷹速飛翔》</h2>\n\t\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\t\n\t\t\t\t\t\t<p class=\"works-card__year work-year wp-block-paragraph\">2025</p>\n\t\t\t\t\t\t\n\t\t\t\t\t</div>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__caption is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<h2 class=\"works-card__title wp-block-post-title\"><a href=\"/works/tsg-falcons-fly-fast/\" target=\"_self\" >台鋼獵鷹主題曲《鷹速飛翔》</a></h2>\n\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\n\t\t\t\t\t<p class=\"works-card__year work-year wp-block-paragraph\">2025</p>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t</article>\n\t\t\t\n\t\t</li><li class=\"wp-block-post post-88 portfolio_work type-portfolio_work status-publish has-post-thumbnail hentry work_category-music\">\n\t\t\t\n\t\t\t<article class=\"wp-block-group works-card is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__media is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<figure class=\"works-card__image wp-block-post-featured-image\"><a href=\"/works/tower-of-saviors-12th/\" target=\"_self\" ><img width=\"1254\" height=\"1254\" src=\"/wp-content/uploads/2026/08/tower-of-saviors-12th-cover.webp\" class=\"attachment-full size-full wp-post-image\" alt=\"神魔之塔十二週年主題曲《星恆相伴》\" style=\"object-fit:cover;\" decoding=\"async\" loading=\"lazy\" srcset=\"/wp-content/uploads/2026/08/tower-of-saviors-12th-cover.webp 1254w, /wp-content/uploads/2026/08/tower-of-saviors-12th-cover-300x300.webp 300w, /wp-content/uploads/2026/08/tower-of-saviors-12th-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/tower-of-saviors-12th-cover-150x150.webp 150w, /wp-content/uploads/2026/08/tower-of-saviors-12th-cover-768x768.webp 768w\" sizes=\"auto, (max-width: 1254px) 100vw, 1254px\" /></a></figure>\n\n\t\t\t\t\t\n\t\t\t\t\t<div aria-hidden=\"true\" inert=\"\" class=\"wp-block-group works-card__overlay is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t\t<h2 class=\"works-card__overlay-title wp-block-post-title\">神魔之塔十二週年主題曲《星恆相伴》</h2>\n\t\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\t\n\t\t\t\t\t\t<p class=\"works-card__year work-year wp-block-paragraph\">2025</p>\n\t\t\t\t\t\t\n\t\t\t\t\t</div>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__caption is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<h2 class=\"works-card__title wp-block-post-title\"><a href=\"/works/tower-of-saviors-12th/\" target=\"_self\" >神魔之塔十二週年主題曲《星恆相伴》</a></h2>\n\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\n\t\t\t\t\t<p class=\"works-card__year work-year wp-block-paragraph\">2025</p>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t</article>\n\t\t\t\n\t\t</li><li class=\"wp-block-post post-84 portfolio_work type-portfolio_work status-publish has-post-thumbnail hentry work_category-music\">\n\t\t\t\n\t\t\t<article class=\"wp-block-group works-card is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__media is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<figure class=\"works-card__image wp-block-post-featured-image\"><a href=\"/works/plastic-friends/\" target=\"_self\" ><img width=\"1254\" height=\"1254\" src=\"/wp-content/uploads/2026/08/plastic-friends-cover.webp\" class=\"attachment-full size-full wp-post-image\" alt=\"Leefynk《Plastic Friends》\" style=\"object-fit:cover;\" decoding=\"async\" loading=\"lazy\" srcset=\"/wp-content/uploads/2026/08/plastic-friends-cover.webp 1254w, /wp-content/uploads/2026/08/plastic-friends-cover-300x300.webp 300w, /wp-content/uploads/2026/08/plastic-friends-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/plastic-friends-cover-150x150.webp 150w, /wp-content/uploads/2026/08/plastic-friends-cover-768x768.webp 768w\" sizes=\"auto, (max-width: 1254px) 100vw, 1254px\" /></a></figure>\n\n\t\t\t\t\t\n\t\t\t\t\t<div aria-hidden=\"true\" inert=\"\" class=\"wp-block-group works-card__overlay is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t\t<h2 class=\"works-card__overlay-title wp-block-post-title\">Leefynk《Plastic Friends》</h2>\n\t\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\t\n\t\t\t\t\t</div>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__caption is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<h2 class=\"works-card__title wp-block-post-title\"><a href=\"/works/plastic-friends/\" target=\"_self\" >Leefynk《Plastic Friends》</a></h2>\n\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t</article>\n\t\t\t\n\t\t</li><li class=\"wp-block-post post-80 portfolio_work type-portfolio_work status-publish has-post-thumbnail hentry work_category-music\">\n\t\t\t\n\t\t\t<article class=\"wp-block-group works-card is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__media is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<figure class=\"works-card__image wp-block-post-featured-image\"><a href=\"/works/tower-of-saviors-10th/\" target=\"_self\" ><img width=\"1254\" height=\"1254\" src=\"/wp-content/uploads/2026/08/tower-of-saviors-10th-cover.webp\" class=\"attachment-full size-full wp-post-image\" alt=\"神魔之塔十週年主題曲《與你相遇》\" style=\"object-fit:cover;\" decoding=\"async\" loading=\"lazy\" srcset=\"/wp-content/uploads/2026/08/tower-of-saviors-10th-cover.webp 1254w, /wp-content/uploads/2026/08/tower-of-saviors-10th-cover-300x300.webp 300w, /wp-content/uploads/2026/08/tower-of-saviors-10th-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/tower-of-saviors-10th-cover-150x150.webp 150w, /wp-content/uploads/2026/08/tower-of-saviors-10th-cover-768x768.webp 768w\" sizes=\"auto, (max-width: 1254px) 100vw, 1254px\" /></a></figure>\n\n\t\t\t\t\t\n\t\t\t\t\t<div aria-hidden=\"true\" inert=\"\" class=\"wp-block-group works-card__overlay is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t\t<h2 class=\"works-card__overlay-title wp-block-post-title\">神魔之塔十週年主題曲《與你相遇》</h2>\n\t\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\t\n\t\t\t\t\t\t<p class=\"works-card__year work-year wp-block-paragraph\">2023</p>\n\t\t\t\t\t\t\n\t\t\t\t\t</div>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__caption is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<h2 class=\"works-card__title wp-block-post-title\"><a href=\"/works/tower-of-saviors-10th/\" target=\"_self\" >神魔之塔十週年主題曲《與你相遇》</a></h2>\n\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\n\t\t\t\t\t<p class=\"works-card__year work-year wp-block-paragraph\">2023</p>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t</article>\n\t\t\t\n\t\t</li><li class=\"wp-block-post post-75 portfolio_work type-portfolio_work status-publish has-post-thumbnail hentry work_category-music\">\n\t\t\t\n\t\t\t<article class=\"wp-block-group works-card is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__media is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<figure class=\"works-card__image wp-block-post-featured-image\"><a href=\"/works/miru-miru-nya/\" target=\"_self\" ><img width=\"2000\" height=\"1100\" src=\"/wp-content/uploads/2026/08/miru-miru-nya-cover.webp\" class=\"attachment-full size-full wp-post-image\" alt=\"純愛咪戀ミルミルニャー！｜〈純白和弦〉杏仁ミル聯動主題曲\" style=\"object-fit:cover;\" decoding=\"async\" loading=\"lazy\" srcset=\"/wp-content/uploads/2026/08/miru-miru-nya-cover.webp 2000w, /wp-content/uploads/2026/08/miru-miru-nya-cover-300x165.webp 300w, /wp-content/uploads/2026/08/miru-miru-nya-cover-1024x563.webp 1024w, /wp-content/uploads/2026/08/miru-miru-nya-cover-768x422.webp 768w, /wp-content/uploads/2026/08/miru-miru-nya-cover-1536x845.webp 1536w\" sizes=\"auto, (max-width: 2000px) 100vw, 2000px\" /></a></figure>\n\n\t\t\t\t\t\n\t\t\t\t\t<div aria-hidden=\"true\" inert=\"\" class=\"wp-block-group works-card__overlay is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t\t<h2 class=\"works-card__overlay-title wp-block-post-title\">純愛咪戀ミルミルニャー！｜〈純白和弦〉杏仁ミル聯動主題曲</h2>\n\t\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\t\n\t\t\t\t\t\t<p class=\"works-card__year work-year wp-block-paragraph\">2023</p>\n\t\t\t\t\t\t\n\t\t\t\t\t</div>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__caption is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<h2 class=\"works-card__title wp-block-post-title\"><a href=\"/works/miru-miru-nya/\" target=\"_self\" >純愛咪戀ミルミルニャー！｜〈純白和弦〉杏仁ミル聯動主題曲</a></h2>\n\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\n\t\t\t\t\t<p class=\"works-card__year work-year wp-block-paragraph\">2023</p>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t</article>\n\t\t\t\n\t\t</li><li class=\"wp-block-post post-70 portfolio_work type-portfolio_work status-publish has-post-thumbnail hentry work_category-music\">\n\t\t\t\n\t\t\t<article class=\"wp-block-group works-card is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__media is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<figure class=\"works-card__image wp-block-post-featured-image\"><a href=\"/works/white-days/\" target=\"_self\" ><img width=\"676\" height=\"676\" src=\"/wp-content/uploads/2026/08/white-days-cover.webp\" class=\"attachment-full size-full wp-post-image\" alt=\"【White Days】〈純白和弦〉塔芭絲可聯動主題曲\" style=\"object-fit:cover;\" decoding=\"async\" loading=\"lazy\" srcset=\"/wp-content/uploads/2026/08/white-days-cover.webp 676w, /wp-content/uploads/2026/08/white-days-cover-300x300.webp 300w, /wp-content/uploads/2026/08/white-days-cover-150x150.webp 150w\" sizes=\"auto, (max-width: 676px) 100vw, 676px\" /></a></figure>\n\n\t\t\t\t\t\n\t\t\t\t\t<div aria-hidden=\"true\" inert=\"\" class=\"wp-block-group works-card__overlay is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t\t<h2 class=\"works-card__overlay-title wp-block-post-title\">【White Days】〈純白和弦〉塔芭絲可聯動主題曲</h2>\n\t\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\t\n\t\t\t\t\t\t<p class=\"works-card__year work-year wp-block-paragraph\">2023</p>\n\t\t\t\t\t\t\n\t\t\t\t\t</div>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__caption is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<h2 class=\"works-card__title wp-block-post-title\"><a href=\"/works/white-days/\" target=\"_self\" >【White Days】〈純白和弦〉塔芭絲可聯動主題曲</a></h2>\n\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\n\t\t\t\t\t<p class=\"works-card__year work-year wp-block-paragraph\">2023</p>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t</article>\n\t\t\t\n\t\t</li><li class=\"wp-block-post post-65 portfolio_work type-portfolio_work status-publish has-post-thumbnail hentry work_category-music\">\n\t\t\t\n\t\t\t<article class=\"wp-block-group works-card is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__media is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<figure class=\"works-card__image wp-block-post-featured-image\"><a href=\"/works/way-someway/\" target=\"_self\" ><img width=\"1303\" height=\"1303\" src=\"/wp-content/uploads/2026/08/way-someway-cover.webp\" class=\"attachment-full size-full wp-post-image\" alt=\"WAY《Someway 某》\" style=\"object-fit:cover;\" decoding=\"async\" loading=\"lazy\" srcset=\"/wp-content/uploads/2026/08/way-someway-cover.webp 1303w, /wp-content/uploads/2026/08/way-someway-cover-300x300.webp 300w, /wp-content/uploads/2026/08/way-someway-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/way-someway-cover-150x150.webp 150w, /wp-content/uploads/2026/08/way-someway-cover-768x768.webp 768w\" sizes=\"auto, (max-width: 1303px) 100vw, 1303px\" /></a></figure>\n\n\t\t\t\t\t\n\t\t\t\t\t<div aria-hidden=\"true\" inert=\"\" class=\"wp-block-group works-card__overlay is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t\t<h2 class=\"works-card__overlay-title wp-block-post-title\">WAY《Someway 某》</h2>\n\t\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\t\n\t\t\t\t\t\t<p class=\"works-card__year work-year wp-block-paragraph\">2022</p>\n\t\t\t\t\t\t\n\t\t\t\t\t</div>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__caption is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<h2 class=\"works-card__title wp-block-post-title\"><a href=\"/works/way-someway/\" target=\"_self\" >WAY《Someway 某》</a></h2>\n\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\n\t\t\t\t\t<p class=\"works-card__year work-year wp-block-paragraph\">2022</p>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t</article>\n\t\t\t\n\t\t</li><li class=\"wp-block-post post-54 portfolio_work type-portfolio_work status-publish has-post-thumbnail hentry work_category-music\">\n\t\t\t\n\t\t\t<article class=\"wp-block-group works-card is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__media is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<figure class=\"works-card__image wp-block-post-featured-image\"><a href=\"/works/huang-yi-m-score/\" target=\"_self\" ><img width=\"1254\" height=\"1254\" src=\"/wp-content/uploads/2026/08/huang-yi-m-score-cover.webp\" class=\"attachment-full size-full wp-post-image\" alt=\"黃易群俠傳 M 配樂\" style=\"object-fit:cover;\" decoding=\"async\" loading=\"lazy\" srcset=\"/wp-content/uploads/2026/08/huang-yi-m-score-cover.webp 1254w, /wp-content/uploads/2026/08/huang-yi-m-score-cover-300x300.webp 300w, /wp-content/uploads/2026/08/huang-yi-m-score-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/huang-yi-m-score-cover-150x150.webp 150w, /wp-content/uploads/2026/08/huang-yi-m-score-cover-768x768.webp 768w\" sizes=\"auto, (max-width: 1254px) 100vw, 1254px\" /></a></figure>\n\n\t\t\t\t\t\n\t\t\t\t\t<div aria-hidden=\"true\" inert=\"\" class=\"wp-block-group works-card__overlay is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t\t<h2 class=\"works-card__overlay-title wp-block-post-title\">黃易群俠傳 M 配樂</h2>\n\t\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\t\n\t\t\t\t\t\t<p class=\"works-card__year work-year wp-block-paragraph\">2020</p>\n\t\t\t\t\t\t\n\t\t\t\t\t</div>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__caption is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<h2 class=\"works-card__title wp-block-post-title\"><a href=\"/works/huang-yi-m-score/\" target=\"_self\" >黃易群俠傳 M 配樂</a></h2>\n\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\n\t\t\t\t\t<p class=\"works-card__year work-year wp-block-paragraph\">2020</p>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t</article>\n\t\t\t\n\t\t</li><li class=\"wp-block-post post-48 portfolio_work type-portfolio_work status-publish has-post-thumbnail hentry work_category-music\">\n\t\t\t\n\t\t\t<article class=\"wp-block-group works-card is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__media is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<figure class=\"works-card__image wp-block-post-featured-image\"><a href=\"/works/rod-game-score/\" target=\"_self\" ><img width=\"1080\" height=\"1080\" src=\"/wp-content/uploads/2026/08/rod-game-score-cover.webp\" class=\"attachment-full size-full wp-post-image\" alt=\"《ROD》遊戲配樂\" style=\"object-fit:cover;\" decoding=\"async\" loading=\"lazy\" srcset=\"/wp-content/uploads/2026/08/rod-game-score-cover.webp 1080w, /wp-content/uploads/2026/08/rod-game-score-cover-300x300.webp 300w, /wp-content/uploads/2026/08/rod-game-score-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/rod-game-score-cover-150x150.webp 150w, /wp-content/uploads/2026/08/rod-game-score-cover-768x768.webp 768w\" sizes=\"auto, (max-width: 1080px) 100vw, 1080px\" /></a></figure>\n\n\t\t\t\t\t\n\t\t\t\t\t<div aria-hidden=\"true\" inert=\"\" class=\"wp-block-group works-card__overlay is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t\t<h2 class=\"works-card__overlay-title wp-block-post-title\">《ROD》遊戲配樂</h2>\n\t\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\t\n\t\t\t\t\t\t<p class=\"works-card__year work-year wp-block-paragraph\">2019</p>\n\t\t\t\t\t\t\n\t\t\t\t\t</div>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__caption is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<h2 class=\"works-card__title wp-block-post-title\"><a href=\"/works/rod-game-score/\" target=\"_self\" >《ROD》遊戲配樂</a></h2>\n\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\n\t\t\t\t\t<p class=\"works-card__year work-year wp-block-paragraph\">2019</p>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t</article>\n\t\t\t\n\t\t</li><li class=\"wp-block-post post-42 portfolio_work type-portfolio_work status-publish has-post-thumbnail hentry work_category-music\">\n\t\t\t\n\t\t\t<article class=\"wp-block-group works-card is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__media is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<figure class=\"works-card__image wp-block-post-featured-image\"><a href=\"/works/black-bear-right-field-ep/\" target=\"_self\" ><img width=\"2400\" height=\"2400\" src=\"/wp-content/uploads/2026/08/black-bear-right-field-ep-cover.webp\" class=\"attachment-full size-full wp-post-image\" alt=\"黑熊合唱團 EP《我在右外野看台等你》\" style=\"object-fit:cover;\" decoding=\"async\" loading=\"lazy\" srcset=\"/wp-content/uploads/2026/08/black-bear-right-field-ep-cover.webp 2400w, /wp-content/uploads/2026/08/black-bear-right-field-ep-cover-300x300.webp 300w, /wp-content/uploads/2026/08/black-bear-right-field-ep-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/black-bear-right-field-ep-cover-150x150.webp 150w, /wp-content/uploads/2026/08/black-bear-right-field-ep-cover-768x768.webp 768w, /wp-content/uploads/2026/08/black-bear-right-field-ep-cover-1536x1536.webp 1536w, /wp-content/uploads/2026/08/black-bear-right-field-ep-cover-2048x2048.webp 2048w\" sizes=\"auto, (max-width: 2400px) 100vw, 2400px\" /></a></figure>\n\n\t\t\t\t\t\n\t\t\t\t\t<div aria-hidden=\"true\" inert=\"\" class=\"wp-block-group works-card__overlay is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t\t<h2 class=\"works-card__overlay-title wp-block-post-title\">黑熊合唱團 EP《我在右外野看台等你》</h2>\n\t\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\t\n\t\t\t\t\t</div>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__caption is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<h2 class=\"works-card__title wp-block-post-title\"><a href=\"/works/black-bear-right-field-ep/\" target=\"_self\" >黑熊合唱團 EP《我在右外野看台等你》</a></h2>\n\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t</article>\n\t\t\t\n\t\t</li><li class=\"wp-block-post post-38 portfolio_work type-portfolio_work status-publish has-post-thumbnail hentry work_category-music\">\n\t\t\t\n\t\t\t<article class=\"wp-block-group works-card is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__media is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<figure class=\"works-card__image wp-block-post-featured-image\"><a href=\"/works/wasai-psychology-score/\" target=\"_self\" ><img width=\"1254\" height=\"1254\" src=\"/wp-content/uploads/2026/08/wasai-psychology-score-cover.webp\" class=\"attachment-full size-full wp-post-image\" alt=\"哇賽心理學 配樂\" style=\"object-fit:cover;\" decoding=\"async\" loading=\"lazy\" srcset=\"/wp-content/uploads/2026/08/wasai-psychology-score-cover.webp 1254w, /wp-content/uploads/2026/08/wasai-psychology-score-cover-300x300.webp 300w, /wp-content/uploads/2026/08/wasai-psychology-score-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/wasai-psychology-score-cover-150x150.webp 150w, /wp-content/uploads/2026/08/wasai-psychology-score-cover-768x768.webp 768w\" sizes=\"auto, (max-width: 1254px) 100vw, 1254px\" /></a></figure>\n\n\t\t\t\t\t\n\t\t\t\t\t<div aria-hidden=\"true\" inert=\"\" class=\"wp-block-group works-card__overlay is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t\t<h2 class=\"works-card__overlay-title wp-block-post-title\">哇賽心理學 配樂</h2>\n\t\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\t\n\t\t\t\t\t\t<p class=\"works-card__year work-year wp-block-paragraph\">2021</p>\n\t\t\t\t\t\t\n\t\t\t\t\t</div>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__caption is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<h2 class=\"works-card__title wp-block-post-title\"><a href=\"/works/wasai-psychology-score/\" target=\"_self\" >哇賽心理學 配樂</a></h2>\n\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\n\t\t\t\t\t<p class=\"works-card__year work-year wp-block-paragraph\">2021</p>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t</article>\n\t\t\t\n\t\t</li><li class=\"wp-block-post post-28 portfolio_work type-portfolio_work status-publish has-post-thumbnail hentry work_category-live\">\n\t\t\t\n\t\t\t<article class=\"wp-block-group works-card is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__media is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<figure class=\"works-card__image wp-block-post-featured-image\"><a href=\"/works/kingdom/\" target=\"_self\" ><img width=\"2400\" height=\"1600\" src=\"/wp-content/uploads/2026/08/kingdom-cover.webp\" class=\"attachment-full size-full wp-post-image\" alt=\"《KINGDOM》 趙亭婷x安娜琪舞蹈劇場\" style=\"object-fit:cover;\" decoding=\"async\" loading=\"lazy\" srcset=\"/wp-content/uploads/2026/08/kingdom-cover.webp 2400w, /wp-content/uploads/2026/08/kingdom-cover-300x200.webp 300w, /wp-content/uploads/2026/08/kingdom-cover-1024x683.webp 1024w, /wp-content/uploads/2026/08/kingdom-cover-768x512.webp 768w, /wp-content/uploads/2026/08/kingdom-cover-1536x1024.webp 1536w, /wp-content/uploads/2026/08/kingdom-cover-2048x1365.webp 2048w\" sizes=\"auto, (max-width: 2400px) 100vw, 2400px\" /></a></figure>\n\n\t\t\t\t\t\n\t\t\t\t\t<div aria-hidden=\"true\" inert=\"\" class=\"wp-block-group works-card__overlay is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t\t<h2 class=\"works-card__overlay-title wp-block-post-title\">《KINGDOM》 趙亭婷x安娜琪舞蹈劇場</h2>\n\t\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/live/\" rel=\"tag\">LIVE</a></div>\n\t\t\t\t\t\t\n\t\t\t\t\t</div>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__caption is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<h2 class=\"works-card__title wp-block-post-title\"><a href=\"/works/kingdom/\" target=\"_self\" >《KINGDOM》 趙亭婷x安娜琪舞蹈劇場</a></h2>\n\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/live/\" rel=\"tag\">LIVE</a></div>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t</article>\n\t\t\t\n\t\t</li><li class=\"wp-block-post post-27 portfolio_work type-portfolio_work status-publish has-post-thumbnail hentry work_category-live\">\n\t\t\t\n\t\t\t<article class=\"wp-block-group works-card is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__media is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<figure class=\"works-card__image wp-block-post-featured-image\"><a href=\"/works/boulder/\" target=\"_self\" ><img width=\"1537\" height=\"1023\" src=\"/wp-content/uploads/2026/08/boulder-cover.webp\" class=\"attachment-full size-full wp-post-image\" alt=\"Boulder 石\" style=\"object-fit:cover;\" decoding=\"async\" loading=\"lazy\" srcset=\"/wp-content/uploads/2026/08/boulder-cover.webp 1537w, /wp-content/uploads/2026/08/boulder-cover-300x200.webp 300w, /wp-content/uploads/2026/08/boulder-cover-1024x682.webp 1024w, /wp-content/uploads/2026/08/boulder-cover-768x511.webp 768w\" sizes=\"auto, (max-width: 1537px) 100vw, 1537px\" /></a></figure>\n\n\t\t\t\t\t\n\t\t\t\t\t<div aria-hidden=\"true\" inert=\"\" class=\"wp-block-group works-card__overlay is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t\t<h2 class=\"works-card__overlay-title wp-block-post-title\">Boulder 石</h2>\n\t\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/live/\" rel=\"tag\">LIVE</a></div>\n\t\t\t\t\t\t\n\t\t\t\t\t</div>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__caption is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<h2 class=\"works-card__title wp-block-post-title\"><a href=\"/works/boulder/\" target=\"_self\" >Boulder 石</a></h2>\n\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/live/\" rel=\"tag\">LIVE</a></div>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t</article>\n\t\t\t\n\t\t</li><li class=\"wp-block-post post-26 portfolio_work type-portfolio_work status-publish has-post-thumbnail hentry work_category-live\">\n\t\t\t\n\t\t\t<article class=\"wp-block-group works-card is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__media is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<figure class=\"works-card__image wp-block-post-featured-image\"><a href=\"/works/wonde1and/\" target=\"_self\" ><img width=\"1086\" height=\"1448\" src=\"/wp-content/uploads/2026/08/wonde1and-cover.webp\" class=\"attachment-full size-full wp-post-image\" alt=\"E1and Special Showcase 《WONDE1AND》\" style=\"object-fit:cover;\" decoding=\"async\" loading=\"lazy\" srcset=\"/wp-content/uploads/2026/08/wonde1and-cover.webp 1086w, /wp-content/uploads/2026/08/wonde1and-cover-225x300.webp 225w, /wp-content/uploads/2026/08/wonde1and-cover-768x1024.webp 768w\" sizes=\"auto, (max-width: 1086px) 100vw, 1086px\" /></a></figure>\n\n\t\t\t\t\t\n\t\t\t\t\t<div aria-hidden=\"true\" inert=\"\" class=\"wp-block-group works-card__overlay is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t\t<h2 class=\"works-card__overlay-title wp-block-post-title\">E1and Special Showcase 《WONDE1AND》</h2>\n\t\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/live/\" rel=\"tag\">LIVE</a></div>\n\t\t\t\t\t\t\n\t\t\t\t\t</div>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__caption is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<h2 class=\"works-card__title wp-block-post-title\"><a href=\"/works/wonde1and/\" target=\"_self\" >E1and Special Showcase 《WONDE1AND》</a></h2>\n\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/live/\" rel=\"tag\">LIVE</a></div>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t</article>\n\t\t\t\n\t\t</li><li class=\"wp-block-post post-25 portfolio_work type-portfolio_work status-publish has-post-thumbnail hentry work_category-music\">\n\t\t\t\n\t\t\t<article class=\"wp-block-group works-card is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__media is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<figure class=\"works-card__image wp-block-post-featured-image\"><a href=\"/works/tong-xing-tower-of-saviors-11th-anniversary/\" target=\"_self\" ><img width=\"1254\" height=\"1254\" src=\"/wp-content/uploads/2026/08/tongxing-cover.webp\" class=\"attachment-full size-full wp-post-image\" alt=\"【神魔之塔】《同行》- 神魔之塔11週年主題曲\" style=\"object-fit:cover;\" decoding=\"async\" loading=\"lazy\" srcset=\"/wp-content/uploads/2026/08/tongxing-cover.webp 1254w, /wp-content/uploads/2026/08/tongxing-cover-300x300.webp 300w, /wp-content/uploads/2026/08/tongxing-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/tongxing-cover-150x150.webp 150w, /wp-content/uploads/2026/08/tongxing-cover-768x768.webp 768w\" sizes=\"auto, (max-width: 1254px) 100vw, 1254px\" /></a></figure>\n\n\t\t\t\t\t\n\t\t\t\t\t<div aria-hidden=\"true\" inert=\"\" class=\"wp-block-group works-card__overlay is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t\t<h2 class=\"works-card__overlay-title wp-block-post-title\">【神魔之塔】《同行》- 神魔之塔11週年主題曲</h2>\n\t\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\t\n\t\t\t\t\t</div>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group works-card__caption is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t<h2 class=\"works-card__title wp-block-post-title\"><a href=\"/works/tong-xing-tower-of-saviors-11th-anniversary/\" target=\"_self\" >【神魔之塔】《同行》- 神魔之塔11週年主題曲</a></h2>\n\t\t\t\t\t<div class=\"taxonomy-work_category works-card__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t</article>\n\t\t\t\n\t\t</li></ul>\n\t</div>\n\t\n</div>\n\n",
+  "canonical_url": "/work/",
+  "works": [
+    {
+      "id": 113,
+      "title": "全息烏托邦《80之後》",
+      "canonical_url": "/works/holographic-utopia-after-80/",
+      "year": "2025",
+      "categories": [
+        {
+          "slug": "music",
+          "name": "MUSIC"
+        }
+      ],
+      "cover": {
+        "id": 114,
+        "src": "/wp-content/uploads/2026/08/holographic-utopia-after-80-cover-1024x683.webp",
+        "width": 1024,
+        "height": 683,
+        "alt": "全息烏托邦《80之後》",
+        "srcset": "/wp-content/uploads/2026/08/holographic-utopia-after-80-cover-1024x683.webp 1024w, /wp-content/uploads/2026/08/holographic-utopia-after-80-cover-300x200.webp 300w, /wp-content/uploads/2026/08/holographic-utopia-after-80-cover-768x512.webp 768w, /wp-content/uploads/2026/08/holographic-utopia-after-80-cover.webp 1536w",
+        "sizes": "(max-width: 1024px) 100vw, 1024px"
+      },
+      "tracks": [
+        {
+          "id": 115,
+          "attachment_id": 115,
+          "work_id": 113,
+          "title": "全息烏托邦 80之後 score ExhVer",
+          "artist": "",
+          "release": "全息烏托邦《80之後》",
+          "length": "2:30",
+          "src": "/wp-content/uploads/2026/08/holographic-utopia-after-80-track-01.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 113,
+          "artwork": "/wp-content/uploads/2026/08/holographic-utopia-after-80-cover-1024x683.webp",
+          "artworkAlt": "全息烏托邦《80之後》",
+          "providerLinks": []
+        },
+        {
+          "id": 116,
+          "attachment_id": 116,
+          "work_id": 113,
+          "title": "全息烏托邦 80之後 score MM",
+          "artist": "",
+          "release": "全息烏托邦《80之後》",
+          "length": "5:40",
+          "src": "/wp-content/uploads/2026/08/holographic-utopia-after-80-track-02.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 113,
+          "artwork": "/wp-content/uploads/2026/08/holographic-utopia-after-80-cover-1024x683.webp",
+          "artworkAlt": "全息烏托邦《80之後》",
+          "providerLinks": []
+        }
+      ]
+    },
+    {
+      "id": 108,
+      "title": "楊臨慧《寶寶抱抱》",
+      "canonical_url": "/works/baby-hug/",
+      "year": "2025",
+      "categories": [
+        {
+          "slug": "music",
+          "name": "MUSIC"
+        }
+      ],
+      "cover": {
+        "id": 109,
+        "src": "/wp-content/uploads/2026/08/baby-hug-cover-1024x1024.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "楊臨慧《寶寶抱抱》",
+        "srcset": "/wp-content/uploads/2026/08/baby-hug-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/baby-hug-cover-300x300.webp 300w, /wp-content/uploads/2026/08/baby-hug-cover-150x150.webp 150w, /wp-content/uploads/2026/08/baby-hug-cover-768x768.webp 768w, /wp-content/uploads/2026/08/baby-hug-cover-1536x1536.webp 1536w, /wp-content/uploads/2026/08/baby-hug-cover.webp 2000w",
+        "sizes": "(max-width: 1024px) 100vw, 1024px"
+      },
+      "tracks": [
+        {
+          "id": 110,
+          "attachment_id": 110,
+          "work_id": 108,
+          "title": "寶寶抱抱 MMA",
+          "artist": "",
+          "release": "楊臨慧《寶寶抱抱》",
+          "length": "3:27",
+          "src": "/wp-content/uploads/2026/08/baby-hug-track-01.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 108,
+          "artwork": "/wp-content/uploads/2026/08/baby-hug-cover-1024x1024.webp",
+          "artworkAlt": "楊臨慧《寶寶抱抱》",
+          "providerLinks": []
+        },
+        {
+          "id": 111,
+          "attachment_id": 111,
+          "work_id": 108,
+          "title": "寶寶抱抱 MMM (GR 5dB)",
+          "artist": "",
+          "release": "楊臨慧《寶寶抱抱》",
+          "length": "3:27",
+          "src": "/wp-content/uploads/2026/08/baby-hug-track-02.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 108,
+          "artwork": "/wp-content/uploads/2026/08/baby-hug-cover-1024x1024.webp",
+          "artworkAlt": "楊臨慧《寶寶抱抱》",
+          "providerLinks": []
+        }
+      ]
+    },
+    {
+      "id": 103,
+      "title": "風色幻想 NeXus 遊戲主題曲《風色的軌跡》",
+      "canonical_url": "/works/fantasia-sango-nexus/",
+      "year": "2025",
+      "categories": [
+        {
+          "slug": "music",
+          "name": "MUSIC"
+        }
+      ],
+      "cover": {
+        "id": 104,
+        "src": "/wp-content/uploads/2026/08/fantasia-sango-nexus-cover-1024x724.webp",
+        "width": 1024,
+        "height": 724,
+        "alt": "風色幻想 NeXus 遊戲主題曲《風色的軌跡》",
+        "srcset": "/wp-content/uploads/2026/08/fantasia-sango-nexus-cover-1024x724.webp 1024w, /wp-content/uploads/2026/08/fantasia-sango-nexus-cover-300x212.webp 300w, /wp-content/uploads/2026/08/fantasia-sango-nexus-cover-768x543.webp 768w, /wp-content/uploads/2026/08/fantasia-sango-nexus-cover-1536x1086.webp 1536w, /wp-content/uploads/2026/08/fantasia-sango-nexus-cover.webp 1920w",
+        "sizes": "(max-width: 1024px) 100vw, 1024px"
+      },
+      "tracks": [
+        {
+          "id": 105,
+          "attachment_id": 105,
+          "work_id": 103,
+          "title": "風色的軌跡",
+          "artist": "",
+          "release": "風色幻想 NeXus 遊戲主題曲《風色的軌跡》",
+          "length": "4:46",
+          "src": "/wp-content/uploads/2026/08/fantasia-sango-nexus-track-01.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 103,
+          "artwork": "/wp-content/uploads/2026/08/fantasia-sango-nexus-cover-1024x724.webp",
+          "artworkAlt": "風色幻想 NeXus 遊戲主題曲《風色的軌跡》",
+          "providerLinks": []
+        },
+        {
+          "id": 106,
+          "attachment_id": 106,
+          "work_id": 103,
+          "title": "風色的軌跡 (Instrumental)",
+          "artist": "",
+          "release": "風色幻想 NeXus 遊戲主題曲《風色的軌跡》",
+          "length": "4:46",
+          "src": "/wp-content/uploads/2026/08/fantasia-sango-nexus-track-02.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 103,
+          "artwork": "/wp-content/uploads/2026/08/fantasia-sango-nexus-cover-1024x724.webp",
+          "artworkAlt": "風色幻想 NeXus 遊戲主題曲《風色的軌跡》",
+          "providerLinks": []
+        }
+      ]
+    },
+    {
+      "id": 98,
+      "title": "台鋼天鷹主題曲《Take Wing》",
+      "canonical_url": "/works/tsg-hawks-take-wing/",
+      "year": "2025",
+      "categories": [
+        {
+          "slug": "music",
+          "name": "MUSIC"
+        }
+      ],
+      "cover": {
+        "id": 99,
+        "src": "/wp-content/uploads/2026/08/tsg-hawks-take-wing-cover-1024x1024.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "台鋼天鷹主題曲《Take Wing》",
+        "srcset": "/wp-content/uploads/2026/08/tsg-hawks-take-wing-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/tsg-hawks-take-wing-cover-300x300.webp 300w, /wp-content/uploads/2026/08/tsg-hawks-take-wing-cover-150x150.webp 150w, /wp-content/uploads/2026/08/tsg-hawks-take-wing-cover-768x768.webp 768w, /wp-content/uploads/2026/08/tsg-hawks-take-wing-cover.webp 1254w",
+        "sizes": "(max-width: 1024px) 100vw, 1024px"
+      },
+      "tracks": [
+        {
+          "id": 100,
+          "attachment_id": 100,
+          "work_id": 98,
+          "title": "Take Wing",
+          "artist": "",
+          "release": "台鋼天鷹主題曲《Take Wing》",
+          "length": "3:13",
+          "src": "/wp-content/uploads/2026/08/tsg-hawks-take-wing-track-01.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 98,
+          "artwork": "/wp-content/uploads/2026/08/tsg-hawks-take-wing-cover-1024x1024.webp",
+          "artworkAlt": "台鋼天鷹主題曲《Take Wing》",
+          "providerLinks": []
+        },
+        {
+          "id": 101,
+          "attachment_id": 101,
+          "work_id": 98,
+          "title": "Take Wing (Instrumental)",
+          "artist": "",
+          "release": "台鋼天鷹主題曲《Take Wing》",
+          "length": "3:13",
+          "src": "/wp-content/uploads/2026/08/tsg-hawks-take-wing-track-02.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 98,
+          "artwork": "/wp-content/uploads/2026/08/tsg-hawks-take-wing-cover-1024x1024.webp",
+          "artworkAlt": "台鋼天鷹主題曲《Take Wing》",
+          "providerLinks": []
+        }
+      ]
+    },
+    {
+      "id": 93,
+      "title": "台鋼獵鷹主題曲《鷹速飛翔》",
+      "canonical_url": "/works/tsg-falcons-fly-fast/",
+      "year": "2025",
+      "categories": [
+        {
+          "slug": "music",
+          "name": "MUSIC"
+        }
+      ],
+      "cover": {
+        "id": 94,
+        "src": "/wp-content/uploads/2026/08/tsg-falcons-fly-fast-cover-1024x1024.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "台鋼獵鷹主題曲《鷹速飛翔》",
+        "srcset": "/wp-content/uploads/2026/08/tsg-falcons-fly-fast-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/tsg-falcons-fly-fast-cover-300x300.webp 300w, /wp-content/uploads/2026/08/tsg-falcons-fly-fast-cover-150x150.webp 150w, /wp-content/uploads/2026/08/tsg-falcons-fly-fast-cover-768x768.webp 768w, /wp-content/uploads/2026/08/tsg-falcons-fly-fast-cover-1536x1536.webp 1536w, /wp-content/uploads/2026/08/tsg-falcons-fly-fast-cover.webp 2000w",
+        "sizes": "(max-width: 1024px) 100vw, 1024px"
+      },
+      "tracks": [
+        {
+          "id": 95,
+          "attachment_id": 95,
+          "work_id": 93,
+          "title": "鷹速飛翔",
+          "artist": "",
+          "release": "台鋼獵鷹主題曲《鷹速飛翔》",
+          "length": "3:23",
+          "src": "/wp-content/uploads/2026/08/tsg-falcons-fly-fast-track-01.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 93,
+          "artwork": "/wp-content/uploads/2026/08/tsg-falcons-fly-fast-cover-1024x1024.webp",
+          "artworkAlt": "台鋼獵鷹主題曲《鷹速飛翔》",
+          "providerLinks": []
+        },
+        {
+          "id": 96,
+          "attachment_id": 96,
+          "work_id": 93,
+          "title": "鷹速飛翔 (Instrumental)",
+          "artist": "",
+          "release": "台鋼獵鷹主題曲《鷹速飛翔》",
+          "length": "3:23",
+          "src": "/wp-content/uploads/2026/08/tsg-falcons-fly-fast-track-02.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 93,
+          "artwork": "/wp-content/uploads/2026/08/tsg-falcons-fly-fast-cover-1024x1024.webp",
+          "artworkAlt": "台鋼獵鷹主題曲《鷹速飛翔》",
+          "providerLinks": []
+        }
+      ]
+    },
+    {
+      "id": 88,
+      "title": "神魔之塔十二週年主題曲《星恆相伴》",
+      "canonical_url": "/works/tower-of-saviors-12th/",
+      "year": "2025",
+      "categories": [
+        {
+          "slug": "music",
+          "name": "MUSIC"
+        }
+      ],
+      "cover": {
+        "id": 89,
+        "src": "/wp-content/uploads/2026/08/tower-of-saviors-12th-cover-1024x1024.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "神魔之塔十二週年主題曲《星恆相伴》",
+        "srcset": "/wp-content/uploads/2026/08/tower-of-saviors-12th-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/tower-of-saviors-12th-cover-300x300.webp 300w, /wp-content/uploads/2026/08/tower-of-saviors-12th-cover-150x150.webp 150w, /wp-content/uploads/2026/08/tower-of-saviors-12th-cover-768x768.webp 768w, /wp-content/uploads/2026/08/tower-of-saviors-12th-cover.webp 1254w",
+        "sizes": "(max-width: 1024px) 100vw, 1024px"
+      },
+      "tracks": [
+        {
+          "id": 90,
+          "attachment_id": 90,
+          "work_id": 88,
+          "title": "星恆相伴",
+          "artist": "",
+          "release": "神魔之塔十二週年主題曲《星恆相伴》",
+          "length": "3:43",
+          "src": "/wp-content/uploads/2026/08/tower-of-saviors-12th-track-01.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 88,
+          "artwork": "/wp-content/uploads/2026/08/tower-of-saviors-12th-cover-1024x1024.webp",
+          "artworkAlt": "神魔之塔十二週年主題曲《星恆相伴》",
+          "providerLinks": []
+        },
+        {
+          "id": 91,
+          "attachment_id": 91,
+          "work_id": 88,
+          "title": "星恆相伴 (Instrumental)",
+          "artist": "",
+          "release": "神魔之塔十二週年主題曲《星恆相伴》",
+          "length": "3:43",
+          "src": "/wp-content/uploads/2026/08/tower-of-saviors-12th-track-02.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 88,
+          "artwork": "/wp-content/uploads/2026/08/tower-of-saviors-12th-cover-1024x1024.webp",
+          "artworkAlt": "神魔之塔十二週年主題曲《星恆相伴》",
+          "providerLinks": []
+        }
+      ]
+    },
+    {
+      "id": 84,
+      "title": "Leefynk《Plastic Friends》",
+      "canonical_url": "/works/plastic-friends/",
+      "year": "",
+      "categories": [
+        {
+          "slug": "music",
+          "name": "MUSIC"
+        }
+      ],
+      "cover": {
+        "id": 85,
+        "src": "/wp-content/uploads/2026/08/plastic-friends-cover-1024x1024.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Leefynk《Plastic Friends》",
+        "srcset": "/wp-content/uploads/2026/08/plastic-friends-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/plastic-friends-cover-300x300.webp 300w, /wp-content/uploads/2026/08/plastic-friends-cover-150x150.webp 150w, /wp-content/uploads/2026/08/plastic-friends-cover-768x768.webp 768w, /wp-content/uploads/2026/08/plastic-friends-cover.webp 1254w",
+        "sizes": "(max-width: 1024px) 100vw, 1024px"
+      },
+      "tracks": [
+        {
+          "id": 86,
+          "attachment_id": 86,
+          "work_id": 84,
+          "title": "Plastic Friends",
+          "artist": "",
+          "release": "Leefynk《Plastic Friends》",
+          "length": "3:18",
+          "src": "/wp-content/uploads/2026/08/plastic-friends-track-01.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 84,
+          "artwork": "/wp-content/uploads/2026/08/plastic-friends-cover-1024x1024.webp",
+          "artworkAlt": "Leefynk《Plastic Friends》",
+          "providerLinks": {
+            "spotify": "https://open.spotify.com/track/0Qk1R4pPXx391nsJzIIwhv"
+          }
+        }
+      ]
+    },
+    {
+      "id": 80,
+      "title": "神魔之塔十週年主題曲《與你相遇》",
+      "canonical_url": "/works/tower-of-saviors-10th/",
+      "year": "2023",
+      "categories": [
+        {
+          "slug": "music",
+          "name": "MUSIC"
+        }
+      ],
+      "cover": {
+        "id": 81,
+        "src": "/wp-content/uploads/2026/08/tower-of-saviors-10th-cover-1024x1024.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "神魔之塔十週年主題曲《與你相遇》",
+        "srcset": "/wp-content/uploads/2026/08/tower-of-saviors-10th-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/tower-of-saviors-10th-cover-300x300.webp 300w, /wp-content/uploads/2026/08/tower-of-saviors-10th-cover-150x150.webp 150w, /wp-content/uploads/2026/08/tower-of-saviors-10th-cover-768x768.webp 768w, /wp-content/uploads/2026/08/tower-of-saviors-10th-cover.webp 1254w",
+        "sizes": "(max-width: 1024px) 100vw, 1024px"
+      },
+      "tracks": [
+        {
+          "id": 82,
+          "attachment_id": 82,
+          "work_id": 80,
+          "title": "與你相遇",
+          "artist": "",
+          "release": "神魔之塔十週年主題曲《與你相遇》",
+          "length": "3:54",
+          "src": "/wp-content/uploads/2026/08/tower-of-saviors-10th-track-01.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 80,
+          "artwork": "/wp-content/uploads/2026/08/tower-of-saviors-10th-cover-1024x1024.webp",
+          "artworkAlt": "神魔之塔十週年主題曲《與你相遇》",
+          "providerLinks": {
+            "spotify": "https://open.spotify.com/track/2S2orgDVpX68S8SXep7Lks",
+            "youtube": "https://www.youtube.com/watch?v=e0NRoLw7NwY"
+          }
+        }
+      ]
+    },
+    {
+      "id": 75,
+      "title": "純愛咪戀ミルミルニャー！｜〈純白和弦〉杏仁ミル聯動主題曲",
+      "canonical_url": "/works/miru-miru-nya/",
+      "year": "2023",
+      "categories": [
+        {
+          "slug": "music",
+          "name": "MUSIC"
+        }
+      ],
+      "cover": {
+        "id": 76,
+        "src": "/wp-content/uploads/2026/08/miru-miru-nya-cover-1024x563.webp",
+        "width": 1024,
+        "height": 563,
+        "alt": "純愛咪戀ミルミルニャー！｜〈純白和弦〉杏仁ミル聯動主題曲",
+        "srcset": "/wp-content/uploads/2026/08/miru-miru-nya-cover-1024x563.webp 1024w, /wp-content/uploads/2026/08/miru-miru-nya-cover-300x165.webp 300w, /wp-content/uploads/2026/08/miru-miru-nya-cover-768x422.webp 768w, /wp-content/uploads/2026/08/miru-miru-nya-cover-1536x845.webp 1536w, /wp-content/uploads/2026/08/miru-miru-nya-cover.webp 2000w",
+        "sizes": "(max-width: 1024px) 100vw, 1024px"
+      },
+      "tracks": [
+        {
+          "id": 77,
+          "attachment_id": 77,
+          "work_id": 75,
+          "title": "純愛咪戀ミルミルニャー！",
+          "artist": "",
+          "release": "純愛咪戀ミルミルニャー！｜〈純白和弦〉杏仁ミル聯動主題曲",
+          "length": "3:21",
+          "src": "/wp-content/uploads/2026/08/miru-miru-nya-track-01.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 75,
+          "artwork": "/wp-content/uploads/2026/08/miru-miru-nya-cover-1024x563.webp",
+          "artworkAlt": "純愛咪戀ミルミルニャー！｜〈純白和弦〉杏仁ミル聯動主題曲",
+          "providerLinks": []
+        },
+        {
+          "id": 78,
+          "attachment_id": 78,
+          "work_id": 75,
+          "title": "純愛咪戀ミルミルニャー！ (Instrumental)",
+          "artist": "",
+          "release": "純愛咪戀ミルミルニャー！｜〈純白和弦〉杏仁ミル聯動主題曲",
+          "length": "3:21",
+          "src": "/wp-content/uploads/2026/08/miru-miru-nya-track-02.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 75,
+          "artwork": "/wp-content/uploads/2026/08/miru-miru-nya-cover-1024x563.webp",
+          "artworkAlt": "純愛咪戀ミルミルニャー！｜〈純白和弦〉杏仁ミル聯動主題曲",
+          "providerLinks": []
+        }
+      ]
+    },
+    {
+      "id": 70,
+      "title": "【White Days】〈純白和弦〉塔芭絲可聯動主題曲",
+      "canonical_url": "/works/white-days/",
+      "year": "2023",
+      "categories": [
+        {
+          "slug": "music",
+          "name": "MUSIC"
+        }
+      ],
+      "cover": {
+        "id": 71,
+        "src": "/wp-content/uploads/2026/08/white-days-cover.webp",
+        "width": 676,
+        "height": 676,
+        "alt": "【White Days】〈純白和弦〉塔芭絲可聯動主題曲",
+        "srcset": "/wp-content/uploads/2026/08/white-days-cover.webp 676w, /wp-content/uploads/2026/08/white-days-cover-300x300.webp 300w, /wp-content/uploads/2026/08/white-days-cover-150x150.webp 150w",
+        "sizes": "(max-width: 676px) 100vw, 676px"
+      },
+      "tracks": [
+        {
+          "id": 72,
+          "attachment_id": 72,
+          "work_id": 70,
+          "title": "White Days",
+          "artist": "",
+          "release": "【White Days】〈純白和弦〉塔芭絲可聯動主題曲",
+          "length": "3:21",
+          "src": "/wp-content/uploads/2026/08/white-days-track-01.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 70,
+          "artwork": "/wp-content/uploads/2026/08/white-days-cover.webp",
+          "artworkAlt": "【White Days】〈純白和弦〉塔芭絲可聯動主題曲",
+          "providerLinks": []
+        },
+        {
+          "id": 73,
+          "attachment_id": 73,
+          "work_id": 70,
+          "title": "White Days (Instrumental)",
+          "artist": "",
+          "release": "【White Days】〈純白和弦〉塔芭絲可聯動主題曲",
+          "length": "3:21",
+          "src": "/wp-content/uploads/2026/08/white-days-track-02.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 70,
+          "artwork": "/wp-content/uploads/2026/08/white-days-cover.webp",
+          "artworkAlt": "【White Days】〈純白和弦〉塔芭絲可聯動主題曲",
+          "providerLinks": []
+        }
+      ]
+    },
+    {
+      "id": 65,
+      "title": "WAY《Someway 某》",
+      "canonical_url": "/works/way-someway/",
+      "year": "2022",
+      "categories": [
+        {
+          "slug": "music",
+          "name": "MUSIC"
+        }
+      ],
+      "cover": {
+        "id": 66,
+        "src": "/wp-content/uploads/2026/08/way-someway-cover-1024x1024.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "WAY《Someway 某》",
+        "srcset": "/wp-content/uploads/2026/08/way-someway-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/way-someway-cover-300x300.webp 300w, /wp-content/uploads/2026/08/way-someway-cover-150x150.webp 150w, /wp-content/uploads/2026/08/way-someway-cover-768x768.webp 768w, /wp-content/uploads/2026/08/way-someway-cover.webp 1303w",
+        "sizes": "(max-width: 1024px) 100vw, 1024px"
+      },
+      "tracks": [
+        {
+          "id": 67,
+          "attachment_id": 67,
+          "work_id": 65,
+          "title": "核",
+          "artist": "",
+          "release": "WAY《Someway 某》",
+          "length": "4:11",
+          "src": "/wp-content/uploads/2026/08/way-someway-track-01.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 65,
+          "artwork": "/wp-content/uploads/2026/08/way-someway-cover-1024x1024.webp",
+          "artworkAlt": "WAY《Someway 某》",
+          "providerLinks": []
+        },
+        {
+          "id": 68,
+          "attachment_id": 68,
+          "work_id": 65,
+          "title": "8プラス9",
+          "artist": "",
+          "release": "WAY《Someway 某》",
+          "length": "5:34",
+          "src": "/wp-content/uploads/2026/08/way-someway-track-02.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 65,
+          "artwork": "/wp-content/uploads/2026/08/way-someway-cover-1024x1024.webp",
+          "artworkAlt": "WAY《Someway 某》",
+          "providerLinks": []
+        }
+      ]
+    },
+    {
+      "id": 54,
+      "title": "黃易群俠傳 M 配樂",
+      "canonical_url": "/works/huang-yi-m-score/",
+      "year": "2020",
+      "categories": [
+        {
+          "slug": "music",
+          "name": "MUSIC"
+        }
+      ],
+      "cover": {
+        "id": 55,
+        "src": "/wp-content/uploads/2026/08/huang-yi-m-score-cover-1024x1024.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "黃易群俠傳 M 配樂",
+        "srcset": "/wp-content/uploads/2026/08/huang-yi-m-score-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/huang-yi-m-score-cover-300x300.webp 300w, /wp-content/uploads/2026/08/huang-yi-m-score-cover-150x150.webp 150w, /wp-content/uploads/2026/08/huang-yi-m-score-cover-768x768.webp 768w, /wp-content/uploads/2026/08/huang-yi-m-score-cover.webp 1254w",
+        "sizes": "(max-width: 1024px) 100vw, 1024px"
+      },
+      "tracks": [
+        {
+          "id": 56,
+          "attachment_id": 56,
+          "work_id": 54,
+          "title": "RTM2 V2",
+          "artist": "",
+          "release": "黃易群俠傳 M 配樂",
+          "length": "0:14",
+          "src": "/wp-content/uploads/2026/08/huang-yi-m-score-track-01.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 54,
+          "artwork": "/wp-content/uploads/2026/08/huang-yi-m-score-cover-1024x1024.webp",
+          "artworkAlt": "黃易群俠傳 M 配樂",
+          "providerLinks": []
+        },
+        {
+          "id": 57,
+          "attachment_id": 57,
+          "work_id": 54,
+          "title": "RTM2 V1",
+          "artist": "",
+          "release": "黃易群俠傳 M 配樂",
+          "length": "0:14",
+          "src": "/wp-content/uploads/2026/08/huang-yi-m-score-track-02.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 54,
+          "artwork": "/wp-content/uploads/2026/08/huang-yi-m-score-cover-1024x1024.webp",
+          "artworkAlt": "黃易群俠傳 M 配樂",
+          "providerLinks": []
+        },
+        {
+          "id": 58,
+          "attachment_id": 58,
+          "work_id": 54,
+          "title": "瀾江島動畫配樂",
+          "artist": "",
+          "release": "黃易群俠傳 M 配樂",
+          "length": "0:53",
+          "src": "/wp-content/uploads/2026/08/huang-yi-m-score-track-03.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 54,
+          "artwork": "/wp-content/uploads/2026/08/huang-yi-m-score-cover-1024x1024.webp",
+          "artworkAlt": "黃易群俠傳 M 配樂",
+          "providerLinks": []
+        },
+        {
+          "id": 59,
+          "attachment_id": 59,
+          "work_id": 54,
+          "title": "戰鬥配樂",
+          "artist": "",
+          "release": "黃易群俠傳 M 配樂",
+          "length": "1:01",
+          "src": "/wp-content/uploads/2026/08/huang-yi-m-score-track-04.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 54,
+          "artwork": "/wp-content/uploads/2026/08/huang-yi-m-score-cover-1024x1024.webp",
+          "artworkAlt": "黃易群俠傳 M 配樂",
+          "providerLinks": []
+        },
+        {
+          "id": 60,
+          "attachment_id": 60,
+          "work_id": 54,
+          "title": "實驗室劇情配樂",
+          "artist": "",
+          "release": "黃易群俠傳 M 配樂",
+          "length": "2:31",
+          "src": "/wp-content/uploads/2026/08/huang-yi-m-score-track-05.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 54,
+          "artwork": "/wp-content/uploads/2026/08/huang-yi-m-score-cover-1024x1024.webp",
+          "artworkAlt": "黃易群俠傳 M 配樂",
+          "providerLinks": []
+        },
+        {
+          "id": 61,
+          "attachment_id": 61,
+          "work_id": 54,
+          "title": "實驗室動畫配樂",
+          "artist": "",
+          "release": "黃易群俠傳 M 配樂",
+          "length": "1:52",
+          "src": "/wp-content/uploads/2026/08/huang-yi-m-score-track-06.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 54,
+          "artwork": "/wp-content/uploads/2026/08/huang-yi-m-score-cover-1024x1024.webp",
+          "artworkAlt": "黃易群俠傳 M 配樂",
+          "providerLinks": []
+        },
+        {
+          "id": 62,
+          "attachment_id": 62,
+          "work_id": 54,
+          "title": "創角配樂",
+          "artist": "",
+          "release": "黃易群俠傳 M 配樂",
+          "length": "2:11",
+          "src": "/wp-content/uploads/2026/08/huang-yi-m-score-track-07.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 54,
+          "artwork": "/wp-content/uploads/2026/08/huang-yi-m-score-cover-1024x1024.webp",
+          "artworkAlt": "黃易群俠傳 M 配樂",
+          "providerLinks": []
+        },
+        {
+          "id": 63,
+          "attachment_id": 63,
+          "work_id": 54,
+          "title": "實驗室初始劇情配樂（實驗室 I）",
+          "artist": "",
+          "release": "黃易群俠傳 M 配樂",
+          "length": "2:13",
+          "src": "/wp-content/uploads/2026/08/huang-yi-m-score-track-08.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 54,
+          "artwork": "/wp-content/uploads/2026/08/huang-yi-m-score-cover-1024x1024.webp",
+          "artworkAlt": "黃易群俠傳 M 配樂",
+          "providerLinks": []
+        }
+      ]
+    },
+    {
+      "id": 48,
+      "title": "《ROD》遊戲配樂",
+      "canonical_url": "/works/rod-game-score/",
+      "year": "2019",
+      "categories": [
+        {
+          "slug": "music",
+          "name": "MUSIC"
+        }
+      ],
+      "cover": {
+        "id": 49,
+        "src": "/wp-content/uploads/2026/08/rod-game-score-cover-1024x1024.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "《ROD》遊戲配樂",
+        "srcset": "/wp-content/uploads/2026/08/rod-game-score-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/rod-game-score-cover-300x300.webp 300w, /wp-content/uploads/2026/08/rod-game-score-cover-150x150.webp 150w, /wp-content/uploads/2026/08/rod-game-score-cover-768x768.webp 768w, /wp-content/uploads/2026/08/rod-game-score-cover.webp 1080w",
+        "sizes": "(max-width: 1024px) 100vw, 1024px"
+      },
+      "tracks": [
+        {
+          "id": 50,
+          "attachment_id": 50,
+          "work_id": 48,
+          "title": "Warm Feeling",
+          "artist": "",
+          "release": "《ROD》遊戲配樂",
+          "length": "1:24",
+          "src": "/wp-content/uploads/2026/08/rod-game-score-track-01.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 48,
+          "artwork": "/wp-content/uploads/2026/08/rod-game-score-cover-1024x1024.webp",
+          "artworkAlt": "《ROD》遊戲配樂",
+          "providerLinks": []
+        },
+        {
+          "id": 51,
+          "attachment_id": 51,
+          "work_id": 48,
+          "title": "Opening",
+          "artist": "",
+          "release": "《ROD》遊戲配樂",
+          "length": "0:29",
+          "src": "/wp-content/uploads/2026/08/rod-game-score-track-02.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 48,
+          "artwork": "/wp-content/uploads/2026/08/rod-game-score-cover-1024x1024.webp",
+          "artworkAlt": "《ROD》遊戲配樂",
+          "providerLinks": []
+        },
+        {
+          "id": 52,
+          "attachment_id": 52,
+          "work_id": 48,
+          "title": "Opening (Rainy mood)",
+          "artist": "",
+          "release": "《ROD》遊戲配樂",
+          "length": "0:34",
+          "src": "/wp-content/uploads/2026/08/rod-game-score-track-03.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 48,
+          "artwork": "/wp-content/uploads/2026/08/rod-game-score-cover-1024x1024.webp",
+          "artworkAlt": "《ROD》遊戲配樂",
+          "providerLinks": []
+        }
+      ]
+    },
+    {
+      "id": 42,
+      "title": "黑熊合唱團 EP《我在右外野看台等你》",
+      "canonical_url": "/works/black-bear-right-field-ep/",
+      "year": "",
+      "categories": [
+        {
+          "slug": "music",
+          "name": "MUSIC"
+        }
+      ],
+      "cover": {
+        "id": 43,
+        "src": "/wp-content/uploads/2026/08/black-bear-right-field-ep-cover-1024x1024.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "黑熊合唱團 EP《我在右外野看台等你》",
+        "srcset": "/wp-content/uploads/2026/08/black-bear-right-field-ep-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/black-bear-right-field-ep-cover-300x300.webp 300w, /wp-content/uploads/2026/08/black-bear-right-field-ep-cover-150x150.webp 150w, /wp-content/uploads/2026/08/black-bear-right-field-ep-cover-768x768.webp 768w, /wp-content/uploads/2026/08/black-bear-right-field-ep-cover-1536x1536.webp 1536w, /wp-content/uploads/2026/08/black-bear-right-field-ep-cover-2048x2048.webp 2048w",
+        "sizes": "(max-width: 1024px) 100vw, 1024px"
+      },
+      "tracks": [
+        {
+          "id": 44,
+          "attachment_id": 44,
+          "work_id": 42,
+          "title": "Stay with Me",
+          "artist": "",
+          "release": "黑熊合唱團 EP《我在右外野看台等你》",
+          "length": "4:49",
+          "src": "/wp-content/uploads/2026/08/black-bear-right-field-ep-track-01.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 42,
+          "artwork": "/wp-content/uploads/2026/08/black-bear-right-field-ep-cover-1024x1024.webp",
+          "artworkAlt": "黑熊合唱團 EP《我在右外野看台等你》",
+          "providerLinks": []
+        },
+        {
+          "id": 45,
+          "attachment_id": 45,
+          "work_id": 42,
+          "title": "彈吉他的女孩",
+          "artist": "",
+          "release": "黑熊合唱團 EP《我在右外野看台等你》",
+          "length": "3:56",
+          "src": "/wp-content/uploads/2026/08/black-bear-right-field-ep-track-02.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 42,
+          "artwork": "/wp-content/uploads/2026/08/black-bear-right-field-ep-cover-1024x1024.webp",
+          "artworkAlt": "黑熊合唱團 EP《我在右外野看台等你》",
+          "providerLinks": []
+        },
+        {
+          "id": 46,
+          "attachment_id": 46,
+          "work_id": 42,
+          "title": "如果我了解他，他也了解我",
+          "artist": "",
+          "release": "黑熊合唱團 EP《我在右外野看台等你》",
+          "length": "4:20",
+          "src": "/wp-content/uploads/2026/08/black-bear-right-field-ep-track-03.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 42,
+          "artwork": "/wp-content/uploads/2026/08/black-bear-right-field-ep-cover-1024x1024.webp",
+          "artworkAlt": "黑熊合唱團 EP《我在右外野看台等你》",
+          "providerLinks": []
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "title": "哇賽心理學 配樂",
+      "canonical_url": "/works/wasai-psychology-score/",
+      "year": "2021",
+      "categories": [
+        {
+          "slug": "music",
+          "name": "MUSIC"
+        }
+      ],
+      "cover": {
+        "id": 39,
+        "src": "/wp-content/uploads/2026/08/wasai-psychology-score-cover-1024x1024.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "哇賽心理學 配樂",
+        "srcset": "/wp-content/uploads/2026/08/wasai-psychology-score-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/wasai-psychology-score-cover-300x300.webp 300w, /wp-content/uploads/2026/08/wasai-psychology-score-cover-150x150.webp 150w, /wp-content/uploads/2026/08/wasai-psychology-score-cover-768x768.webp 768w, /wp-content/uploads/2026/08/wasai-psychology-score-cover.webp 1254w",
+        "sizes": "(max-width: 1024px) 100vw, 1024px"
+      },
+      "tracks": [
+        {
+          "id": 40,
+          "attachment_id": 40,
+          "work_id": 38,
+          "title": "Full Song",
+          "artist": "",
+          "release": "哇賽心理學 配樂",
+          "length": "1:59",
+          "src": "/wp-content/uploads/2026/08/wasai-psychology-score-track-01.mp3",
+          "mime_type": "audio/mpeg",
+          "workId": 38,
+          "artwork": "/wp-content/uploads/2026/08/wasai-psychology-score-cover-1024x1024.webp",
+          "artworkAlt": "哇賽心理學 配樂",
+          "providerLinks": {
+            "spotify": "https://open.spotify.com/show/7yccG9xggI4MmkYtFAZzzt"
+          }
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "title": "《KINGDOM》 趙亭婷x安娜琪舞蹈劇場",
+      "canonical_url": "/works/kingdom/",
+      "year": "",
+      "categories": [
+        {
+          "slug": "live",
+          "name": "LIVE"
+        }
+      ],
+      "cover": {
+        "id": 24,
+        "src": "/wp-content/uploads/2026/08/kingdom-cover-1024x683.webp",
+        "width": 1024,
+        "height": 683,
+        "alt": "《KINGDOM》趙亭婷 x 安娜琪舞蹈劇場演出現場",
+        "srcset": "/wp-content/uploads/2026/08/kingdom-cover-1024x683.webp 1024w, /wp-content/uploads/2026/08/kingdom-cover-300x200.webp 300w, /wp-content/uploads/2026/08/kingdom-cover-768x512.webp 768w, /wp-content/uploads/2026/08/kingdom-cover-1536x1024.webp 1536w, /wp-content/uploads/2026/08/kingdom-cover-2048x1365.webp 2048w",
+        "sizes": "(max-width: 1024px) 100vw, 1024px"
+      },
+      "tracks": []
+    },
+    {
+      "id": 27,
+      "title": "Boulder 石",
+      "canonical_url": "/works/boulder/",
+      "year": "",
+      "categories": [
+        {
+          "slug": "live",
+          "name": "LIVE"
+        }
+      ],
+      "cover": {
+        "id": 23,
+        "src": "/wp-content/uploads/2026/08/boulder-cover-1024x682.webp",
+        "width": 1024,
+        "height": 682,
+        "alt": "《Boulder 石》演出現場",
+        "srcset": "/wp-content/uploads/2026/08/boulder-cover-1024x682.webp 1024w, /wp-content/uploads/2026/08/boulder-cover-300x200.webp 300w, /wp-content/uploads/2026/08/boulder-cover-768x511.webp 768w, /wp-content/uploads/2026/08/boulder-cover.webp 1537w",
+        "sizes": "(max-width: 1024px) 100vw, 1024px"
+      },
+      "tracks": []
+    },
+    {
+      "id": 26,
+      "title": "E1and Special Showcase 《WONDE1AND》",
+      "canonical_url": "/works/wonde1and/",
+      "year": "",
+      "categories": [
+        {
+          "slug": "live",
+          "name": "LIVE"
+        }
+      ],
+      "cover": {
+        "id": 22,
+        "src": "/wp-content/uploads/2026/08/wonde1and-cover-768x1024.webp",
+        "width": 768,
+        "height": 1024,
+        "alt": "E1and Special Showcase《WONDE1AND》演出海報",
+        "srcset": "/wp-content/uploads/2026/08/wonde1and-cover-768x1024.webp 768w, /wp-content/uploads/2026/08/wonde1and-cover-225x300.webp 225w, /wp-content/uploads/2026/08/wonde1and-cover.webp 1086w",
+        "sizes": "(max-width: 768px) 100vw, 768px"
+      },
+      "tracks": []
+    },
+    {
+      "id": 25,
+      "title": "【神魔之塔】《同行》- 神魔之塔11週年主題曲",
+      "canonical_url": "/works/tong-xing-tower-of-saviors-11th-anniversary/",
+      "year": "",
+      "categories": [
+        {
+          "slug": "music",
+          "name": "MUSIC"
+        }
+      ],
+      "cover": {
+        "id": 21,
+        "src": "/wp-content/uploads/2026/08/tongxing-cover-1024x1024.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "【神魔之塔】《同行》作品封面",
+        "srcset": "/wp-content/uploads/2026/08/tongxing-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/tongxing-cover-300x300.webp 300w, /wp-content/uploads/2026/08/tongxing-cover-150x150.webp 150w, /wp-content/uploads/2026/08/tongxing-cover-768x768.webp 768w, /wp-content/uploads/2026/08/tongxing-cover.webp 1254w",
+        "sizes": "(max-width: 1024px) 100vw, 1024px"
+      },
+      "tracks": []
+    }
+  ]
+}

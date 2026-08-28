@@ -1,0 +1,46 @@
+{
+  "id": 84,
+  "title": "Leefynk《Plastic Friends》",
+  "html": "\n\n<div class=\"wp-block-group alignfull work-detail has-global-padding is-layout-constrained wp-block-group-is-layout-constrained\">\n\t\n\t<div class=\"wp-block-group alignwide work-detail__layout is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\n\t\t<div class=\"wp-block-group work-detail__header is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t<h1 class=\"work-detail__title wp-block-post-title\">Leefynk《Plastic Friends》</h1>\n\t\t\t<div class=\"taxonomy-work_category work-detail__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\n\t\t</div>\n\t\t\n\n\t\t<figure data-cover-orientation=\"square\" class=\"work-detail__hero wp-block-post-featured-image\"><img width=\"1254\" height=\"1254\" src=\"/wp-content/uploads/2026/08/plastic-friends-cover.webp\" class=\"attachment-full size-full wp-post-image\" alt=\"Leefynk《Plastic Friends》\" style=\"object-fit:cover;\" decoding=\"async\" loading=\"lazy\" srcset=\"/wp-content/uploads/2026/08/plastic-friends-cover.webp 1254w, /wp-content/uploads/2026/08/plastic-friends-cover-300x300.webp 300w, /wp-content/uploads/2026/08/plastic-friends-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/plastic-friends-cover-150x150.webp 150w, /wp-content/uploads/2026/08/plastic-friends-cover-768x768.webp 768w\" sizes=\"auto, (max-width: 1254px) 100vw, 1254px\" /></figure>\n\n\t\t\n\t\t<div class=\"wp-block-group work-detail__content has-global-padding is-layout-constrained wp-block-group-is-layout-constrained\">\n\t\t\t<div class=\"entry-content work-detail__post-content wp-block-post-content has-global-padding is-layout-constrained wp-block-post-content-is-layout-constrained\">\n<h2 class=\"wp-block-heading\">Credits</h2>\n\n\n\n<ul class=\"wp-block-list\">\n<li>作詞：Leefynk</li>\n\n<li>作曲：Leefynk</li>\n\n<li>編曲：Leefynk</li>\n\n<li>製作：Leefynk</li>\n\n<li>錄音：鄭辛</li>\n\n<li>混音：蘇昱嘉/ NO.429</li>\n\n<li>母帶：魏瑋</li>\n\n<li>爵士鼓：蘇昱嘉</li>\n\n<li>貝斯：詹維全</li>\n\n<li>吉他編曲：林兆中</li>\n\n<li>吉他演奏：陳柏豪</li>\n</ul>\n\n\n</div>\n\t\t\t<div class=\"work-media\"><section class=\"work-media__section work-media-embed work-media-embed--spotify\" aria-labelledby=\"work-media-spotify-84\"><h2 id=\"work-media-spotify-84\" class=\"work-media__heading\">Spotify</h2><div class=\"work-media-embed__frame work-media-embed__frame--spotify\"><iframe src=\"https://open.spotify.com/embed/track/0Qk1R4pPXx391nsJzIIwhv\" title=\"Leefynk《Plastic Friends》 — Spotify player\" loading=\"lazy\" allow=\"autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture\"></iframe></div></section></div>\n\t\t</div>\n\t\t\n\t</div>\n\t\n</div>\n\n",
+  "canonical_url": "/works/plastic-friends/",
+  "work": {
+    "id": 84,
+    "title": "Leefynk《Plastic Friends》",
+    "canonical_url": "/works/plastic-friends/",
+    "year": "",
+    "categories": [
+      {
+        "slug": "music",
+        "name": "MUSIC"
+      }
+    ],
+    "cover": {
+      "id": 85,
+      "src": "/wp-content/uploads/2026/08/plastic-friends-cover-1024x1024.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Leefynk《Plastic Friends》",
+      "srcset": "/wp-content/uploads/2026/08/plastic-friends-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/plastic-friends-cover-300x300.webp 300w, /wp-content/uploads/2026/08/plastic-friends-cover-150x150.webp 150w, /wp-content/uploads/2026/08/plastic-friends-cover-768x768.webp 768w, /wp-content/uploads/2026/08/plastic-friends-cover.webp 1254w",
+      "sizes": "(max-width: 1024px) 100vw, 1024px"
+    },
+    "tracks": [
+      {
+        "id": 86,
+        "attachment_id": 86,
+        "work_id": 84,
+        "title": "Plastic Friends",
+        "artist": "",
+        "release": "Leefynk《Plastic Friends》",
+        "length": "3:18",
+        "src": "/wp-content/uploads/2026/08/plastic-friends-track-01.mp3",
+        "mime_type": "audio/mpeg",
+        "workId": 84,
+        "artwork": "/wp-content/uploads/2026/08/plastic-friends-cover-1024x1024.webp",
+        "artworkAlt": "Leefynk《Plastic Friends》",
+        "providerLinks": {
+          "spotify": "https://open.spotify.com/track/0Qk1R4pPXx391nsJzIIwhv"
+        }
+      }
+    ]
+  }
+}
