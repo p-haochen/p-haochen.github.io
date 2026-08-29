@@ -520,6 +520,18 @@
 	background: var(--wp--preset--color--portal-canvas);
 }
 
+.work-detail-audio--enhanced {
+	display: block;
+	padding: 0;
+	border: 0;
+	background: transparent;
+}
+
+.work-detail-audio--enhanced > .portfolio-playlist {
+	width: 100%;
+	max-width: 46rem;
+}
+
 .work-detail-audio__title,
 .work-detail-audio__eyebrow,
 .work-detail-audio__current-title {

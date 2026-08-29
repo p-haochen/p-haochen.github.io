@@ -1,15 +1,8 @@
+import { createPlaylistComponent, playlistTracksForWork } from './playlist-component-01.js';
+
 const validViews = new Set(['all', 'music', 'live', 'tech']);
 const directoryStates = new WeakMap();
 const controlsStates = new WeakMap();
-let collectionControlId = 0;
-
-function formatTime(value) {
-	if (!Number.isFinite(value) || value < 0) return '0:00';
-	const hours = Math.floor(value / 3600);
-	const minutes = Math.floor(value / 60);
-	const seconds = Math.floor(value % 60).toString().padStart(2, '0');
-	return hours > 0 ? `${hours}:${String(minutes % 60).padStart(2, '0')}:${seconds}` : `${minutes}:${seconds}`;
-}
 
 function normalizeView(value) {
 	return typeof value === 'string' && validViews.has(value) ? value : 'all';
@@ -117,46 +110,7 @@ function renderVisualGrid(works, view) {
 }
 
 function tracksForWork(work) {
-	if (!Array.isArray(work?.tracks)) return [];
-	return work.tracks
-		.filter((track) => track && typeof track.src === 'string' && track.src !== '')
-		.map((track) => ({
-			...track,
-			artwork: typeof work.cover?.src === 'string' ? work.cover.src : '',
-			artworkAlt: typeof work.cover?.alt === 'string' ? work.cover.alt : '',
-			release: typeof track.release === 'string' && track.release !== '' ? track.release : work.title,
-		}));
-}
-
-function sameTrack(track, candidate) {
-	if (!track || !candidate || typeof candidate !== 'object' || track.src !== candidate.src) return false;
-	const trackWorkId = Number.parseInt(String(track.workId ?? 0), 10) || 0;
-	const candidateWorkId = Number.parseInt(String(candidate.workId ?? 0), 10) || 0;
-	if (trackWorkId > 0 && candidateWorkId > 0 && trackWorkId !== candidateWorkId) return false;
-	const trackId = Number.parseInt(String(track.id ?? track.attachment_id ?? 0), 10) || 0;
-	const candidateId = Number.parseInt(String(candidate.id ?? candidate.attachment_id ?? 0), 10) || 0;
-	if (trackId > 0 && candidateId > 0) return trackId === candidateId;
-	return track.title === candidate.title;
-}
-
-function queuesMatch(queue, tracks) {
-	return Array.isArray(queue)
-		&& queue.length === tracks.length
-		&& queue.every((track, index) => sameTrack(tracks[index], track));
-}
-
-function isCollectionPlayer(player) {
-	return Boolean(
-		player
-		&& typeof player.subscribe === 'function'
-		&& typeof player.playQueue === 'function'
-		&& typeof player.previous === 'function'
-		&& typeof player.next === 'function'
-		&& typeof player.toggle === 'function'
-		&& typeof player.seekTo === 'function'
-		&& typeof player.setVolume === 'function'
-		&& typeof player.getState === 'function',
-	);
+	return playlistTracksForWork(work);
 }
 
 function playTrack(player, tracks, index) {
@@ -164,11 +118,17 @@ function playTrack(player, tracks, index) {
 	void player.playQueue(tracks, index);
 }
 
-function createMusicCoverCard(work, player) {
+function createMusicCoverCard(work, player, onRequestOpen) {
 	const item = document.createElement('li');
 	item.className = `music-cover-card works-card wp-block-post post-${work.id} work_category-music`;
 	item.dataset.workTitle = work.title;
-	item.append(createArtwork(work.cover, 'music-cover-card__artwork'));
+	const reveal = document.createElement('button');
+	reveal.type = 'button';
+	reveal.className = 'music-cover-card__reveal';
+	reveal.setAttribute('aria-label', `Show actions for ${work.title}`);
+	reveal.setAttribute('aria-expanded', 'false');
+	reveal.append(createArtwork(work.cover, 'music-cover-card__artwork'));
+	item.append(reveal);
 	const overlay = document.createElement('div');
 	overlay.className = 'music-cover-card__overlay';
 	const title = document.createElement('h3');
@@ -197,17 +157,42 @@ function createMusicCoverCard(work, player) {
 	overlay.append(title, actions);
 	item.append(overlay);
 	let destroyed = false;
-	return {
+	let overlayOpen = false;
+	const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+	const syncOverlaySemantics = () => {
+		const available = finePointer.matches || overlayOpen;
+		overlay.setAttribute('aria-hidden', String(!available));
+		if (available) overlay.removeAttribute('inert');
+		else overlay.setAttribute('inert', '');
+	};
+	const controller = {
 		root: item,
+		isOpen() { return overlayOpen; },
+		setOverlayOpen(value) {
+			overlayOpen = Boolean(value);
+			item.classList.toggle('is-overlay-open', overlayOpen);
+			reveal.setAttribute('aria-expanded', String(overlayOpen));
+			syncOverlaySemantics();
+		},
 		destroy() {
 			if (destroyed) return;
 			destroyed = true;
 			removePlayListener();
+			reveal.removeEventListener('click', onReveal);
+			finePointer.removeEventListener?.('change', syncOverlaySemantics);
 		},
 	};
+	const onReveal = () => {
+		if (finePointer.matches) return;
+		onRequestOpen(controller);
+	};
+	reveal.addEventListener('click', onReveal);
+	finePointer.addEventListener?.('change', syncOverlaySemantics);
+	syncOverlaySemantics();
+	return controller;
 }
 
-function createCollectionModule(work, player) {
+function createLegacyCollectionModule(work, player) {
 	const tracks = tracksForWork(work);
 	const module = document.createElement('article');
 	module.className = 'music-collection';
@@ -432,6 +417,14 @@ function createCollectionModule(work, player) {
 	};
 }
 
+function createCollectionModule(work, player) {
+	const playlist = createPlaylistComponent(work, player, { announceStatus: false });
+	if (playlist) return playlist;
+	const fallback = document.createElement('article');
+	fallback.className = 'portfolio-playlist music-collection';
+	return { root: fallback, mount() {}, destroy() {} };
+}
+
 function renderMusicView(works, player) {
 	const musicWorks = works.filter((work) => categorySlugs(work).includes('music'));
 	const controllers = [];
@@ -446,8 +439,15 @@ function renderMusicView(works, player) {
 	coverHeading.textContent = 'Music cover browser';
 	const covers = document.createElement('ul');
 	covers.className = 'music-cover-browser__grid';
+	let openCover = null;
+	const requestCoverOpen = (controller) => {
+		if (openCover && openCover !== controller) openCover.setOverlayOpen(false);
+		const nextOpen = !controller.isOpen();
+		controller.setOverlayOpen(nextOpen);
+		openCover = nextOpen ? controller : null;
+	};
 	for (const work of musicWorks) {
-		const controller = createMusicCoverCard(work, player);
+		const controller = createMusicCoverCard(work, player, requestCoverOpen);
 		controllers.push(controller);
 		covers.append(controller.root);
 	}
@@ -481,12 +481,19 @@ function renderMusicView(works, player) {
 	}
 	collections.append(collectionsHeader, collectionGrid);
 	root.append(coverBrowser, collections);
+	const onDocumentPointerDown = (event) => {
+		if (!openCover || openCover.root.contains(event.target)) return;
+		openCover.setOverlayOpen(false);
+		openCover = null;
+	};
+	document.addEventListener('pointerdown', onDocumentPointerDown, true);
 	return {
 		root,
 		mount() {
 			controllers.forEach((controller) => controller.mount?.());
 		},
 		destroy() {
+			document.removeEventListener('pointerdown', onDocumentPointerDown, true);
 			controllers.splice(0).forEach((controller) => controller.destroy());
 		},
 	};

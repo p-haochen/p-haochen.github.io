@@ -56,6 +56,13 @@ function freezeTrack(track) {
 	return Object.freeze({ ...track, providerLinks: Object.freeze({ ...track.providerLinks }) });
 }
 
+function queueKeyForTracks(tracks) {
+	if (!Array.isArray(tracks) || tracks.length === 0) return '';
+	const workIds = [...new Set(tracks.map((track) => Number.parseInt(String(track?.workId ?? 0), 10) || 0))];
+	if (workIds.length === 1 && workIds[0] > 0) return `work:${workIds[0]}`;
+	return `queue:${tracks.map((track) => `${track?.id ?? 0}:${track?.src ?? ''}`).join('|')}`;
+}
+
 export function createMusicPlayer(root) {
 	if (!(root instanceof HTMLElement)) return null;
 	const audio = root.querySelector('[data-music-player-audio]');
@@ -68,7 +75,10 @@ export function createMusicPlayer(root) {
 	const nextButton = root.querySelector('[data-music-player-action="next"]');
 	const closeButton = root.querySelector('[data-music-player-action="close"]');
 	const seek = root.querySelector('[data-music-player-seek]');
+	const muteButton = root.querySelector('[data-music-player-action="mute"]');
 	const volume = root.querySelector('[data-music-player-volume]');
+	const volumeOn = muteButton?.querySelector('[data-volume-state="on"]');
+	const volumeMuted = muteButton?.querySelector('[data-volume-state="muted"]');
 	const currentTime = root.querySelector('.music-player__current-time');
 	const duration = root.querySelector('.music-player__duration');
 	const providers = root.querySelector('[data-music-player-providers]');
@@ -83,7 +93,10 @@ export function createMusicPlayer(root) {
 		|| !(nextButton instanceof HTMLButtonElement)
 		|| !(closeButton instanceof HTMLButtonElement)
 		|| !(seek instanceof HTMLInputElement)
+		|| !(muteButton instanceof HTMLButtonElement)
 		|| !(volume instanceof HTMLInputElement)
+		|| !(volumeOn instanceof SVGElement)
+		|| !(volumeMuted instanceof SVGElement)
 		|| !(currentTime instanceof HTMLElement)
 		|| !(duration instanceof HTMLElement)
 		|| !(providers instanceof HTMLElement)
@@ -104,6 +117,9 @@ export function createMusicPlayer(root) {
 	let pendingInternalPauseEvents = 0;
 	let lastNotificationSignature = null;
 	const subscribers = new Set();
+	const volumeByQueue = new Map();
+	const lastNonZeroVolumeByQueue = new Map();
+	let activeQueueKey = '';
 
 	function prefersReducedMotion() {
 		return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -192,6 +208,11 @@ export function createMusicPlayer(root) {
 
 	function syncVolume() {
 		volume.value = String(audio.volume);
+		const muted = audio.volume === 0;
+		muteButton.setAttribute('aria-label', muted ? 'Unmute' : 'Mute');
+		muteButton.setAttribute('aria-pressed', String(muted));
+		volumeOn.hidden = muted;
+		volumeMuted.hidden = !muted;
 	}
 
 	function createProviderSvg(provider) {
@@ -279,10 +300,15 @@ export function createMusicPlayer(root) {
 
 	function setQueue(tracks, startIndex = 0, options = {}) {
 		const nextQueue = Array.isArray(tracks) ? tracks.map(normalizeTrack).filter(Boolean) : [];
+		if (activeQueueKey !== '') {
+			volumeByQueue.set(activeQueueKey, audio.volume);
+			if (audio.volume > 0) lastNonZeroVolumeByQueue.set(activeQueueKey, audio.volume);
+		}
 		if (nextQueue.length === 0) {
 			invalidatePlayback();
 			pauseCurrent();
 			queue = [];
+			activeQueueKey = '';
 			activeIndex = -1;
 			activated = false;
 			audio.removeAttribute('src');
@@ -307,6 +333,14 @@ export function createMusicPlayer(root) {
 		const shouldActivate = options.activate !== false;
 		if (!shouldActivate) pauseCurrent();
 		queue = nextQueue;
+		const nextQueueKey = queueKeyForTracks(nextQueue);
+		if (nextQueueKey !== activeQueueKey) {
+			audio.volume = volumeByQueue.get(nextQueueKey) ?? 1;
+			audio.muted = audio.volume === 0;
+			if (audio.volume > 0) lastNonZeroVolumeByQueue.set(nextQueueKey, audio.volume);
+			syncVolume();
+		}
+		activeQueueKey = nextQueueKey;
 		activeIndex = nextActiveIndex;
 		activated = shouldActivate;
 		liveRegion.textContent = '';
@@ -400,10 +434,34 @@ export function createMusicPlayer(root) {
 	function setVolume(value) {
 		const nextVolume = Number(value);
 		if (!Number.isFinite(nextVolume)) return false;
+		if (activeQueueKey !== '' && audio.volume > 0) lastNonZeroVolumeByQueue.set(activeQueueKey, audio.volume);
 		audio.volume = Math.min(1, Math.max(0, nextVolume));
 		audio.muted = audio.volume === 0;
+		if (activeQueueKey !== '') {
+			volumeByQueue.set(activeQueueKey, audio.volume);
+			if (audio.volume > 0) lastNonZeroVolumeByQueue.set(activeQueueKey, audio.volume);
+		}
 		syncVolume();
 		notify();
+		return true;
+	}
+
+	function getVolumeForQueue(tracks) {
+		const normalized = Array.isArray(tracks) ? tracks.map(normalizeTrack).filter(Boolean) : [];
+		const key = queueKeyForTracks(normalized);
+		if (key !== '' && key === activeQueueKey) return audio.volume;
+		return key !== '' ? (volumeByQueue.get(key) ?? 1) : 1;
+	}
+
+	function setVolumeForQueue(tracks, value) {
+		const normalized = Array.isArray(tracks) ? tracks.map(normalizeTrack).filter(Boolean) : [];
+		const key = queueKeyForTracks(normalized);
+		const nextVolume = Number(value);
+		if (key === '' || !Number.isFinite(nextVolume)) return false;
+		const clamped = Math.min(1, Math.max(0, nextVolume));
+		volumeByQueue.set(key, clamped);
+		if (clamped > 0) lastNonZeroVolumeByQueue.set(key, clamped);
+		if (key === activeQueueKey) return setVolume(clamped);
 		return true;
 	}
 
@@ -453,6 +511,10 @@ export function createMusicPlayer(root) {
 	playButton.addEventListener('click', () => {
 		void toggle();
 	});
+	muteButton.addEventListener('click', () => {
+		const restoredVolume = activeQueueKey !== '' ? (lastNonZeroVolumeByQueue.get(activeQueueKey) ?? 1) : 1;
+		setVolume(audio.volume > 0 ? 0 : restoredVolume);
+	});
 	closeButton.addEventListener('click', close);
 	seek.addEventListener('input', () => {
 		const requested = Number.parseFloat(seek.value);
@@ -498,6 +560,7 @@ export function createMusicPlayer(root) {
 		notify();
 	});
 	audio.addEventListener('volumechange', () => {
+		if (activeQueueKey !== '') volumeByQueue.set(activeQueueKey, audio.volume);
 		syncVolume();
 		notify();
 	});
@@ -521,6 +584,8 @@ export function createMusicPlayer(root) {
 		toggle,
 		seekTo,
 		setVolume,
+		getVolumeForQueue,
+		setVolumeForQueue,
 		subscribe,
 		setInlineActive,
 		setRouteIsMusic,
