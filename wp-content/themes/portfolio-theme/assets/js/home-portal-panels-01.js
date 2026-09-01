@@ -1,5 +1,5 @@
 import { initializeWorksDirectories, setWorksFilter } from './works-directory-01.js';
-import { initializeWorksMultiView, setWorksView } from './works-multiview-01.js';
+import { initializeWorksMultiView, setWorksFilters, setWorksRole, setWorksSort, setWorksStyle, setWorksView } from './works-multiview-01.js';
 import { createMusicPlayer } from './music-player-01.js';
 import { initializeWorkDetailAudio } from './work-detail-audio-01.js';
 
@@ -266,10 +266,10 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 
 		function mountWorksContextualControls(directory) {
 			clearContextualControls();
-			const filters = directory.querySelector('.works-directory__filters');
-			if (!(filters instanceof HTMLElement)) return false;
+			const controls = directory.querySelector('.works-directory__controls');
+			if (!(controls instanceof HTMLElement)) return false;
 
-			contextualControls.append(filters);
+			contextualControls.append(controls);
 			panelHeader.classList.add('has-contextual-controls');
 			return true;
 		}
@@ -764,15 +764,60 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			return setWorksFilter(directory, view, options);
 		}
 
+		function applyWorksSort(directory, sort, options = {}) {
+			if (directory.dataset.worksMultiViewReady !== 'true') return null;
+			return setWorksSort(directory, sort, options);
+		}
+
+		function applyWorksRole(directory, role, options = {}) {
+			if (directory.dataset.worksMultiViewReady !== 'true') return null;
+			return setWorksRole(directory, role, options);
+		}
+
+		function applyWorksStyle(directory, style, options = {}) {
+			if (directory.dataset.worksMultiViewReady !== 'true') return null;
+			return setWorksStyle(directory, style, options);
+		}
+
+		function applyWorksFilters(directory, filters, options = {}) {
+			if (directory.dataset.worksMultiViewReady !== 'true') return null;
+			return setWorksFilters(directory, filters, options);
+		}
+
 		async function requestB3WorksFilterTransition(request) {
 			const directory = request?.directory;
-			const view = request?.view ?? request?.category;
-			if (!(directory instanceof HTMLElement) || typeof view !== 'string') return;
+			const view = typeof (request?.view ?? request?.category) === 'string' ? (request.view ?? request.category) : null;
+			const sort = typeof request?.sort === 'string' ? request.sort : null;
+			const role = typeof request?.role === 'string' ? request.role : null;
+			const style = typeof request?.style === 'string' ? request.style : null;
+			if (!(directory instanceof HTMLElement) || (view === null && sort === null && role === null && style === null)) return;
+			const applyRequestedState = () => {
+				const detail = role !== null && style !== null
+					? applyWorksFilters(directory, { role, style })
+					: role !== null
+						? applyWorksRole(directory, role)
+						: style !== null
+							? applyWorksStyle(directory, style)
+					: sort !== null
+						? applyWorksSort(directory, sort)
+						: applyWorksView(directory, view);
+				scroller.scrollTop = 0;
+				return detail;
+			};
 			if (!isB3Motion || currentKey !== 'work' || !directory.isConnected) {
-				applyWorksView(directory, view);
+				applyRequestedState();
 				return;
 			}
-			if (activeWorksFilterController === null && (directory.dataset.activeWorkView ?? directory.dataset.activeWorkCategory) === view) return;
+			const alreadyActive = role !== null && style !== null
+				? directory.dataset.activeWorkRole === role && directory.dataset.activeWorkStyle === style
+				: role !== null
+					? directory.dataset.activeWorkRole === role
+					: style !== null
+						? directory.dataset.activeWorkStyle === style
+				: sort !== null
+					? directory.dataset.activeWorkSort === sort
+					: (directory.dataset.activeWorkView ?? directory.dataset.activeWorkCategory) === view;
+			if (activeWorksFilterController === null && alreadyActive) return;
 
 			cancelB3WorksFilterTransition();
 			const token = ++activeWorksFilterToken;
@@ -781,7 +826,7 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			activeWorksFilterController = controller;
 
 			if (prefersReducedMotion()) {
-				applyWorksView(directory, view);
+				applyRequestedState();
 				if (token === activeWorksFilterToken) activeWorksFilterController = null;
 				return;
 			}
@@ -790,7 +835,7 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			await waitForVisualTransition(directory, 'opacity', 110, signal);
 			if (token !== activeWorksFilterToken || signal.aborted || !directory.isConnected || currentKey !== 'work') return;
 
-			applyWorksView(directory, view);
+			applyRequestedState();
 			directory.classList.remove('is-b3-content-exiting');
 			directory.classList.add('is-b3-content-entering');
 			await nextPaint(signal);
@@ -814,11 +859,26 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			const restoration = key === 'work' ? pendingWorksRestoration : null;
 			pendingWorksRestoration = null;
 			const initialView = restoration?.view ?? restoration?.category ?? 'all';
+			const initialSorts = restoration?.sorts && typeof restoration.sorts === 'object'
+				? restoration.sorts
+				: window.history.state?.portfolioWorksSorts && typeof window.history.state.portfolioWorksSorts === 'object'
+					? window.history.state.portfolioWorksSorts
+					: {};
+			const initialRoles = restoration?.roles && typeof restoration.roles === 'object'
+				? restoration.roles
+				: window.history.state?.portfolioWorksRoles && typeof window.history.state.portfolioWorksRoles === 'object'
+					? window.history.state.portfolioWorksRoles
+					: {};
+			const initialStyles = restoration?.styles && typeof restoration.styles === 'object'
+				? restoration.styles
+				: window.history.state?.portfolioWorksStyles && typeof window.history.state.portfolioWorksStyles === 'object'
+					? window.history.state.portfolioWorksStyles
+					: {};
 			const mountedContextually = isB3Motion && key === 'work'
 				? mountWorksContextualControls(directory)
 				: false;
 			const controlsRoot = mountedContextually ? contextualControls : directory;
-			const onViewChange = (detail) => {
+			const onWorksStateChange = (detail) => {
 				if (!isB3Motion || currentKey !== 'work' || !window.history.state?.portfolioPortal) return;
 				const view = detail.view ?? detail.category ?? 'all';
 				window.history.replaceState(
@@ -826,6 +886,12 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 						...window.history.state,
 						portfolioWorksView: view,
 						portfolioWorksFilter: view,
+						portfolioWorksSort: detail.sort ?? 'curated',
+						portfolioWorksSorts: detail.sorts ?? {},
+						portfolioWorksRole: detail.role ?? 'all',
+						portfolioWorksRoles: detail.roles ?? {},
+						portfolioWorksStyle: detail.style ?? 'all',
+						portfolioWorksStyles: detail.styles ?? {},
 					},
 					'',
 					window.location.href,
@@ -835,11 +901,23 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 				activeWorksMultiView = initializeWorksMultiView(directory, {
 					works: payload.works,
 					initialView,
+					initialSorts,
+					initialRoles,
+					initialStyles,
 					controlsRoot,
 					player: musicPlayer,
 					onViewRequest(request) { void requestB3WorksFilterTransition(request); },
-					onViewChange,
+					onViewChange: onWorksStateChange,
+					onSortRequest(request) { void requestB3WorksFilterTransition(request); },
+					onSortChange: onWorksStateChange,
+					onRoleRequest(request) { void requestB3WorksFilterTransition(request); },
+					onRoleChange: onWorksStateChange,
+					onStyleRequest(request) { void requestB3WorksFilterTransition(request); },
+					onStyleChange: onWorksStateChange,
+					onFiltersRequest(request) { void requestB3WorksFilterTransition(request); },
+					onFiltersChange: onWorksStateChange,
 				});
+				if (activeWorksMultiView) onWorksStateChange(activeWorksMultiView);
 			} else {
 				initializeWorksDirectories(directory, {
 					initialCategory: initialView,
@@ -1325,12 +1403,24 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 				return;
 			}
 
-			pendingWorksRestoration = { view: 'all', postId: 0 };
+			pendingWorksRestoration = {
+				view: 'all',
+				sorts: { all: 'curated', music: 'curated', live: 'curated', tech: 'curated' },
+				roles: { all: 'all', music: 'all', live: 'all', tech: 'all' },
+				styles: { all: 'all', music: 'all', live: 'all', tech: 'all' },
+				postId: 0,
+			};
 			const matchingTrigger = triggers.find((trigger) => trigger.key === 'work')?.anchor ?? null;
 			window.history.replaceState(
 				portalHistoryState(Math.max(currentPortalDepth() - 1, 0), 'work', {
 					portfolioWorksFilter: 'all',
 					portfolioWorksView: 'all',
+					portfolioWorksSort: 'curated',
+					portfolioWorksSorts: { all: 'curated', music: 'curated', live: 'curated', tech: 'curated' },
+					portfolioWorksRole: 'all',
+					portfolioWorksRoles: { all: 'all', music: 'all', live: 'all', tech: 'all' },
+					portfolioWorksStyle: 'all',
+					portfolioWorksStyles: { all: 'all', music: 'all', live: 'all', tech: 'all' },
 					portfolioWorksOriginPostId: 0,
 				}),
 				'',
@@ -1477,6 +1567,15 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 						view: typeof historyState.portfolioWorksView === 'string'
 							? historyState.portfolioWorksView
 							: typeof historyState.portfolioWorksFilter === 'string' ? historyState.portfolioWorksFilter : 'all',
+						sorts: historyState.portfolioWorksSorts && typeof historyState.portfolioWorksSorts === 'object'
+							? historyState.portfolioWorksSorts
+							: {},
+						roles: historyState.portfolioWorksRoles && typeof historyState.portfolioWorksRoles === 'object'
+							? historyState.portfolioWorksRoles
+							: {},
+						styles: historyState.portfolioWorksStyles && typeof historyState.portfolioWorksStyles === 'object'
+							? historyState.portfolioWorksStyles
+							: {},
 						postId: Number.parseInt(String(historyState.portfolioWorksOriginPostId ?? 0), 10),
 					};
 					const matchingTrigger = triggers.find((trigger) => trigger.key === 'work')?.anchor ?? null;

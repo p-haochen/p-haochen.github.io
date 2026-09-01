@@ -40,6 +40,30 @@
 	color: var(--wp--preset--color--portal-muted);
 }
 
+.works-view__empty p {
+	margin: 0;
+}
+
+.works-view__empty [data-work-filters-clear] {
+	min-height: 2.75rem;
+	margin: 0.75rem 0 0;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	color: var(--wp--preset--color--portal-foreground);
+	font: inherit;
+	background: transparent;
+	cursor: pointer;
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.35em;
+}
+
+.works-view__empty [data-work-filters-clear]:focus-visible {
+	outline: 2px solid var(--wp--preset--color--portal-focus);
+	outline-offset: 4px;
+}
+
 .works-view:is(.works-view--all, .works-view--live) .works-card__media-link,
 .works-view:is(.works-view--all, .works-view--live) .works-card__media {
 	display: block;

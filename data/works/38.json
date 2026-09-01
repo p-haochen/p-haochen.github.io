@@ -1,19 +1,63 @@
 {
   "id": 38,
   "title": "哇賽心理學 配樂",
-  "html": "\n\n<div class=\"wp-block-group alignfull work-detail has-global-padding is-layout-constrained wp-block-group-is-layout-constrained\">\n\t\n\t<div class=\"wp-block-group alignwide work-detail__layout is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\n\t\t<div class=\"wp-block-group work-detail__header is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t<h1 class=\"work-detail__title wp-block-post-title\">哇賽心理學 配樂</h1>\n\t\t\t<div class=\"taxonomy-work_category work-detail__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\n\t\t\t<p class=\"work-detail__year work-year wp-block-paragraph\">2021</p>\n\t\t\t\n\t\t</div>\n\t\t\n\n\t\t<figure data-cover-orientation=\"square\" class=\"work-detail__hero wp-block-post-featured-image\"><img width=\"1254\" height=\"1254\" src=\"/wp-content/uploads/2026/08/wasai-psychology-score-cover.webp\" class=\"attachment-full size-full wp-post-image\" alt=\"哇賽心理學 配樂\" style=\"object-fit:cover;\" decoding=\"async\" loading=\"lazy\" srcset=\"/wp-content/uploads/2026/08/wasai-psychology-score-cover.webp 1254w, /wp-content/uploads/2026/08/wasai-psychology-score-cover-300x300.webp 300w, /wp-content/uploads/2026/08/wasai-psychology-score-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/wasai-psychology-score-cover-150x150.webp 150w, /wp-content/uploads/2026/08/wasai-psychology-score-cover-768x768.webp 768w\" sizes=\"auto, (max-width: 1254px) 100vw, 1254px\" /></figure>\n\n\t\t\n\t\t<div class=\"wp-block-group work-detail__content has-global-padding is-layout-constrained wp-block-group-is-layout-constrained\">\n\t\t\t<div class=\"entry-content work-detail__post-content wp-block-post-content has-global-padding is-layout-constrained wp-block-post-content-is-layout-constrained\">\n<h2 class=\"wp-block-heading\">Credits</h2>\n\n\n\n<ul class=\"wp-block-list\">\n<li>作曲｜ 陳柏豪</li>\n\n<li>編曲｜ 陳柏豪</li>\n\n<li>吉他｜ 陳柏豪</li>\n\n<li>貝斯｜ 陳柏豪</li>\n\n<li>K B ｜ 陳柏豪</li>\n\n<li>混音｜ 陳柏豪</li>\n</ul>\n\n\n</div>\n\t\t\t<div class=\"work-media\"><section class=\"work-media__section work-media-embed work-media-embed--spotify\" aria-labelledby=\"work-media-spotify-38\"><h2 id=\"work-media-spotify-38\" class=\"work-media__heading\">Spotify</h2><div class=\"work-media-embed__frame work-media-embed__frame--spotify\"><iframe src=\"https://open.spotify.com/embed/show/7yccG9xggI4MmkYtFAZzzt\" title=\"哇賽心理學 配樂 — Spotify player\" loading=\"lazy\" allow=\"autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture\"></iframe></div></section></div>\n\t\t</div>\n\t\t\n\t</div>\n\t\n</div>\n\n",
+  "html": "\n\n<div class=\"wp-block-group alignfull work-detail has-global-padding is-layout-constrained wp-block-group-is-layout-constrained\">\n\t\n\t<div class=\"wp-block-group alignwide work-detail__layout is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\n\t\t<div class=\"wp-block-group work-detail__header is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t<h1 class=\"work-detail__title wp-block-post-title\">哇賽心理學 配樂</h1>\n\t\t\t<div class=\"taxonomy-work_category work-detail__categories wp-block-post-terms\"><a href=\"/work-category/music/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\n\t\t\t<p class=\"work-detail__year work-year wp-block-paragraph\">2021</p>\n\t\t\t\n\t\t</div>\n\t\t\n\n\t\t<figure data-cover-orientation=\"square\" class=\"work-detail__hero wp-block-post-featured-image\"><img width=\"1254\" height=\"1254\" src=\"/wp-content/uploads/2026/08/wasai-psychology-score-cover.webp\" class=\"attachment-full size-full wp-post-image\" alt=\"哇賽心理學 配樂\" style=\"object-fit:cover;\" decoding=\"async\" loading=\"lazy\" srcset=\"/wp-content/uploads/2026/08/wasai-psychology-score-cover.webp 1254w, /wp-content/uploads/2026/08/wasai-psychology-score-cover-300x300.webp 300w, /wp-content/uploads/2026/08/wasai-psychology-score-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/08/wasai-psychology-score-cover-150x150.webp 150w, /wp-content/uploads/2026/08/wasai-psychology-score-cover-768x768.webp 768w\" sizes=\"auto, (max-width: 1254px) 100vw, 1254px\" /></figure>\n\n\t\t\n\t\t<div class=\"wp-block-group work-detail__content has-global-padding is-layout-constrained wp-block-group-is-layout-constrained\">\n\t\t\t<div class=\"entry-content work-detail__post-content wp-block-post-content has-global-padding is-layout-constrained wp-block-post-content-is-layout-constrained\">\n<h2 class=\"wp-block-heading\">Credits</h2>\n\n\n\n<ul class=\"wp-block-list\">\n\n<li>作曲｜ 陳柏豪</li>\n\n\n<li>編曲｜ 陳柏豪</li>\n\n\n<li>吉他｜ 陳柏豪</li>\n\n\n<li>貝斯｜ 陳柏豪</li>\n\n\n<li>K B ｜ 陳柏豪</li>\n\n\n<li>混音｜ 陳柏豪</li>\n\n</ul>\n\n\n</div>\n\t\t\t<div class=\"work-media\"><section class=\"work-media__section work-media-embed work-media-embed--spotify\" aria-labelledby=\"work-media-spotify-38\"><h2 id=\"work-media-spotify-38\" class=\"work-media__heading\">Spotify</h2><div class=\"work-media-embed__frame work-media-embed__frame--spotify\"><iframe src=\"https://open.spotify.com/embed/show/7yccG9xggI4MmkYtFAZzzt\" title=\"哇賽心理學 配樂 — Spotify player\" loading=\"lazy\" allow=\"autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture\"></iframe></div></section></div>\n\t\t</div>\n\t\t\n\t</div>\n\t\n</div>\n\n",
   "canonical_url": "/works/wasai-psychology-score/",
   "work": {
     "id": 38,
     "title": "哇賽心理學 配樂",
     "canonical_url": "/works/wasai-psychology-score/",
     "year": "2021",
+    "menu_order": 150,
     "categories": [
       {
         "slug": "music",
         "name": "MUSIC"
       }
     ],
+    "roles": [
+      {
+        "slug": "music-production",
+        "label": "MUSIC PRODUCTION"
+      },
+      {
+        "slug": "composition",
+        "label": "COMPOSITION"
+      },
+      {
+        "slug": "arrangement",
+        "label": "ARRANGEMENT"
+      },
+      {
+        "slug": "drum-production",
+        "label": "DRUM PRODUCTION"
+      },
+      {
+        "slug": "guitar",
+        "label": "GUITAR"
+      },
+      {
+        "slug": "bass",
+        "label": "BASS"
+      },
+      {
+        "slug": "keys-synth",
+        "label": "KEYS / SYNTH"
+      },
+      {
+        "slug": "mixing",
+        "label": "MIXING"
+      },
+      {
+        "slug": "mastering",
+        "label": "MASTERING"
+      },
+      {
+        "slug": "audio-editing",
+        "label": "AUDIO EDITING"
+      }
+    ],
+    "styles": [],
     "cover": {
       "id": 39,
       "src": "/wp-content/uploads/2026/08/wasai-psychology-score-cover-1024x1024.webp",
