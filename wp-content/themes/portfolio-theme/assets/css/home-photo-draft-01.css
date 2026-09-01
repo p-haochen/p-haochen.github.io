@@ -551,7 +551,37 @@ body.portfolio-home-promoted .photo-draft-shell[data-portal-shell-mode="frame-on
 	overflow-x: hidden;
 	overflow-y: auto;
 	overscroll-behavior: contain;
+	scrollbar-color: color-mix(in srgb, var(--portal-muted) 42%, transparent) transparent;
 	scrollbar-gutter: stable;
+	scrollbar-width: thin;
+}
+
+.photo-portal__scroller::-webkit-scrollbar {
+	width: 7px;
+	height: 7px;
+}
+
+.photo-portal__scroller::-webkit-scrollbar-track,
+.photo-portal__scroller::-webkit-scrollbar-corner {
+	background: transparent;
+}
+
+.photo-portal__scroller::-webkit-scrollbar-thumb {
+	border: 1px solid transparent;
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--portal-muted) 42%, transparent);
+	background-clip: padding-box;
+}
+
+.photo-portal__scroller::-webkit-scrollbar-thumb:hover {
+	background: color-mix(in srgb, var(--portal-muted) 58%, transparent);
+	background-clip: padding-box;
+}
+
+.photo-portal__scroller::-webkit-scrollbar-button {
+	display: none;
+	width: 0;
+	height: 0;
 }
 
 .photo-portal__status:empty {
