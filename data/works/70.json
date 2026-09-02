@@ -53,7 +53,24 @@
         "label": "AUDIO EDITING"
       }
     ],
-    "styles": [],
+    "styles": [
+      {
+        "slug": "pop",
+        "label": "POP"
+      },
+      {
+        "slug": "rock",
+        "label": "ROCK"
+      },
+      {
+        "slug": "j-pop",
+        "label": "J-POP"
+      },
+      {
+        "slug": "symphonic",
+        "label": "SYMPHONIC"
+      }
+    ],
     "cover": {
       "id": 71,
       "src": "/wp-content/uploads/2026/08/white-days-cover.webp",

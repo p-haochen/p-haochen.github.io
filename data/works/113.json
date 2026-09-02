@@ -39,9 +39,22 @@
       {
         "slug": "audio-editing",
         "label": "AUDIO EDITING"
+      },
+      {
+        "slug": "sound-design",
+        "label": "SOUND DESIGN"
       }
     ],
-    "styles": [],
+    "styles": [
+      {
+        "slug": "electronic",
+        "label": "ELECTRONIC"
+      },
+      {
+        "slug": "ambient",
+        "label": "AMBIENT"
+      }
+    ],
     "cover": {
       "id": 114,
       "src": "/wp-content/uploads/2026/08/holographic-utopia-after-80-cover-1024x683.webp",

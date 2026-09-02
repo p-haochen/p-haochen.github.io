@@ -33,7 +33,20 @@
         "label": "SOUND DESIGN"
       }
     ],
-    "styles": [],
+    "styles": [
+      {
+        "slug": "edm",
+        "label": "EDM"
+      },
+      {
+        "slug": "electronic",
+        "label": "ELECTRONIC"
+      },
+      {
+        "slug": "experimental",
+        "label": "EXPERIMENTAL"
+      }
+    ],
     "cover": {
       "id": 66,
       "src": "/wp-content/uploads/2026/08/way-someway-cover-1024x1024.webp",

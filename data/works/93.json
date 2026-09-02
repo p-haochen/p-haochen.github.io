@@ -41,6 +41,10 @@
         "label": "BASS"
       },
       {
+        "slug": "backing-vocals",
+        "label": "BACKING VOCALS"
+      },
+      {
         "slug": "mixing",
         "label": "MIXING"
       },
@@ -53,7 +57,20 @@
         "label": "AUDIO EDITING"
       }
     ],
-    "styles": [],
+    "styles": [
+      {
+        "slug": "pop",
+        "label": "POP"
+      },
+      {
+        "slug": "rock",
+        "label": "ROCK"
+      },
+      {
+        "slug": "symphonic",
+        "label": "SYMPHONIC"
+      }
+    ],
     "cover": {
       "id": 94,
       "src": "/wp-content/uploads/2026/08/tsg-falcons-fly-fast-cover-1024x1024.webp",

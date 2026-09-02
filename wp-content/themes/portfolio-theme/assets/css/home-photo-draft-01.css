@@ -1488,6 +1488,7 @@ body.portfolio-home-promoted .photo-draft-shell[data-portal-shell-mode="frame-on
 }
 
 .photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] {
+	--photo-draft-header-height: clamp(3rem, 4vw, 3.5rem);
 	--portal-background: var(--wp--preset--color--portal-canvas, #0b0c0f);
 	--portal-foreground: var(--wp--preset--color--portal-foreground, #f0eee8);
 	--portal-muted: var(--wp--preset--color--portal-muted, #aaa69f);
@@ -1497,7 +1498,7 @@ body.portfolio-home-promoted .photo-draft-shell[data-portal-shell-mode="frame-on
 	--photo-portal-header-edge-inset: max(clamp(1rem, 2.8vw, 2.75rem), env(safe-area-inset-right));
 	--photo-portal-header-left-inset: max(clamp(1rem, 2.5vw, 2rem), env(safe-area-inset-left));
 	--photo-portal-header-gap: clamp(0.7rem, 1.15vw, 1.25rem);
-	--photo-portal-header-block-padding: clamp(0.3125rem, 0.4vw, 0.375rem);
+	--photo-portal-header-block-padding: 0rem;
 	--photo-portal-content-start-gap: clamp(1rem, 2vw, 2rem);
 	--photo-portal-works-inline-gutter: clamp(1rem, 2vw, 2rem);
 	--photo-portal-close-size: 2.75rem;
@@ -1812,6 +1813,44 @@ body.portfolio-home-promoted .photo-draft-shell[data-portal-shell-mode="frame-on
 		--photo-portal-filter-rail-gap: 0.75rem;
 		--photo-portal-filter-rail-right: max(0.75rem, env(safe-area-inset-right));
 		--photo-portal-works-inline-gutter: 0.75rem;
+	}
+
+	.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-draft__navigation :is(
+		.wp-block-navigation__responsive-container-open,
+		.wp-block-navigation__responsive-container-close
+	) {
+		position: relative;
+		width: 2.75rem;
+		height: 2.75rem;
+		border: 0;
+		background: transparent;
+	}
+
+	.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-draft__navigation :is(
+		.wp-block-navigation__responsive-container-open,
+		.wp-block-navigation__responsive-container-close
+	)::before {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		z-index: 0;
+		width: 2.25rem;
+		height: 2.25rem;
+		border: 1px solid var(--photo-line);
+		background: rgb(0 0 0 / 36%);
+		content: "";
+		pointer-events: none;
+		transform: translate(-50%, -50%);
+	}
+
+	.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-draft__navigation :is(
+		.wp-block-navigation__responsive-container-open,
+		.wp-block-navigation__responsive-container-close
+	) svg {
+		position: relative;
+		z-index: 1;
+		width: 1rem;
+		height: 1rem;
 	}
 
 	.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-portal__header.has-contextual-controls {

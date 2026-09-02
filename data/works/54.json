@@ -61,7 +61,24 @@
         "label": "SOUND DESIGN"
       }
     ],
-    "styles": [],
+    "styles": [
+      {
+        "slug": "rock",
+        "label": "ROCK"
+      },
+      {
+        "slug": "electronic",
+        "label": "ELECTRONIC"
+      },
+      {
+        "slug": "metal",
+        "label": "METAL"
+      },
+      {
+        "slug": "symphonic",
+        "label": "SYMPHONIC"
+      }
+    ],
     "cover": {
       "id": 55,
       "src": "/wp-content/uploads/2026/08/huang-yi-m-score-cover-1024x1024.webp",

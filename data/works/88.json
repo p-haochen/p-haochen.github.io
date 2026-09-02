@@ -53,7 +53,12 @@
         "label": "AUDIO EDITING"
       }
     ],
-    "styles": [],
+    "styles": [
+      {
+        "slug": "pop",
+        "label": "POP"
+      }
+    ],
     "cover": {
       "id": 89,
       "src": "/wp-content/uploads/2026/08/tower-of-saviors-12th-cover-1024x1024.webp",

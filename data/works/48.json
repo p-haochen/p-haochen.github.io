@@ -41,7 +41,12 @@
         "label": "AUDIO EDITING"
       }
     ],
-    "styles": [],
+    "styles": [
+      {
+        "slug": "symphonic",
+        "label": "SYMPHONIC"
+      }
+    ],
     "cover": {
       "id": 49,
       "src": "/wp-content/uploads/2026/08/rod-game-score-cover-1024x1024.webp",

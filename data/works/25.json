@@ -57,7 +57,32 @@
         "label": "AUDIO EDITING"
       }
     ],
-    "styles": [],
+    "styles": [
+      {
+        "slug": "pop",
+        "label": "POP"
+      },
+      {
+        "slug": "rock",
+        "label": "ROCK"
+      },
+      {
+        "slug": "j-pop",
+        "label": "J-POP"
+      },
+      {
+        "slug": "edm",
+        "label": "EDM"
+      },
+      {
+        "slug": "electronic",
+        "label": "ELECTRONIC"
+      },
+      {
+        "slug": "symphonic",
+        "label": "SYMPHONIC"
+      }
+    ],
     "cover": {
       "id": 21,
       "src": "/wp-content/uploads/2026/08/tongxing-cover-1024x1024.webp",

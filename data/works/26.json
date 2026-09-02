@@ -57,7 +57,32 @@
         "label": "SHOW / MUSIC PROGRAMMING"
       }
     ],
-    "styles": [],
+    "styles": [
+      {
+        "slug": "pop",
+        "label": "POP"
+      },
+      {
+        "slug": "rock",
+        "label": "ROCK"
+      },
+      {
+        "slug": "j-pop",
+        "label": "J-POP"
+      },
+      {
+        "slug": "edm",
+        "label": "EDM"
+      },
+      {
+        "slug": "hip-hop",
+        "label": "HIP HOP"
+      },
+      {
+        "slug": "r-and-b",
+        "label": "R&B"
+      }
+    ],
     "cover": {
       "id": 22,
       "src": "/wp-content/uploads/2026/08/wonde1and-cover-768x1024.webp",

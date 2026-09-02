@@ -41,7 +41,32 @@
         "label": "AUDIO EDITING"
       }
     ],
-    "styles": [],
+    "styles": [
+      {
+        "slug": "pop",
+        "label": "POP"
+      },
+      {
+        "slug": "edm",
+        "label": "EDM"
+      },
+      {
+        "slug": "electronic",
+        "label": "ELECTRONIC"
+      },
+      {
+        "slug": "ambient",
+        "label": "AMBIENT"
+      },
+      {
+        "slug": "experimental",
+        "label": "EXPERIMENTAL"
+      },
+      {
+        "slug": "synth-pop",
+        "label": "SYNTH POP"
+      }
+    ],
     "cover": {
       "id": 109,
       "src": "/wp-content/uploads/2026/08/baby-hug-cover-1024x1024.webp",

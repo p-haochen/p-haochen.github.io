@@ -33,7 +33,16 @@
         "label": "SPATIAL / MULTICHANNEL AUDIO"
       }
     ],
-    "styles": [],
+    "styles": [
+      {
+        "slug": "electronic",
+        "label": "ELECTRONIC"
+      },
+      {
+        "slug": "ambient",
+        "label": "AMBIENT"
+      }
+    ],
     "cover": {
       "id": 24,
       "src": "/wp-content/uploads/2026/08/kingdom-cover-1024x683.webp",

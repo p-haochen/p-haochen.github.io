@@ -57,7 +57,12 @@
         "label": "AUDIO EDITING"
       }
     ],
-    "styles": [],
+    "styles": [
+      {
+        "slug": "pop",
+        "label": "POP"
+      }
+    ],
     "cover": {
       "id": 39,
       "src": "/wp-content/uploads/2026/08/wasai-psychology-score-cover-1024x1024.webp",

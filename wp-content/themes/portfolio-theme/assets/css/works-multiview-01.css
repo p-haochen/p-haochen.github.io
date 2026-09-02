@@ -5,7 +5,7 @@
 	--music-collection-heading-height: 2.75rem;
 	--music-collection-now-height: 9rem;
 	--music-collection-track-row-height: 2.75rem;
-	--music-collection-track-list-height: 11rem;
+	--music-collection-track-list-height: calc((var(--music-collection-track-row-height) * 2) + 1px);
 	--music-collection-card-height: calc(var(--music-collection-heading-height) + var(--music-collection-now-height) + var(--music-collection-track-list-height));
 	--music-player-height: 5.5rem;
 }
@@ -248,19 +248,22 @@
 }
 
 .music-collection {
+	--music-collection-surface: #1c1d20;
+	--music-collection-outline: #292a2d;
 	--music-collection-heading-height: 2.75rem;
 	--music-collection-now-height: 9rem;
 	--music-collection-track-row-height: 2.75rem;
-	--music-collection-track-list-height: 11rem;
+	--music-collection-track-list-height: calc((var(--music-collection-track-row-height) * 2) + 1px);
 	--music-collection-card-height: calc(var(--music-collection-heading-height) + var(--music-collection-now-height) + var(--music-collection-track-list-height));
 	--music-collection-volume-fader: clamp(4.5rem, 5vw, 5rem);
+	box-sizing: content-box;
 	display: grid;
 	grid-template-rows: var(--music-collection-heading-height) var(--music-collection-now-height) minmax(0, 1fr);
 	block-size: var(--music-collection-card-height);
 	min-width: 0;
-	border: 0;
+	border: 1px solid var(--music-collection-outline);
 	color: #f2f2f2;
-	background: #111;
+	background: var(--music-collection-surface);
 }
 
 .music-collection__title {
@@ -462,6 +465,15 @@
 	scrollbar-color: #666 transparent;
 	scrollbar-width: thin;
 	list-style: none;
+}
+
+.work-detail-audio--enhanced .music-collection {
+	grid-template-rows: var(--music-collection-heading-height) var(--music-collection-now-height) auto;
+	block-size: auto;
+}
+
+.work-detail-audio--enhanced .music-collection__tracks {
+	overflow-y: visible;
 }
 
 .music-collection__tracks::-webkit-scrollbar {
@@ -895,7 +907,7 @@
 		--music-collection-heading-height: 2.75rem;
 		--music-collection-now-height: 9rem;
 		--music-collection-track-row-height: 2.75rem;
-		--music-collection-track-list-height: 11rem;
+		--music-collection-track-list-height: 5.5rem;
 	}
 
 	.music-collection {
@@ -906,7 +918,7 @@
 		--music-collection-heading-height: 2.75rem;
 		--music-collection-now-height: 9rem;
 		--music-collection-track-row-height: 2.75rem;
-		--music-collection-track-list-height: 11rem;
+		--music-collection-track-list-height: 5.5rem;
 		--music-collection-card-height: calc(var(--music-collection-heading-height) + var(--music-collection-now-height) + var(--music-collection-track-list-height));
 	}
 
