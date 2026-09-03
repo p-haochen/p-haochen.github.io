@@ -950,8 +950,8 @@
 		grid-template-columns: repeat(6, minmax(0, 1fr));
 		grid-template-areas:
 			"art meta meta providers providers close"
-			"transport transport transport transport transport transport"
-			"timeline timeline timeline volume volume volume";
+			"timeline timeline timeline timeline timeline timeline"
+			"transport transport transport volume volume volume";
 		gap: 0.25rem;
 		padding: 0.5rem;
 	}
@@ -972,6 +972,9 @@
 	}
 
 	.music-player__volume {
+		display: grid;
+		grid-template-columns: var(--music-player-target) 4rem;
+		justify-self: end;
 		min-width: 0;
 	}
 
