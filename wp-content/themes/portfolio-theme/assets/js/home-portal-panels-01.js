@@ -107,8 +107,19 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 		const b3PayloadRequests = new Map();
 		const dynamicWorkDefinitions = new Map();
 		const triggers = [];
-		const baseUrl = new URL(window.location.href);
+		const initialDocumentSeo = readDocumentSeo();
+		const embeddedLandingDocumentSeo = readEmbeddedLandingDocumentSeo();
+		const landingDocumentSeo = embeddedLandingDocumentSeo ?? initialDocumentSeo;
+		const landingRoute = embeddedLandingDocumentSeo === null
+			? new URL(window.location.href)
+			: new URL(embeddedLandingDocumentSeo.canonical_url, window.location.href);
+		const baseUrl = embeddedLandingDocumentSeo === null
+			? landingRoute
+			: new URL(`${landingRoute.pathname}${landingRoute.search}${landingRoute.hash}`, window.location.origin);
 		baseUrl.hash = '';
+		const seoOrigin = seoOriginFromCanonical(initialDocumentSeo.canonical_url);
+		const initialDocumentStructuredData = readDocumentStructuredData();
+		const landingDocumentStructuredData = embeddedLandingDocumentSeo === null ? initialDocumentStructuredData : null;
 		let currentKey = null;
 		let restoreTarget = null;
 		let activeController = null;
@@ -131,6 +142,161 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 		const musicPlayer = createMusicPlayer(musicPlayerRoot);
 		let activeWorkDetailAudio = null;
 		let activeWorksMultiView = null;
+		applyDocumentSeo(initialDocumentSeo);
+		applyDocumentStructuredData(initialDocumentStructuredData);
+
+		function readDocumentSeo() {
+			const metaContent = (selector) => document.head.querySelector(selector)?.getAttribute('content')?.trim() ?? '';
+			const canonical = document.head.querySelector('link[rel~="canonical" i]');
+			return {
+				title: document.title.trim(),
+				description: metaContent('meta[name="description" i]'),
+				canonical_url: canonical instanceof HTMLLinkElement ? canonical.href : window.location.href,
+				image_url: metaContent('meta[property="og:image" i]') || metaContent('meta[name="twitter:image" i]'),
+				og_type: metaContent('meta[property="og:type" i]') || 'website',
+				twitter_card: metaContent('meta[name="twitter:card" i]') || 'summary_large_image',
+				robots: metaContent('meta[name="robots" i]'),
+			};
+		}
+
+		function readEmbeddedLandingDocumentSeo() {
+			const metadata = {
+				title: shell.dataset.portalLandingTitle?.trim() ?? '',
+				description: shell.dataset.portalLandingDescription?.trim() ?? '',
+				canonical_url: shell.dataset.portalLandingCanonicalUrl?.trim() ?? '',
+				image_url: shell.dataset.portalLandingImageUrl?.trim() ?? '',
+				og_type: shell.dataset.portalLandingOgType?.trim() ?? '',
+				twitter_card: 'summary_large_image',
+				robots: shell.dataset.portalLandingRobots?.trim() ?? '',
+			};
+			return Object.values(metadata).every((value) => value !== '') ? metadata : null;
+		}
+
+		function readDocumentStructuredData() {
+			const scripts = [...document.head.querySelectorAll('#portfolio-structured-data[type="application/ld+json"]')];
+			const script = scripts.shift();
+			for (const duplicate of scripts) duplicate.remove();
+			if (!(script instanceof HTMLScriptElement)) return null;
+			try {
+				const data = JSON.parse(script.textContent ?? '');
+				return normalizeDocumentStructuredData(data);
+			} catch {
+				return null;
+			}
+		}
+
+		function seoOriginFromCanonical(canonicalUrl) {
+			try {
+				return new URL(canonicalUrl, window.location.href).origin;
+			} catch {
+				return window.location.origin;
+			}
+		}
+
+		function normalizeSeoUrl(value, stripRouteState) {
+			const parsed = new URL(value, `${seoOrigin}/`);
+			const normalized = new URL(parsed.pathname, `${seoOrigin}/`);
+			if (!stripRouteState) {
+				normalized.search = parsed.search;
+				normalized.hash = parsed.hash;
+			}
+			return normalized.href;
+		}
+
+		function normalizeDocumentSeo(candidate) {
+			if (typeof candidate !== 'object' || candidate === null) return null;
+			const title = typeof candidate.title === 'string' ? candidate.title.trim() : '';
+			const description = typeof candidate.description === 'string' ? candidate.description.trim() : '';
+			const canonicalUrl = typeof candidate.canonical_url === 'string' ? candidate.canonical_url.trim() : '';
+			const imageUrl = typeof candidate.image_url === 'string' ? candidate.image_url.trim() : '';
+			const ogType = typeof candidate.og_type === 'string' ? candidate.og_type.trim() : '';
+			const twitterCard = typeof candidate.twitter_card === 'string' && candidate.twitter_card.trim() !== ''
+				? candidate.twitter_card.trim()
+				: 'summary_large_image';
+			const robots = typeof candidate.robots === 'string' ? candidate.robots.trim() : '';
+			if (title === '' || description === '' || canonicalUrl === '' || imageUrl === '' || ogType === '' || robots === '') return null;
+
+			try {
+				return {
+					title,
+					description,
+					canonicalUrl: normalizeSeoUrl(canonicalUrl, true),
+					imageUrl: normalizeSeoUrl(imageUrl, false),
+					ogType,
+					twitterCard,
+					robots,
+				};
+			} catch {
+				return null;
+			}
+		}
+
+		function normalizeDocumentStructuredData(candidate) {
+			if (typeof candidate !== 'object' || candidate === null || Array.isArray(candidate)) return null;
+			if (candidate['@context'] !== 'https://schema.org' || typeof candidate['@type'] !== 'string' || candidate['@type'].trim() === '') return null;
+			if (typeof candidate.url !== 'string' || candidate.url.trim() === '') return null;
+			try {
+				const data = structuredClone(candidate);
+				data.url = normalizeSeoUrl(candidate.url, true);
+				if (typeof data['@id'] === 'string' && data['@id'].trim() !== '') {
+					const identifier = new URL(data['@id'], `${seoOrigin}/`);
+					data['@id'] = `${normalizeSeoUrl(identifier.href, true)}${identifier.hash}`;
+				}
+				return data;
+			} catch {
+				return null;
+			}
+		}
+
+		function uniqueHeadElement(selector, tagName, attributes) {
+			const matches = [...document.head.querySelectorAll(selector)];
+			const element = matches.shift() ?? document.createElement(tagName);
+			for (const duplicate of matches) duplicate.remove();
+			for (const [name, value] of Object.entries(attributes)) element.setAttribute(name, value);
+			if (!element.isConnected) document.head.append(element);
+			return element;
+		}
+
+		function setHeadMeta(selector, attributes, contentValue) {
+			uniqueHeadElement(selector, 'meta', attributes).setAttribute('content', contentValue);
+		}
+
+		function applyDocumentSeo(candidate) {
+			const metadata = normalizeDocumentSeo(candidate);
+			if (!metadata) return false;
+
+			uniqueHeadElement('title', 'title', {}).textContent = metadata.title;
+			setHeadMeta('meta[name="description" i]', { name: 'description' }, metadata.description);
+			uniqueHeadElement('link[rel~="canonical" i]', 'link', { rel: 'canonical' }).setAttribute('href', metadata.canonicalUrl);
+			setHeadMeta('meta[property="og:title" i]', { property: 'og:title' }, metadata.title);
+			setHeadMeta('meta[property="og:description" i]', { property: 'og:description' }, metadata.description);
+			setHeadMeta('meta[property="og:image" i]', { property: 'og:image' }, metadata.imageUrl);
+			setHeadMeta('meta[property="og:type" i]', { property: 'og:type' }, metadata.ogType);
+			setHeadMeta('meta[property="og:url" i]', { property: 'og:url' }, metadata.canonicalUrl);
+			setHeadMeta('meta[name="twitter:card" i]', { name: 'twitter:card' }, metadata.twitterCard);
+			setHeadMeta('meta[name="twitter:title" i]', { name: 'twitter:title' }, metadata.title);
+			setHeadMeta('meta[name="twitter:description" i]', { name: 'twitter:description' }, metadata.description);
+			setHeadMeta('meta[name="twitter:image" i]', { name: 'twitter:image' }, metadata.imageUrl);
+			setHeadMeta('meta[name="robots" i]', { name: 'robots' }, metadata.robots);
+			return true;
+		}
+
+		function applyDocumentStructuredData(candidate) {
+			const matches = [...document.head.querySelectorAll('#portfolio-structured-data[type="application/ld+json"]')];
+			const data = normalizeDocumentStructuredData(candidate);
+			if (data === null) {
+				for (const match of matches) match.remove();
+				return candidate === null || typeof candidate === 'undefined';
+			}
+
+			const script = matches.shift() ?? document.createElement('script');
+			for (const duplicate of matches) duplicate.remove();
+			script.id = 'portfolio-structured-data';
+			script.type = 'application/ld+json';
+			script.textContent = JSON.stringify(data).replaceAll('<', '\\u003C');
+			if (!script.isConnected) document.head.append(script);
+			return true;
+		}
 
 		function destroyWorksMultiView() {
 			activeWorksMultiView?.destroy();
@@ -282,6 +448,31 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			duplicateHeading.setAttribute('aria-hidden', 'true');
 			duplicateHeading.removeAttribute('tabindex');
 			duplicateHeading.removeAttribute('id');
+		}
+
+		function initializePrerenderedRoutePresentation(key, definition) {
+			panelTitle.textContent = definition.title;
+			syncRouteRail(definition);
+			prepareIncomingPortalFragment(key, content);
+
+			const directory = key === 'work' ? content.querySelector('.works-directory') : null;
+			if (directory instanceof HTMLElement) mountWorksContextualControls(directory);
+			else clearContextualControls();
+
+			errorMessage.textContent = '';
+			errorRegion.hidden = true;
+			configureRenderedContentHeading(false);
+		}
+
+		function settlePrerenderedRouteWithoutHydration(key, definition) {
+			mountWorkDetailAudio(key);
+			const categories = [...content.querySelectorAll('.work-detail__categories a')]
+				.map((category) => category.textContent?.trim().toLowerCase() ?? '');
+			musicPlayer?.setRouteIsMusic(definition.kind === 'work-detail' && categories.includes('music'));
+			status.textContent = '';
+			errorMessage.textContent = '';
+			errorRegion.hidden = true;
+			settlePanelBusyState();
 		}
 
 		function configureRenderedContentHeading(shouldFocus) {
@@ -849,7 +1040,7 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			activeWorksFilterController = null;
 		}
 
-		function initializeRenderedWorksDirectory(key, payload) {
+		function initializeRenderedWorksDirectory(key, payload, options = {}) {
 			const directory = content.querySelector('.works-directory');
 			if (!(directory instanceof HTMLElement)) {
 				pendingWorksRestoration = null;
@@ -877,7 +1068,10 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			const mountedContextually = isB3Motion && key === 'work'
 				? mountWorksContextualControls(directory)
 				: false;
-			const controlsRoot = mountedContextually ? contextualControls : directory;
+			const controlsAlreadyContextual = isB3Motion
+				&& key === 'work'
+				&& contextualControls.querySelector('.works-directory__controls') instanceof HTMLElement;
+			const controlsRoot = mountedContextually || controlsAlreadyContextual ? contextualControls : directory;
 			const onWorksStateChange = (detail) => {
 				if (!isB3Motion || currentKey !== 'work' || !window.history.state?.portfolioPortal) return;
 				const view = detail.view ?? detail.category ?? 'all';
@@ -905,6 +1099,7 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 					initialRoles,
 					initialStyles,
 					controlsRoot,
+					preserveInitialMarkup: options.preserveInitialMarkup === true,
 					player: musicPlayer,
 					onViewRequest(request) { void requestB3WorksFilterTransition(request); },
 					onViewChange: onWorksStateChange,
@@ -933,11 +1128,23 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			return originLink instanceof HTMLElement ? originLink : null;
 		}
 
-		async function renderPayload(key, payload, renderToken, animateReplacement, signal) {
+		async function renderPayload(key, payload, renderToken, animateReplacement, signal, preservePrerendered = false) {
 			if (currentKey !== key || renderToken !== activeRenderToken || signal?.aborted) return;
 
 			const definition = definitionForKey(key);
 			if (!definition) return;
+			applyDocumentSeo(payload.seo);
+			applyDocumentStructuredData(payload.structured_data);
+			if (preservePrerendered && key === 'work') {
+				destroyWorksMultiView();
+				initializeRenderedWorksDirectory(key, payload, { preserveInitialMarkup: true });
+				fallbackLink.href = payload.canonical_url;
+				panelTitle.textContent = definition.title;
+				status.textContent = '';
+				configureRenderedContentHeading(false);
+				settlePanelBusyState();
+				return;
+			}
 			const presentation = languagePresentation(payload);
 			const template = document.createElement('template');
 			template.innerHTML = presentation.html.trim();
@@ -1012,6 +1219,14 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			status.textContent = '';
 			settlePanelBusyState();
 			if (isMotionStudy) errorRegion.focus({ preventScroll: true });
+		}
+
+		function retainPrerenderedRouteAfterLoadError(key, renderToken, signal) {
+			if (currentKey !== key || renderToken !== activeRenderToken || signal?.aborted) return;
+			status.textContent = '';
+			errorMessage.textContent = '';
+			errorRegion.hidden = true;
+			settlePanelBusyState();
 		}
 
 		function isValidPanelPayload(payload, expectedSlug) {
@@ -1176,7 +1391,7 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			const cacheKey = definitionCacheKey(definition);
 			const cached = cache.get(cacheKey);
 			if (cached) {
-				await renderPayload(key, cached, options.renderToken, options.animateReplacement, options.signal);
+				await renderPayload(key, cached, options.renderToken, options.animateReplacement, options.signal, options.preservePrerendered === true);
 				return;
 			}
 
@@ -1200,12 +1415,16 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 
 				cache.set(cacheKey, payload);
 				if (requestToken === activeRequestToken && currentKey === key) {
-					await renderPayload(key, payload, options.renderToken, options.animateReplacement, options.signal);
+					await renderPayload(key, payload, options.renderToken, options.animateReplacement, options.signal, options.preservePrerendered === true);
 				}
 			} catch (error) {
 				if (error instanceof DOMException && error.name === 'AbortError') return;
 				if (requestToken === activeRequestToken && currentKey === key) {
-					await renderError(key, options.renderToken, options.animateReplacement, options.signal);
+					if (options.preservePrerendered === true) {
+						retainPrerenderedRouteAfterLoadError(key, options.renderToken, options.signal);
+					} else {
+						await renderError(key, options.renderToken, options.animateReplacement, options.signal);
+					}
 				}
 			} finally {
 				if (requestToken === activeRequestToken) activeController = null;
@@ -1223,9 +1442,10 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			const cached = cache.has(definitionCacheKey(definition));
 			if (!cached) setB3PreparationState(definition, true, token);
 
+			let preparedB3Payload = null;
 			let preparedB3Error = false;
 			try {
-				await requestB3Payload(definition);
+				preparedB3Payload = await requestB3Payload(definition);
 			} catch {
 				preparedB3Error = true;
 			}
@@ -1233,11 +1453,11 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			if (controller.signal.aborted || token !== activeB3PreparationToken) return;
 			setB3PreparationState(definition, false, token);
 			activeB3PreparationController = null;
-			openPanel(key, { ...options, preparedB3Error });
+			openPanel(key, { ...options, preparedB3Payload, preparedB3Error });
 		}
 
 		function requestPanel(key, options = {}) {
-			if (isB3Motion) {
+			if (isB3Motion && options.preservePrerendered !== true) {
 				void prepareB3Target(key, options);
 				return;
 			}
@@ -1263,8 +1483,18 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			activeVisualController = new AbortController();
 			activeCloseToken += 1;
 			const renderToken = ++activeRenderToken;
+			const shouldUpdateHistory = options.updateHistory && options.preparedB3Error !== true;
+			const historyReplacement = options.historyReplacement;
+			if (
+				options.preparedB3Error !== true
+				&& typeof historyReplacement?.url === 'string'
+				&& typeof historyReplacement?.state === 'object'
+				&& historyReplacement.state !== null
+			) {
+				window.history.replaceState(historyReplacement.state, '', historyReplacement.url);
+			}
 
-			if (options.updateHistory && definition.kind === 'work-detail') {
+			if (shouldUpdateHistory && definition.kind === 'work-detail') {
 				const nextDepth = currentPortalDepth() + 1;
 				window.history.pushState(
 					portalHistoryState(nextDepth, key, {
@@ -1275,16 +1505,22 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 					'',
 					definition.canonicalUrl,
 				);
-			} else if (options.updateHistory && window.location.hash !== definition.hash) {
+			} else if (shouldUpdateHistory && window.location.hash !== definition.hash) {
 				const nextDepth = currentPortalDepth() + 1;
 				window.history.pushState(portalHistoryState(nextDepth, key), '', definition.hash);
+			}
+			const preparedPayload = options.preparedB3Payload ?? cache.get(definitionCacheKey(definition));
+			if (preparedPayload) {
+				applyDocumentSeo(preparedPayload.seo);
+				applyDocumentStructuredData(preparedPayload.structured_data);
 			}
 
 			if (!panelAlreadyOpen) setShellState('opening');
 			currentKey = key;
 			setHeaderActionMode(isB3Motion && definition.kind === 'work-detail' ? 'back' : 'close');
 			if (options.restoreTarget instanceof HTMLElement) restoreTarget = options.restoreTarget;
-			setLoadingState(definition, isOpenSwitch);
+			if (options.preservePrerendered === true) initializePrerenderedRoutePresentation(key, definition);
+			setLoadingState(definition, isOpenSwitch || options.preservePrerendered === true);
 			panel.setAttribute('aria-owns', 'portfolio-music-player portfolio-music-player-status');
 			panel.hidden = false;
 			landing.inert = true;
@@ -1300,6 +1536,10 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 				if (isMotionStudy) status.focus({ preventScroll: true });
 				else panelTitle.focus({ preventScroll: true });
 			}
+			if (options.preservePrerendered === true && key !== 'work') {
+				settlePrerenderedRouteWithoutHydration(key, definition);
+				return;
+			}
 			if (isB3Motion && options.preparedB3Error === true) {
 				void renderError(key, renderToken, isOpenSwitch, activeVisualController.signal);
 			} else {
@@ -1307,12 +1547,15 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 					renderToken,
 					animateReplacement: isOpenSwitch,
 					signal: activeVisualController.signal,
+					preservePrerendered: options.preservePrerendered === true,
 				});
 			}
 		}
 
 		async function finishClose(shouldRestoreFocus) {
 			const closeToken = ++activeCloseToken;
+			applyDocumentSeo(landingDocumentSeo);
+			applyDocumentStructuredData(landingDocumentStructuredData);
 			cancelB3Preparation();
 			activeVisualController?.abort();
 			activeCloseController?.abort();
@@ -1411,8 +1654,8 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 				postId: 0,
 			};
 			const matchingTrigger = triggers.find((trigger) => trigger.key === 'work')?.anchor ?? null;
-			window.history.replaceState(
-				portalHistoryState(Math.max(currentPortalDepth() - 1, 0), 'work', {
+			const historyReplacement = {
+				state: portalHistoryState(Math.max(currentPortalDepth() - 1, 0), 'work', {
 					portfolioWorksFilter: 'all',
 					portfolioWorksView: 'all',
 					portfolioWorksSort: 'curated',
@@ -1423,10 +1666,11 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 					portfolioWorksStyles: { all: 'all', music: 'all', live: 'all', tech: 'all' },
 					portfolioWorksOriginPostId: 0,
 				}),
-				'',
-				new URL(panelDefinitions.work.hash, baseUrl).href,
-			);
-			requestPanel('work', { updateHistory: false, restoreTarget: matchingTrigger });
+				url: currentPortalDepth() > 0
+					? panelDefinitions.work.hash
+					: new URL(panelDefinitions.work.canonicalPath, `${window.location.origin}/`).href,
+			};
+			requestPanel('work', { updateHistory: false, restoreTarget: matchingTrigger, historyReplacement });
 		}
 
 		function activateHeaderAction() {
@@ -1603,8 +1847,10 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			else window.addEventListener('load', scheduleB2Prefetch, { once: true });
 		}
 		if (isB3Motion) {
-			if (document.readyState === 'complete') scheduleB3Prefetch();
-			else window.addEventListener('load', scheduleB3Prefetch, { once: true });
+			if (shell.dataset.portalPrerendered !== 'true') {
+				if (document.readyState === 'complete') scheduleB3Prefetch();
+				else window.addEventListener('load', scheduleB3Prefetch, { once: true });
+			}
 		}
 		const initialWorkId = Number.parseInt(shell.dataset.portalInitialWorkId ?? '', 10);
 		const initialWorkDefinition = Number.isInteger(initialWorkId) && initialWorkId > 0
@@ -1618,11 +1864,17 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 		const initialKey = initialWorkDefinition?.key
 			?? (Object.hasOwn(panelDefinitions, initialPanelKey) ? initialPanelKey : null)
 			?? keyFromHash(window.location.hash);
+		const preservePrerenderedInitialContent = shell.dataset.portalPrerendered === 'true'
+			&& content.childElementCount > 0;
 		if (initialKey === null) {
 			hasKnownBaseEntry = true;
 			window.history.replaceState(portalHistoryState(0, null), '', window.location.href);
 		} else {
-			requestPanel(initialKey, { updateHistory: false, restoreTarget: null });
+			requestPanel(initialKey, {
+				updateHistory: false,
+				restoreTarget: null,
+				preservePrerendered: preservePrerenderedInitialContent,
+			});
 		}
 	}
 }

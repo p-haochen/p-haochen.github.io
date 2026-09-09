@@ -112,17 +112,26 @@ function createEmptyState(view, role, style, roleLabel, styleLabel) {
 	return empty;
 }
 
-function createArtwork(cover, className) {
+function hasArtwork(cover) {
+	return Boolean(cover && typeof cover.src === 'string' && cover.src !== '');
+}
+
+function createArtwork(cover, className, options = {}) {
 	const frame = document.createElement('div');
 	frame.className = className;
-	if (!cover || typeof cover.src !== 'string' || cover.src === '') return frame;
+	if (!hasArtwork(cover)) return frame;
 	const image = document.createElement('img');
 	image.src = cover.src;
 	image.alt = typeof cover.alt === 'string' && cover.alt !== '' ? cover.alt : '';
-	image.loading = 'lazy';
+	image.loading = options.priority === true ? 'eager' : 'lazy';
+	if (options.priority === true) image.fetchPriority = 'high';
 	image.decoding = 'async';
 	if (typeof cover.srcset === 'string' && cover.srcset !== '') image.srcset = cover.srcset;
-	if (typeof cover.sizes === 'string' && cover.sizes !== '') image.sizes = cover.sizes;
+	const requestedSizes = typeof cover.card_sizes === 'string' && cover.card_sizes !== '' ? cover.card_sizes : cover.sizes;
+	if (typeof requestedSizes === 'string' && requestedSizes !== '') {
+		const sizes = options.priority === true ? requestedSizes.replace(/^\s*auto\s*,\s*/i, '') : requestedSizes;
+		if (sizes !== '') image.sizes = sizes;
+	}
 	if (Number.isFinite(cover.width) && cover.width > 0) image.width = cover.width;
 	if (Number.isFinite(cover.height) && cover.height > 0) image.height = cover.height;
 	frame.append(image);
@@ -166,7 +175,7 @@ function createVisualCard(work, options = {}) {
 	mediaLink.href = work.canonical_url;
 	mediaLink.className = 'works-card__media-link';
 	mediaLink.setAttribute('aria-label', `View ${work.title}`);
-	const media = createArtwork(work.cover, 'works-card__media');
+	const media = createArtwork(work.cover, 'works-card__media', { priority: options.priority === true });
 	media.append(createVisualCardOverlay(work, options));
 	mediaLink.append(media);
 	const caption = document.createElement('div');
@@ -195,7 +204,12 @@ function createVisualCard(work, options = {}) {
 function renderVisualGrid(works, view, role, style, roleLabel, styleLabel) {
 	const list = document.createElement('ul');
 	list.className = `works-grid works-view works-view--${view}`;
-	for (const work of works) list.append(createVisualCard(work, { showYear: view !== 'all' }));
+	let hasPrioritizedArtwork = false;
+	for (const work of works) {
+		const priority = !hasPrioritizedArtwork && hasArtwork(work.cover);
+		if (priority) hasPrioritizedArtwork = true;
+		list.append(createVisualCard(work, { showYear: view !== 'all', priority }));
+	}
 	if (works.length === 0) return createEmptyState(view, role, style, roleLabel, styleLabel);
 	return list;
 }
@@ -209,7 +223,7 @@ function playTrack(player, tracks, index) {
 	void player.playQueue(tracks, index);
 }
 
-function createMusicCoverCard(work, player, onRequestOpen) {
+function createMusicCoverCard(work, player, onRequestOpen, options = {}) {
 	const item = document.createElement('li');
 	item.className = `music-cover-card works-card wp-block-post post-${work.id} work_category-music`;
 	annotateWorkItem(item, work);
@@ -218,7 +232,7 @@ function createMusicCoverCard(work, player, onRequestOpen) {
 	reveal.className = 'music-cover-card__reveal';
 	reveal.setAttribute('aria-label', `Show actions for ${work.title}`);
 	reveal.setAttribute('aria-expanded', 'false');
-	reveal.append(createArtwork(work.cover, 'music-cover-card__artwork'));
+	reveal.append(createArtwork(work.cover, 'music-cover-card__artwork', { priority: options.priority === true }));
 	item.append(reveal);
 	const overlay = document.createElement('div');
 	overlay.className = 'music-cover-card__overlay';
@@ -541,8 +555,11 @@ function renderMusicView(works, player, role, style, roleLabel, styleLabel) {
 		controller.setOverlayOpen(nextOpen);
 		openCover = nextOpen ? controller : null;
 	};
+	let hasPrioritizedArtwork = false;
 	for (const work of musicWorks) {
-		const controller = createMusicCoverCard(work, player, requestCoverOpen);
+		const priority = !hasPrioritizedArtwork && hasArtwork(work.cover);
+		if (priority) hasPrioritizedArtwork = true;
+		const controller = createMusicCoverCard(work, player, requestCoverOpen, { priority });
 		controllers.push(controller);
 		covers.append(controller.root);
 	}
@@ -732,6 +749,39 @@ function renderView(state, view) {
 	};
 	if (state.controller) Object.assign(state.controller, detail);
 	return detail;
+}
+
+function hydrateViewStateWithoutRendering(state, view) {
+	const sort = normalizeSort(state.sorts[view]);
+	const viewWorks = worksForView(state.works, view);
+	const availableRoles = new Set(viewWorks.flatMap((work) => roleSlugs(work)).filter((slug) => state.roleLabels.has(slug)));
+	const availableStyles = new Set(viewWorks.flatMap((work) => styleSlugs(work)).filter((slug) => state.styleLabels.has(slug)));
+	let role = normalizeRole(state.roles[view], state.roleLabels);
+	let style = normalizeStyle(state.styles[view], state.styleLabels);
+	if (role !== 'all' && !availableRoles.has(role)) role = 'all';
+	if (style !== 'all' && !availableStyles.has(style)) style = 'all';
+	state.roles[view] = role;
+	state.styles[view] = style;
+	const visibleCount = viewWorks.filter((work) => (role === 'all' || roleSlugs(work).includes(role))
+		&& (style === 'all' || styleSlugs(work).includes(style))).length;
+	Object.assign(state.directory.dataset, {
+		activeWorkView: view,
+		activeWorkCategory: view,
+		activeWorkSort: sort,
+		activeWorkRole: role,
+		activeWorkStyle: style,
+	});
+	state.player?.setRouteIsMusic(view === 'music');
+	return {
+		view,
+		sort,
+		sorts: { ...state.sorts },
+		role,
+		roles: { ...state.roles },
+		style,
+		styles: { ...state.styles },
+		visibleCount,
+	};
 }
 
 function setFilterPanelOpen(controlsRoot, open, restoreFocus = true) {
@@ -980,6 +1030,10 @@ export function initializeWorksMultiView(directory, options = {}) {
 		},
 	};
 	state.controller = controller;
-	Object.assign(controller, renderView(state, normalizeView(options.initialView)));
+	const initialView = normalizeView(options.initialView);
+	const initialDetail = options.preserveInitialMarkup === true
+		? hydrateViewStateWithoutRendering(state, initialView)
+		: renderView(state, initialView);
+	Object.assign(controller, initialDetail);
 	return controller;
 }
