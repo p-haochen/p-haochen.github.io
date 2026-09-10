@@ -1,0 +1,99 @@
+{
+  "id": 254,
+  "title": "【沉珀 Aetris】微光 Glimmer",
+  "html": "\n\n<div class=\"wp-block-group alignfull work-detail has-global-padding is-layout-constrained wp-block-group-is-layout-constrained\">\n\t\n\t<div class=\"wp-block-group alignwide work-detail__layout is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\n\t\t<div class=\"wp-block-group work-detail__header is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t<h1 class=\"work-detail__title wp-block-post-title\">【沉珀 Aetris】微光 Glimmer</h1>\n\t\t\t<div class=\"taxonomy-work_category work-detail__categories wp-block-post-terms\"><a href=\"/work/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\n\t\t\t<p class=\"work-detail__year work-year wp-block-paragraph\">2026</p>\n\t\t\t\n\t\t</div>\n\t\t\n\n\t\t<figure data-cover-orientation=\"landscape\" class=\"work-detail__hero wp-block-post-featured-image\"><img width=\"1672\" height=\"941\" src=\"/wp-content/uploads/2026/09/aetris-glimmer-cover.webp\" class=\"attachment-full size-full wp-post-image\" alt=\"【沉珀 Aetris】微光 Glimmer 封面\" style=\"object-fit:cover;\" decoding=\"async\" srcset=\"/wp-content/uploads/2026/09/aetris-glimmer-cover.webp 1672w, /wp-content/uploads/2026/09/aetris-glimmer-cover-300x169.webp 300w, /wp-content/uploads/2026/09/aetris-glimmer-cover-1024x576.webp 1024w, /wp-content/uploads/2026/09/aetris-glimmer-cover-768x432.webp 768w, /wp-content/uploads/2026/09/aetris-glimmer-cover-1536x864.webp 1536w\" sizes=\"(max-width: 1672px) 100vw, 1672px\" loading=\"eager\" fetchpriority=\"high\" /></figure>\n\n\t\t\n\t\t<div class=\"wp-block-group work-detail__content has-global-padding is-layout-constrained wp-block-group-is-layout-constrained\">\n\t\t\t<div class=\"entry-content work-detail__post-content wp-block-post-content has-global-padding is-layout-constrained wp-block-post-content-is-layout-constrained\">\n<h2 class=\"wp-block-heading\">Credits</h2>\n\n\n\n<ul class=\"wp-block-list\">\n\n<li>演唱｜莓Ichii、宓Iseri、璃Miri</li>\n\n\n<li>作詞｜維尼 Narsil、莓Ichii、宓Iseri、璃Miri</li>\n\n\n<li>作曲｜陳柏豪、Aaron Aranas</li>\n\n\n<li>編曲｜陳柏豪</li>\n\n\n<li>吉他｜陳柏豪</li>\n\n\n<li>錄音師｜維尼 Narsil</li>\n\n\n<li>錄音室｜紫外線工作室</li>\n\n\n<li>錄音編輯｜燁夜</li>\n\n\n<li>混音｜維尼 Narsil</li>\n\n\n<li>母帶處理｜EAjRock</li>\n\n\n<li>成音監督｜EAjRock、維尼 Narsil、Carnival蘇品嘉</li>\n\n</ul>\n</div>\n\t\t\t<div class=\"work-media\"><section class=\"work-media__section work-media-embed work-media-embed--youtube\" aria-labelledby=\"work-media-youtube-254\"><h2 id=\"work-media-youtube-254\" class=\"work-media__heading\">YouTube</h2><div class=\"work-media-embed__frame work-media-embed__frame--youtube\"><iframe src=\"https://www.youtube.com/embed/OsgHbrQsp38\" title=\"【沉珀 Aetris】微光 Glimmer — YouTube video\" loading=\"lazy\" allow=\"accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe></div></section></div>\n\t\t</div>\n\t\t\n\t</div>\n\t\n</div>\n\n",
+  "canonical_url": "/works/aetris-glimmer/",
+  "seo": {
+    "title": "【沉珀 Aetris】微光 Glimmer | PO HAO CHEN",
+    "description": "PO HAO CHEN portfolio: 【沉珀 Aetris】微光 Glimmer. 2026 · MUSIC · MUSIC PRODUCTION, COMPOSITION, ARRANGEMENT.",
+    "canonical_url": "/works/aetris-glimmer/",
+    "image_url": "/wp-content/uploads/2026/09/aetris-glimmer-cover-1024x576.webp",
+    "og_type": "article",
+    "robots": "max-image-preview:large"
+  },
+  "structured_data": {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    "@id": "https://pohaochen.com/works/aetris-glimmer/#creative-work",
+    "url": "https://pohaochen.com/works/aetris-glimmer/",
+    "name": "【沉珀 Aetris】微光 Glimmer",
+    "image": "https://pohaochen.com/wp-content/uploads/2026/09/aetris-glimmer-cover-1024x576.webp",
+    "dateCreated": "2026"
+  },
+  "work": {
+    "id": 254,
+    "title": "【沉珀 Aetris】微光 Glimmer",
+    "canonical_url": "/works/aetris-glimmer/",
+    "year": "2026",
+    "menu_order": 200,
+    "categories": [
+      {
+        "slug": "music",
+        "name": "MUSIC"
+      }
+    ],
+    "roles": [
+      {
+        "slug": "music-production",
+        "label": "MUSIC PRODUCTION"
+      },
+      {
+        "slug": "composition",
+        "label": "COMPOSITION"
+      },
+      {
+        "slug": "arrangement",
+        "label": "ARRANGEMENT"
+      },
+      {
+        "slug": "drum-production",
+        "label": "DRUM PRODUCTION"
+      },
+      {
+        "slug": "guitar",
+        "label": "GUITAR"
+      },
+      {
+        "slug": "keys-synth",
+        "label": "KEYS / SYNTH"
+      }
+    ],
+    "styles": [
+      {
+        "slug": "pop",
+        "label": "POP"
+      },
+      {
+        "slug": "j-pop",
+        "label": "J-POP"
+      },
+      {
+        "slug": "electronic",
+        "label": "ELECTRONIC"
+      },
+      {
+        "slug": "symphonic",
+        "label": "SYMPHONIC"
+      }
+    ],
+    "cover": {
+      "id": 255,
+      "src": "/wp-content/uploads/2026/09/aetris-glimmer-cover-1024x576.webp",
+      "width": 1024,
+      "height": 576,
+      "alt": "【沉珀 Aetris】微光 Glimmer 封面",
+      "srcset": "/wp-content/uploads/2026/09/aetris-glimmer-cover-1024x576.webp 1024w, /wp-content/uploads/2026/09/aetris-glimmer-cover-300x169.webp 300w, /wp-content/uploads/2026/09/aetris-glimmer-cover-768x432.webp 768w, /wp-content/uploads/2026/09/aetris-glimmer-cover-1536x864.webp 1536w, /wp-content/uploads/2026/09/aetris-glimmer-cover.webp 1672w",
+      "sizes": "(max-width: 1024px) 100vw, 1024px",
+      "card_sizes": "(max-width: 700px) calc(100vw - 2rem), (max-width: 1199px) calc((100vw - 5rem) / 2), calc((100vw - 10rem) / 4)"
+    },
+    "tracks": [],
+    "seo": {
+      "title": "【沉珀 Aetris】微光 Glimmer | PO HAO CHEN",
+      "description": "PO HAO CHEN portfolio: 【沉珀 Aetris】微光 Glimmer. 2026 · MUSIC · MUSIC PRODUCTION, COMPOSITION, ARRANGEMENT.",
+      "canonical_url": "/works/aetris-glimmer/",
+      "image_url": "/wp-content/uploads/2026/09/aetris-glimmer-cover-1024x576.webp",
+      "og_type": "article",
+      "robots": "max-image-preview:large"
+    }
+  }
+}
