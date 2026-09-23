@@ -1,0 +1,86 @@
+{
+  "id": 257,
+  "title": "PHC Recorder",
+  "html": "\n\n<div class=\"wp-block-group alignfull work-detail has-global-padding is-layout-constrained wp-block-group-is-layout-constrained\">\n\t\n\t<div class=\"wp-block-group alignwide work-detail__layout is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\n\t\t<div class=\"wp-block-group work-detail__header is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t<h1 class=\"work-detail__title wp-block-post-title\">PHC Recorder</h1><div class=\"work-ctas\" role=\"group\" aria-label=\"Project links\"><a class=\"work-cta work-cta--download\" href=\"https://github.com/p-haochen/phc-recorder/releases/download/v1.0.1/phc.recorder-v1.0.1.zip?utm_source=chatgpt.com\" target=\"_blank\" rel=\"noopener noreferrer\" data-work-cta-type=\"download\"><span>DOWNLOAD</span></a><a class=\"work-cta work-cta--github\" href=\"https://github.com/p-haochen/phc-recorder?utm_source=chatgpt.com\" target=\"_blank\" rel=\"noopener noreferrer\" data-work-cta-type=\"github\"><span>GITHUB</span></a></div>\n\t\t\t<div class=\"taxonomy-work_category work-detail__categories wp-block-post-terms\"><a href=\"/work/\" rel=\"tag\">LAB</a></div>\n\t\t\t\n\t\t\t<p class=\"work-detail__year work-year wp-block-paragraph\">2026</p>\n\t\t\t\n\t\t</div>\n\t\t\n\n\t\t<figure data-cover-orientation=\"landscape\" class=\"work-detail__hero wp-block-post-featured-image\"><img width=\"1448\" height=\"1086\" src=\"/wp-content/uploads/2026/09/PHC-Recorder-Cover.png\" class=\"attachment-full size-full wp-post-image\" alt=\"PHC Recorder cover showing the audio recording interface\" style=\"object-fit:cover;\" decoding=\"async\" srcset=\"/wp-content/uploads/2026/09/PHC-Recorder-Cover.png 1448w, /wp-content/uploads/2026/09/PHC-Recorder-Cover-300x225.png 300w, /wp-content/uploads/2026/09/PHC-Recorder-Cover-1024x768.png 1024w, /wp-content/uploads/2026/09/PHC-Recorder-Cover-768x576.png 768w\" sizes=\"(max-width: 1448px) 100vw, 1448px\" loading=\"eager\" fetchpriority=\"high\" /></figure>\n\n\t\t\n\t\t<div class=\"wp-block-group work-detail__content has-global-padding is-layout-constrained wp-block-group-is-layout-constrained\">\n\t\t\t<div class=\"entry-content work-detail__post-content wp-block-post-content has-global-padding is-layout-constrained wp-block-post-content-is-layout-constrained\"><p class=\"wp-block-paragraph\">PHC Recorder is a free and open-source multichannel recording utility for Cycling ’74 Max, supporting 1–64 channels with synchronized mono or interleaved WAV recording.</p><p class=\"wp-block-paragraph\">PHC Recorder began as a reusable recording module for my own multichannel Max/MSP performance and installation workflows. It was later developed into a standalone package that can be reused across projects and shared with the Max community.</p><h2 class=\"wp-block-heading\">Credits</h2><p class=\"wp-block-paragraph\">Concept / Design / Development: PO HAO CHEN</p></div>\n\t\t\t<div class=\"work-media\"><section class=\"work-media__section work-media-gallery work-media-gallery--phc-recorder\" aria-labelledby=\"work-media-gallery-257\"><h2 id=\"work-media-gallery-257\" class=\"work-media__heading\">Gallery</h2><div class=\"work-media-gallery__grid\"><figure class=\"work-media-gallery__item\"><a class=\"work-media-gallery__link\" href=\"/wp-content/uploads/2026/09/attachment1-20260923.webp\" data-work-gallery-item data-work-gallery-index=\"0\" data-work-gallery-count=\"2\" aria-haspopup=\"dialog\" aria-label=\"Open image 1 of 2: PHC Recorder product overview with recording interface, features, and multichannel controls\"><img width=\"1024\" height=\"768\" src=\"/wp-content/uploads/2026/09/attachment1-20260923-1024x768.webp\" class=\"work-media-gallery__image\" alt=\"PHC Recorder product overview with recording interface, features, and multichannel controls\" loading=\"lazy\" decoding=\"async\" sizes=\"auto, (max-width: 700px) calc(100vw - 2rem), (max-width: 1599px) calc((100vw - 8rem) / 2), 720px\" srcset=\"/wp-content/uploads/2026/09/attachment1-20260923-1024x768.webp 1024w, /wp-content/uploads/2026/09/attachment1-20260923-300x225.webp 300w, /wp-content/uploads/2026/09/attachment1-20260923-768x576.webp 768w, /wp-content/uploads/2026/09/attachment1-20260923.webp 1448w\" /></a></figure><figure class=\"work-media-gallery__item\"><a class=\"work-media-gallery__link\" href=\"/wp-content/uploads/2026/09/PHC-Recorder-Interface.webp\" data-work-gallery-item data-work-gallery-index=\"1\" data-work-gallery-count=\"2\" aria-haspopup=\"dialog\" aria-label=\"Open image 2 of 2: PHC Recorder 16-channel interleaved recording interface\"><img width=\"800\" height=\"763\" src=\"/wp-content/uploads/2026/09/PHC-Recorder-Interface.webp\" class=\"work-media-gallery__image\" alt=\"PHC Recorder 16-channel interleaved recording interface\" loading=\"lazy\" decoding=\"async\" sizes=\"auto, (max-width: 700px) calc(100vw - 2rem), (max-width: 1599px) calc((100vw - 8rem) / 2), 720px\" srcset=\"/wp-content/uploads/2026/09/PHC-Recorder-Interface.webp 800w, /wp-content/uploads/2026/09/PHC-Recorder-Interface-300x286.webp 300w, /wp-content/uploads/2026/09/PHC-Recorder-Interface-768x732.webp 768w\" /></a></figure></div></section></div>\n\t\t</div>\n\t\t\n\t</div>\n\t\n</div>\n\n",
+  "canonical_url": "/works/phc-recorder/",
+  "seo": {
+    "title": "PHC Recorder | PO HAO CHEN",
+    "description": "PO HAO CHEN portfolio: PHC Recorder. 2026 · LAB · LIVE ELECTRONICS, LIVE SOUND ENGINEERING, SOUND DESIGN.",
+    "canonical_url": "/works/phc-recorder/",
+    "image_url": "/wp-content/uploads/2026/09/PHC-Recorder-Cover-1024x768.png",
+    "og_type": "article",
+    "robots": "max-image-preview:large"
+  },
+  "structured_data": {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    "@id": "https://pohaochen.com/works/phc-recorder/#creative-work",
+    "url": "https://pohaochen.com/works/phc-recorder/",
+    "name": "PHC Recorder",
+    "image": "https://pohaochen.com/wp-content/uploads/2026/09/PHC-Recorder-Cover-1024x768.png",
+    "dateCreated": "2026"
+  },
+  "work": {
+    "id": 257,
+    "title": "PHC Recorder",
+    "canonical_url": "/works/phc-recorder/",
+    "year": "2026",
+    "menu_order": 201,
+    "categories": [
+      {
+        "slug": "tech",
+        "name": "LAB"
+      }
+    ],
+    "roles": [
+      {
+        "slug": "live-electronics",
+        "label": "LIVE ELECTRONICS"
+      },
+      {
+        "slug": "live-sound-engineering",
+        "label": "LIVE SOUND ENGINEERING"
+      },
+      {
+        "slug": "sound-design",
+        "label": "SOUND DESIGN"
+      },
+      {
+        "slug": "spatial-multichannel-audio",
+        "label": "SPATIAL / MULTICHANNEL AUDIO"
+      }
+    ],
+    "styles": [],
+    "ctas": [
+      {
+        "label": "Download",
+        "url": "https://github.com/p-haochen/phc-recorder/releases/download/v1.0.1/phc.recorder-v1.0.1.zip?utm_source=chatgpt.com",
+        "type": "download"
+      },
+      {
+        "label": "GitHub",
+        "url": "https://github.com/p-haochen/phc-recorder?utm_source=chatgpt.com",
+        "type": "github"
+      }
+    ],
+    "cover": {
+      "id": 263,
+      "src": "/wp-content/uploads/2026/09/PHC-Recorder-Cover-1024x768.png",
+      "width": 1024,
+      "height": 768,
+      "alt": "PHC Recorder cover showing the audio recording interface",
+      "srcset": "/wp-content/uploads/2026/09/PHC-Recorder-Cover-1024x768.png 1024w, /wp-content/uploads/2026/09/PHC-Recorder-Cover-300x225.png 300w, /wp-content/uploads/2026/09/PHC-Recorder-Cover-768x576.png 768w, /wp-content/uploads/2026/09/PHC-Recorder-Cover.png 1448w",
+      "sizes": "(max-width: 1024px) 100vw, 1024px",
+      "card_sizes": "(max-width: 700px) calc(100vw - 2rem), (max-width: 1199px) calc((100vw - 5rem) / 2), calc((100vw - 10rem) / 4)"
+    },
+    "tracks": [],
+    "seo": {
+      "title": "PHC Recorder | PO HAO CHEN",
+      "description": "PO HAO CHEN portfolio: PHC Recorder. 2026 · LAB · LIVE ELECTRONICS, LIVE SOUND ENGINEERING, SOUND DESIGN.",
+      "canonical_url": "/works/phc-recorder/",
+      "image_url": "/wp-content/uploads/2026/09/PHC-Recorder-Cover-1024x768.png",
+      "og_type": "article",
+      "robots": "max-image-preview:large"
+    }
+  }
+}
