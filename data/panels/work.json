@@ -2157,12 +2157,12 @@
       "ctas": [
         {
           "label": "Download",
-          "url": "https://github.com/p-haochen/phc-recorder/releases/download/v1.0.1/phc.recorder-v1.0.1.zip?utm_source=chatgpt.com",
+          "url": "https://github.com/p-haochen/phc-recorder/releases/download/v1.0.1/phc.recorder-v1.0.1.zip",
           "type": "download"
         },
         {
           "label": "GitHub",
-          "url": "https://github.com/p-haochen/phc-recorder?utm_source=chatgpt.com",
+          "url": "https://github.com/p-haochen/phc-recorder",
           "type": "github"
         }
       ],
