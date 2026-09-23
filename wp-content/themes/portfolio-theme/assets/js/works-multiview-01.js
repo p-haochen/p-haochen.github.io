@@ -10,6 +10,10 @@ function normalizeView(value) {
 	return typeof value === 'string' && validViews.has(value) ? value : 'all';
 }
 
+function viewLabel(view) {
+	return view === 'tech' ? 'LAB' : view.toUpperCase();
+}
+
 function normalizeSort(value) {
 	return typeof value === 'string' && validSorts.has(value) ? value : 'curated';
 }
@@ -99,8 +103,8 @@ function createEmptyState(view, role, style, roleLabel, styleLabel) {
 	const message = document.createElement('p');
 	const activeLabels = [role === 'all' ? '' : roleLabel, style === 'all' ? '' : styleLabel].filter(Boolean);
 	message.textContent = activeLabels.length === 0
-		? `No published ${view.toUpperCase()} works yet.`
-		: `No ${view === 'all' ? '' : `${view.toUpperCase()} `}works match ${activeLabels.join(' + ')}.`;
+		? `No published ${viewLabel(view)} works yet.`
+		: `No ${view === 'all' ? '' : `${viewLabel(view)} `}works match ${activeLabels.join(' + ')}.`;
 	empty.append(message);
 	if (activeLabels.length > 0) {
 		const clear = document.createElement('button');
