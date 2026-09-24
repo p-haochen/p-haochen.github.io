@@ -174,6 +174,12 @@
 	justify-content: flex-end;
 }
 
+.works-directory__filter-reveal,
+.works-directory__sort {
+	--works-collapsed-handle-color: color-mix(in srgb, var(--wp--preset--color--portal-muted) 42%, transparent);
+	--works-collapsed-handle-length: 6.25rem;
+}
+
 .works-directory__filter-reveal {
 	--works-filter-handle-size: 0.1875rem;
 	--works-filter-reveal-duration: 180ms;
@@ -197,9 +203,9 @@
 	right: 0;
 	bottom: 0;
 	z-index: 2;
-	width: 100%;
+	width: min(100%, var(--works-collapsed-handle-length));
 	height: var(--works-filter-handle-size);
-	background: currentColor;
+	background: var(--works-collapsed-handle-color);
 	content: "";
 	opacity: 1;
 	pointer-events: none;
@@ -393,6 +399,36 @@
 	background: var(--wp--preset--color--portal-canvas, #080a0d);
 	box-shadow: 0 1.25rem 3rem rgb(0 0 0 / 35%);
 	overscroll-behavior: contain;
+	scrollbar-color: color-mix(in srgb, var(--wp--preset--color--portal-muted) 42%, transparent) transparent;
+	scrollbar-width: thin;
+}
+
+.works-filter-panel::-webkit-scrollbar {
+	width: 7px;
+	height: 7px;
+}
+
+.works-filter-panel::-webkit-scrollbar-track,
+.works-filter-panel::-webkit-scrollbar-corner {
+	background: transparent;
+}
+
+.works-filter-panel::-webkit-scrollbar-thumb {
+	border: 1px solid transparent;
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--wp--preset--color--portal-muted) 42%, transparent);
+	background-clip: padding-box;
+}
+
+.works-filter-panel::-webkit-scrollbar-thumb:hover {
+	background: color-mix(in srgb, var(--wp--preset--color--portal-muted) 58%, transparent);
+	background-clip: padding-box;
+}
+
+.works-filter-panel::-webkit-scrollbar-button {
+	display: none;
+	width: 0;
+	height: 0;
 }
 
 .works-filter-panel[hidden] {
@@ -567,9 +603,9 @@
 	right: 0;
 	bottom: 0;
 	z-index: 2;
-	width: 100%;
+	width: min(100%, var(--works-collapsed-handle-length));
 	height: var(--works-sort-handle-size);
-	background: currentColor;
+	background: var(--works-collapsed-handle-color);
 	content: "";
 	opacity: 1;
 	pointer-events: none;
@@ -698,7 +734,7 @@
 	0%,
 	84%,
 	100% {
-		background-color: var(--wp--preset--color--portal-muted);
+		background-color: var(--works-collapsed-handle-color, color-mix(in srgb, var(--wp--preset--color--portal-muted) 42%, transparent));
 	}
 
 	90% {

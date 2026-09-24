@@ -44,28 +44,9 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 		&& typeof endpointBase === 'string'
 		&& endpointBase !== ''
 	) {
-		const supportedMotionModes = new Set(['slide-up', 'fade']);
-		const requestedMotionMode = new URLSearchParams(window.location.search).get('portal-motion');
-		const defaultMotionMode = supportedMotionModes.has(shell.dataset.portalDefaultMotion)
-			? shell.dataset.portalDefaultMotion
-			: 'baseline';
-		const hasRequestedMotion = supportedMotionModes.has(requestedMotionMode);
-		const motionMode = hasRequestedMotion ? requestedMotionMode : defaultMotionMode;
-		const isMotionStudy = motionMode !== 'baseline';
-		const supportedShellModes = new Set(['brand-on-open', 'frame-on-open', 'frame-on-open-soft', 'frame-on-open-b2', 'frame-on-open-b3']);
-		const requestedShellMode = new URLSearchParams(window.location.search).get('portal-shell');
-		const defaultShellMode = supportedShellModes.has(shell.dataset.portalDefaultShell)
-			? shell.dataset.portalDefaultShell
-			: 'existing';
-		const shellMode = hasRequestedMotion
-			? (motionMode === 'fade' && supportedShellModes.has(requestedShellMode) ? requestedShellMode : 'existing')
-			: (motionMode === 'fade' ? defaultShellMode : 'existing');
-		const isShellComparison = shellMode !== 'existing';
-		const isRefinedFrameMotion = shellMode === 'frame-on-open-soft';
-		const isB2Motion = shellMode === 'frame-on-open-b2';
-		const isB3Motion = shellMode === 'frame-on-open-b3';
-		shell.dataset.portalMotionMode = motionMode;
-		shell.dataset.portalShellMode = shellMode;
+		const isB3Motion = shell.dataset.portalMotionMode === 'fade'
+			&& shell.dataset.portalShellMode === 'frame-on-open-b3';
+		const isMotionStudy = isB3Motion;
 
 		const panelDefinitions = Object.freeze({
 			work: {
@@ -103,7 +84,6 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			},
 		});
 		const cache = new Map();
-		const b2PayloadRequests = new Map();
 		const b3PayloadRequests = new Map();
 		const dynamicWorkDefinitions = new Map();
 		const triggers = [];
@@ -129,7 +109,6 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 		let activeVisualController = null;
 		let activeCloseController = null;
 		let hasKnownBaseEntry = false;
-		let b2PrefetchScheduled = false;
 		let b3PrefetchScheduled = false;
 		let activeB3PreparationController = null;
 		let activeB3PreparationToken = 0;
@@ -655,7 +634,7 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 		}
 
 		function setBrandAvailability(visible) {
-			const shouldExpose = !isShellComparison || visible;
+			const shouldExpose = !isB3Motion || visible;
 			brandLink.classList.toggle('is-shell-brand-visible', shouldExpose);
 
 			if (shouldExpose) {
@@ -732,22 +711,7 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 					'is-content-exiting',
 					'is-content-entering',
 					'is-content-entering-active',
-					'is-soft-content-exiting',
-					'is-soft-content-entering',
-					'is-soft-content-entering-active',
 				);
-			}
-		}
-
-		function resetRefinedContentTransition() {
-			for (const element of [content, errorRegion]) {
-				element.classList.remove('is-soft-content-exiting', 'is-soft-content-entering', 'is-soft-content-entering-active');
-			}
-		}
-
-		function resetB2ContentTransition() {
-			for (const element of [content, errorRegion]) {
-				element.classList.remove('is-b2-content-exiting', 'is-b2-content-entering', 'is-b2-content-entering-active');
 			}
 		}
 
@@ -798,70 +762,6 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			return true;
 		}
 
-		async function commitRefinedContentView(commit, outgoingElement, incomingElement, renderToken, animateReplacement, signal) {
-			const outgoingHasView = outgoingElement === errorRegion
-				? !errorRegion.hidden
-				: content.childElementCount > 0;
-			const shouldAnimate = !prefersReducedMotion();
-			const shouldExit = shouldAnimate && animateReplacement && outgoingHasView;
-
-			if (shouldExit) {
-				outgoingElement.classList.add('is-soft-content-exiting');
-				await waitForVisualTransition(outgoingElement, 'opacity', 120, signal);
-				if (renderToken !== activeRenderToken || signal?.aborted) {
-					return false;
-				}
-			}
-
-			commit();
-			resetRefinedContentTransition();
-
-			if (shouldAnimate) {
-				incomingElement.classList.add('is-soft-content-entering');
-				await nextAnimationFrame(signal);
-				if (renderToken !== activeRenderToken || signal?.aborted) {
-					return false;
-				}
-				incomingElement.classList.add('is-soft-content-entering-active');
-				await waitForVisualTransition(incomingElement, 'opacity', 200, signal);
-				if (renderToken !== activeRenderToken || signal?.aborted) {
-					return false;
-				}
-			}
-
-			resetRefinedContentTransition();
-			return true;
-		}
-
-		async function commitB2ContentView(commit, outgoingElement, incomingElement, renderToken, animateReplacement, signal) {
-			const outgoingHasView = outgoingElement === errorRegion
-				? !errorRegion.hidden
-				: content.childElementCount > 0;
-			const shouldAnimate = !prefersReducedMotion();
-			const shouldExit = shouldAnimate && animateReplacement && outgoingHasView;
-
-			if (shouldExit) {
-				outgoingElement.classList.add('is-b2-content-exiting');
-				await waitForVisualTransition(outgoingElement, 'opacity', 110, signal);
-				if (renderToken !== activeRenderToken || signal?.aborted) return false;
-			}
-
-			commit();
-			resetB2ContentTransition();
-
-			if (shouldAnimate) {
-				incomingElement.classList.add('is-b2-content-entering');
-				await nextPaint(signal);
-				if (renderToken !== activeRenderToken || signal?.aborted) return false;
-				incomingElement.classList.add('is-b2-content-entering-active');
-				await waitForVisualTransition(incomingElement, 'opacity', 220, signal);
-				if (renderToken !== activeRenderToken || signal?.aborted) return false;
-			}
-
-			resetB2ContentTransition();
-			return true;
-		}
-
 		async function commitB3ContentView(commit, outgoingElement, incomingElement, renderToken, animateReplacement, signal) {
 			const outgoingHasView = outgoingElement === errorRegion
 				? !errorRegion.hidden
@@ -894,12 +794,6 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 		function commitRouteView(commit, outgoingElement, incomingElement, renderToken, animateReplacement, signal) {
 			if (isB3Motion) {
 				return commitB3ContentView(commit, outgoingElement, incomingElement, renderToken, animateReplacement, signal);
-			}
-			if (isB2Motion) {
-				return commitB2ContentView(commit, outgoingElement, incomingElement, renderToken, animateReplacement, signal);
-			}
-			if (isRefinedFrameMotion) {
-				return commitRefinedContentView(commit, outgoingElement, incomingElement, renderToken, animateReplacement, signal);
 			}
 			return commitContentView(commit, outgoingElement, incomingElement, renderToken, animateReplacement, signal);
 		}
@@ -1256,40 +1150,6 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 				: isValidPanelPayload(payload, definition.payloadSlug);
 		}
 
-		async function requestB2Payload(definition) {
-			const cached = cache.get(definition.payloadSlug);
-			if (cached) return cached;
-
-			const pending = b2PayloadRequests.get(definition.payloadSlug);
-			if (pending) return pending;
-
-			const request = (async () => {
-				const response = await fetch(`${endpointBase}${definition.payloadSlug}`, {
-					method: 'GET',
-					credentials: 'same-origin',
-					headers: { Accept: 'application/json' },
-				});
-				if (!response.ok) throw new Error(`Panel request returned HTTP ${response.status}.`);
-
-				const payload = await response.json();
-				if (!isValidPanelPayload(payload, definition.payloadSlug)) {
-					throw new Error('Panel response did not match the expected contract.');
-				}
-
-				cache.set(definition.payloadSlug, payload);
-				return payload;
-			})();
-
-			b2PayloadRequests.set(definition.payloadSlug, request);
-			try {
-				return await request;
-			} finally {
-				if (b2PayloadRequests.get(definition.payloadSlug) === request) {
-					b2PayloadRequests.delete(definition.payloadSlug);
-				}
-			}
-		}
-
 		async function requestB3Payload(definition) {
 			const cacheKey = definitionCacheKey(definition);
 			const cached = cache.get(cacheKey);
@@ -1325,26 +1185,6 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			}
 		}
 
-		async function prefetchB2Payloads() {
-			const definitionsBySlug = new Map(
-				Object.values(panelDefinitions).map((definition) => [definition.payloadSlug, definition]),
-			);
-			await Promise.allSettled(
-				[...definitionsBySlug.values()].map((definition) => requestB2Payload(definition)),
-			);
-		}
-
-		function scheduleB2Prefetch() {
-			if (!isB2Motion || b2PrefetchScheduled || document.readyState !== 'complete') return;
-			b2PrefetchScheduled = true;
-			const run = () => { void prefetchB2Payloads(); };
-			if ('requestIdleCallback' in window) {
-				window.requestIdleCallback(run, { timeout: 1000 });
-				return;
-			}
-			window.setTimeout(run, 200);
-		}
-
 		async function prefetchB3Payloads() {
 			const definitionsBySlug = new Map(
 				Object.values(panelDefinitions).map((definition) => [definition.payloadSlug, definition]),
@@ -1365,27 +1205,7 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			window.setTimeout(run, 200);
 		}
 
-		async function loadB2Panel(key, options) {
-			const definition = panelDefinitions[key];
-			try {
-				const payload = await requestB2Payload(definition);
-				if (currentKey === key && options.renderToken === activeRenderToken && !options.signal?.aborted) {
-					await renderPayload(key, payload, options.renderToken, options.animateReplacement, options.signal);
-					scheduleB2Prefetch();
-				}
-			} catch {
-				if (currentKey === key && options.renderToken === activeRenderToken && !options.signal?.aborted) {
-					await renderError(key, options.renderToken, options.animateReplacement, options.signal);
-				}
-			}
-		}
-
 		async function loadPanel(key, options) {
-			if (isB2Motion) {
-				await loadB2Panel(key, options);
-				return;
-			}
-
 			const definition = definitionForKey(key);
 			if (!definition) return;
 			const cacheKey = definitionCacheKey(definition);
@@ -1471,13 +1291,11 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			if (isB3Motion) cancelB3WorksFilterTransition();
 
 			const panelAlreadyOpen = currentKey !== null && !panel.hidden && panel.classList.contains('is-open');
-			const isOpenSwitch = isShellComparison && panelAlreadyOpen && currentKey !== key;
+			const isOpenSwitch = isB3Motion && panelAlreadyOpen && currentKey !== key;
 			activeController?.abort();
 			activeController = null;
 			activeRequestToken += 1;
 			activeVisualController?.abort();
-			if (isRefinedFrameMotion) resetRefinedContentTransition();
-			if (isB2Motion) resetB2ContentTransition();
 			if (isB3Motion) resetB3ContentTransition();
 			activeCloseController?.abort();
 			activeVisualController = new AbortController();
@@ -1570,19 +1388,14 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			destroyActiveWorkDetailAudio();
 			destroyWorksMultiView();
 			if (isB3Motion) resetB3ContentTransition();
-			else if (isB2Motion) resetB2ContentTransition();
 			else resetContentTransition();
 			settlePanelBusyState();
 			setShellState('closing');
 			panel.classList.remove('is-open');
 			updateTriggerStates(null);
 
-			const waits = [waitForVisualTransition(panel, 'opacity', motionMode === 'slide-up' ? 270 : 210, closeSignal)];
-			if (shellMode === 'brand-on-open') waits.push(waitForVisualTransition(brandLink, 'opacity', 190, closeSignal));
-			if (shellMode === 'frame-on-open') waits.push(waitForVisualTransition(brandLink, 'opacity', 280, closeSignal));
-			if (shellMode === 'frame-on-open-soft') waits.push(waitForVisualTransition(brandLink, 'opacity', 230, closeSignal));
-			if (shellMode === 'frame-on-open-b2') waits.push(waitForVisualTransition(brandLink, 'opacity', 200, closeSignal));
-			if (shellMode === 'frame-on-open-b3') waits.push(waitForVisualTransition(brandLink, 'opacity', 200, closeSignal));
+			const waits = [waitForVisualTransition(panel, 'opacity', 210, closeSignal)];
+			if (isB3Motion) waits.push(waitForVisualTransition(brandLink, 'opacity', 200, closeSignal));
 			await Promise.all(waits);
 			if (closeToken !== activeCloseToken || closeSignal.aborted) return;
 
@@ -1842,10 +1655,6 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 
 		configurePortalSemantics();
 		setShellState('landing');
-		if (isB2Motion) {
-			if (document.readyState === 'complete') scheduleB2Prefetch();
-			else window.addEventListener('load', scheduleB2Prefetch, { once: true });
-		}
 		if (isB3Motion) {
 			if (shell.dataset.portalPrerendered !== 'true') {
 				if (document.readyState === 'complete') scheduleB3Prefetch();
