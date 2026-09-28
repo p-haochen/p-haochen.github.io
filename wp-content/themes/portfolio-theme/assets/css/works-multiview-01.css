@@ -911,7 +911,7 @@
 	}
 
 	.music-collection {
-		--music-collection-volume-fader: 4rem;
+		--music-collection-volume-fader: 3.5rem;
 	}
 
 	.work-detail-audio--enhanced .music-collection {
@@ -935,6 +935,10 @@
 
 	.music-collection__current {
 		display: contents;
+	}
+
+	.music-collection__controls {
+		margin-inline-start: -0.625rem;
 	}
 
 	.music-collection__volume {
@@ -984,6 +988,26 @@
 
 	.music-player__time {
 		font-size: 0.68rem;
+	}
+}
+
+@media (max-width: 384px) {
+	.music-collection {
+		--music-collection-now-height: 13rem;
+	}
+
+	.work-detail-audio--enhanced .music-collection {
+		--music-collection-now-height: 13rem;
+	}
+
+	.music-collection__now {
+		grid-template-areas:
+			"artwork meta meta"
+			"timeline timeline timeline"
+			"controls controls controls"
+			"volume volume volume";
+		grid-template-rows: auto repeat(3, minmax(2.5rem, auto));
+		row-gap: 0.5rem;
 	}
 }
 
