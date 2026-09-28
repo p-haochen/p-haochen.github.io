@@ -941,6 +941,10 @@
 		gap: 0.15rem;
 	}
 
+	.music-collection__volume-toggle svg {
+		transform: translateX(0.35rem);
+	}
+
 	.music-collection__artwork {
 		display: block;
 	}

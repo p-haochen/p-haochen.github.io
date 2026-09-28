@@ -1,0 +1,80 @@
+{
+  "id": 267,
+  "title": "泡泡Bubble",
+  "html": "\n\n<div class=\"wp-block-group alignfull work-detail has-global-padding is-layout-constrained wp-block-group-is-layout-constrained\">\n\t\n\t<div class=\"wp-block-group alignwide work-detail__layout is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\n\t\t<div class=\"wp-block-group work-detail__header is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t<h1 class=\"work-detail__title wp-block-post-title\">泡泡Bubble</h1>\n\t\t</div>\n\t\t\n\n\t\t\n\t\t<div class=\"wp-block-group work-detail__visual is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t<figure data-cover-orientation=\"square\" class=\"work-detail__hero wp-block-post-featured-image\"><img width=\"1080\" height=\"1076\" src=\"/wp-content/uploads/2026/09/bubble-cover.webp\" class=\"attachment-full size-full wp-post-image\" alt=\"泡泡Bubble 封面\" style=\"object-fit:cover;\" decoding=\"async\" srcset=\"/wp-content/uploads/2026/09/bubble-cover.webp 1080w, /wp-content/uploads/2026/09/bubble-cover-300x300.webp 300w, /wp-content/uploads/2026/09/bubble-cover-1024x1020.webp 1024w, /wp-content/uploads/2026/09/bubble-cover-150x150.webp 150w, /wp-content/uploads/2026/09/bubble-cover-768x765.webp 768w\" sizes=\"(max-width: 1080px) 100vw, 1080px\" loading=\"eager\" fetchpriority=\"high\" /></figure>\n\n\t\t\t\n\t\t\t<div class=\"wp-block-group work-detail__metadata is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group work-detail__metadata-row work-detail__metadata-row--year is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t\n\t\t\t\t\t<p class=\"work-detail__metadata-label wp-block-paragraph\">YEAR</p>\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t<p class=\"work-detail__year work-year work-detail__metadata-value wp-block-paragraph\">2022</p>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group work-detail__metadata-row work-detail__metadata-row--type is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t\n\t\t\t\t\t<p class=\"work-detail__metadata-label wp-block-paragraph\">TYPE</p>\n\t\t\t\t\t\n\t\t\t\t\t<div class=\"taxonomy-work_category work-detail__categories work-detail__metadata-value wp-block-post-terms\"><a href=\"/work/\" rel=\"tag\">MUSIC</a></div>\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t</div>\n\t\t\t\n\t\t</div>\n\t\t\n\n\t\t\n\t\t<div class=\"wp-block-group work-detail__content has-global-padding is-layout-constrained wp-block-group-is-layout-constrained\">\n\t\t\t<div class=\"entry-content work-detail__post-content wp-block-post-content has-global-padding is-layout-constrained wp-block-post-content-is-layout-constrained\">\n<h2 class=\"wp-block-heading\">Credits</h2>\n\n\n\n<ul class=\"wp-block-list\">\n\n<li>編曲 | leechʚΐɞ</li>\n\n\n<li>吉他 | 陳柏豪</li>\n\n\n<li>合聲 | leechʚΐɞ</li>\n\n\n<li>混音 | leechʚΐɞ</li>\n\n\n<li>母帶後期處理 | leechʚΐɞ</li>\n\n</ul>\n</div>\n\t\t\t<div class=\"work-media\"><section class=\"work-media__section work-media-embed work-media-embed--youtube\" aria-labelledby=\"work-media-youtube-267\"><h2 id=\"work-media-youtube-267\" class=\"work-media__heading\">YouTube</h2><div class=\"work-media-embed__frame work-media-embed__frame--youtube\"><iframe src=\"https://www.youtube.com/embed/kzG-cRK7nG4\" title=\"泡泡Bubble — YouTube video\" loading=\"lazy\" allow=\"accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe></div></section></div>\n\t\t</div>\n\t\t\n\t</div>\n\t\n</div>\n\n",
+  "canonical_url": "/works/bubble/",
+  "seo": {
+    "title": "泡泡Bubble | PO HAO CHEN",
+    "description": "PO HAO CHEN portfolio: 泡泡Bubble. 2022 · MUSIC · GUITAR.",
+    "canonical_url": "/works/bubble/",
+    "image_url": "/wp-content/uploads/2026/09/bubble-cover-1024x1020.webp",
+    "og_type": "article",
+    "robots": "max-image-preview:large"
+  },
+  "structured_data": {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    "@id": "https://pohaochen.com/works/bubble/#creative-work",
+    "url": "https://pohaochen.com/works/bubble/",
+    "name": "泡泡Bubble",
+    "image": "https://pohaochen.com/wp-content/uploads/2026/09/bubble-cover-1024x1020.webp",
+    "dateCreated": "2022"
+  },
+  "work": {
+    "id": 267,
+    "title": "泡泡Bubble",
+    "canonical_url": "/works/bubble/",
+    "year": "2022",
+    "menu_order": 230,
+    "categories": [
+      {
+        "slug": "music",
+        "name": "MUSIC"
+      }
+    ],
+    "roles": [
+      {
+        "slug": "guitar",
+        "label": "GUITAR"
+      }
+    ],
+    "styles": [
+      {
+        "slug": "pop",
+        "label": "POP"
+      },
+      {
+        "slug": "j-pop",
+        "label": "J-POP"
+      },
+      {
+        "slug": "electronic",
+        "label": "ELECTRONIC"
+      },
+      {
+        "slug": "acg",
+        "label": "ACG"
+      }
+    ],
+    "ctas": [],
+    "cover": {
+      "id": 270,
+      "src": "/wp-content/uploads/2026/09/bubble-cover-1024x1020.webp",
+      "width": 1024,
+      "height": 1020,
+      "alt": "泡泡Bubble 封面",
+      "srcset": "/wp-content/uploads/2026/09/bubble-cover-1024x1020.webp 1024w, /wp-content/uploads/2026/09/bubble-cover-300x300.webp 300w, /wp-content/uploads/2026/09/bubble-cover-150x150.webp 150w, /wp-content/uploads/2026/09/bubble-cover-768x765.webp 768w, /wp-content/uploads/2026/09/bubble-cover.webp 1080w",
+      "sizes": "(max-width: 1024px) 100vw, 1024px",
+      "card_sizes": "(max-width: 700px) calc(100vw - 2rem), (max-width: 1199px) calc((100vw - 5rem) / 2), calc((100vw - 10rem) / 4)"
+    },
+    "tracks": [],
+    "seo": {
+      "title": "泡泡Bubble | PO HAO CHEN",
+      "description": "PO HAO CHEN portfolio: 泡泡Bubble. 2022 · MUSIC · GUITAR.",
+      "canonical_url": "/works/bubble/",
+      "image_url": "/wp-content/uploads/2026/09/bubble-cover-1024x1020.webp",
+      "og_type": "article",
+      "robots": "max-image-preview:large"
+    }
+  }
+}

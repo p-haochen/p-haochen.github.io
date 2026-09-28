@@ -833,15 +833,15 @@ button:focus-visible,
 
 .contact-form {
 	display: grid;
-	width: min(100%, 58rem);
-	gap: clamp(1.1rem, 2vw, 1.5rem);
+	width: min(100%, 37.5rem);
+	gap: clamp(1rem, 1.5vw, 1.25rem);
 	margin-inline: auto;
 }
 
 .contact-form__identity {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: clamp(1rem, 2vw, 1.5rem);
+	gap: clamp(0.875rem, 1.5vw, 1.25rem);
 }
 
 .contact-form__field {
@@ -871,12 +871,13 @@ button:focus-visible,
 }
 
 .contact-form input {
-	min-height: 3.75rem;
-	padding: 0.85rem 1rem;
+	min-height: 3.125rem;
+	padding: 0.7rem 1rem;
 }
 
 .contact-form textarea {
-	min-height: 10rem;
+	height: 8.75rem;
+	min-height: 8.75rem;
 	padding: 1rem;
 	line-height: 1.6;
 	resize: vertical;
@@ -912,9 +913,9 @@ button:focus-visible,
 }
 
 .contact-form__actions button {
-	min-width: 12rem;
-	min-height: 3.75rem;
-	padding: 0.85rem 1.4rem;
+	min-width: 8.5rem;
+	min-height: 2.75rem;
+	padding: 0.55rem 1rem;
 	border: 1px solid var(--wp--preset--color--portal-foreground, #f1f0ec);
 	border-radius: 0;
 	background: var(--wp--preset--color--portal-foreground, #f1f0ec);
