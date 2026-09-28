@@ -229,6 +229,7 @@ body.portfolio-home-promoted .photo-draft-shell[data-portal-shell-mode="frame-on
 	width: 7.2em;
 	max-width: 100%;
 	margin: 0;
+	visibility: hidden;
 	color: var(--photo-foreground);
 	font-family: "Syncopate", var(--wp--preset--font-family--sans);
 	font-size: clamp(2.75rem, 3.65vw, 3.35rem);
@@ -239,6 +240,10 @@ body.portfolio-home-promoted .photo-draft-shell[data-portal-shell-mode="frame-on
 	transform-origin: left center;
 	-webkit-text-stroke: 0.25px currentColor;
 	text-wrap: balance;
+}
+
+.photo-draft .photo-draft__title.is-font-ready {
+	visibility: visible;
 }
 
 .photo-draft__role {

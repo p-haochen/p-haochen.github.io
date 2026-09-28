@@ -161,6 +161,7 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 		<style>
 			.photo-draft__navigation { display: none !important; }
 			.photo-draft__brand { display: inline-flex !important; }
+			.photo-draft__title { visibility: visible !important; }
 			.photo-draft__noscript-nav { display: grid !important; }
 		</style>
 		<nav class="photo-draft__noscript-nav" aria-label="Primary navigation without JavaScript">
@@ -178,6 +179,20 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 		<p class="photo-draft__role wp-block-paragraph">MUSIC PRODUCER / SOUND ARTIST</p>
 
 	</section>
+
+
+	<script>
+	(() => {
+		const title = document.querySelector('.photo-draft__title');
+		if (!title) return;
+		const reveal = () => title.classList.add('is-font-ready');
+		if (document.fonts?.load) {
+			document.fonts.load('400 48px Syncopate', title.textContent?.trim() || 'PO HAO CHEN').then(reveal, reveal);
+		} else {
+			reveal();
+		}
+	})();
+	</script>
 
 
 
