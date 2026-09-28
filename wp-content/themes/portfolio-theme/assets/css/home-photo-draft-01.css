@@ -1338,6 +1338,11 @@ body.portfolio-home-promoted .photo-draft-shell[data-portal-shell-mode="frame-on
 		--photo-portal-works-inline-gutter: 0.75rem;
 	}
 
+	.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"]:has(.works-directory[data-active-work-view="music"]) {
+		--photo-portal-filter-rail-width: 2.75rem;
+		--photo-portal-filter-rail-gap: 0.125rem;
+	}
+
 	.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-draft__navigation :is(
 		.wp-block-navigation__responsive-container-open,
 		.wp-block-navigation__responsive-container-close
@@ -1385,8 +1390,9 @@ body.portfolio-home-promoted .photo-draft-shell[data-portal-shell-mode="frame-on
 
 @media (max-width: 760px) {
 	.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] {
-		--photo-portal-route-rail-width: 1.25rem;
-		--photo-portal-route-rail-gap: 0.5rem;
+		--photo-portal-route-rail-left: max(0.25rem, env(safe-area-inset-left));
+		--photo-portal-route-rail-width: 1rem;
+		--photo-portal-route-rail-gap: 0.375rem;
 		--photo-portal-route-rail-font-size: 0.75rem;
 	}
 

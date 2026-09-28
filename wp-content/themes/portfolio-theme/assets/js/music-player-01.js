@@ -119,7 +119,15 @@ export function createMusicPlayer(root) {
 	const subscribers = new Set();
 	const volumeByQueue = new Map();
 	const lastNonZeroVolumeByQueue = new Map();
+	const mobilePlayback = window.matchMedia('(max-width: 700px)');
 	let activeQueueKey = '';
+
+	function resetMobileVolume() {
+		if (!mobilePlayback.matches) return;
+		audio.volume = 1;
+		audio.muted = false;
+		syncVolume();
+	}
 
 	function prefersReducedMotion() {
 		return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -300,7 +308,7 @@ export function createMusicPlayer(root) {
 
 	function setQueue(tracks, startIndex = 0, options = {}) {
 		const nextQueue = Array.isArray(tracks) ? tracks.map(normalizeTrack).filter(Boolean) : [];
-		if (activeQueueKey !== '') {
+		if (activeQueueKey !== '' && !mobilePlayback.matches) {
 			volumeByQueue.set(activeQueueKey, audio.volume);
 			if (audio.volume > 0) lastNonZeroVolumeByQueue.set(activeQueueKey, audio.volume);
 		}
@@ -341,6 +349,7 @@ export function createMusicPlayer(root) {
 			syncVolume();
 		}
 		activeQueueKey = nextQueueKey;
+		resetMobileVolume();
 		activeIndex = nextActiveIndex;
 		activated = shouldActivate;
 		liveRegion.textContent = '';
@@ -560,8 +569,17 @@ export function createMusicPlayer(root) {
 		notify();
 	});
 	audio.addEventListener('volumechange', () => {
-		if (activeQueueKey !== '') volumeByQueue.set(activeQueueKey, audio.volume);
+		if (activeQueueKey !== '' && !mobilePlayback.matches) volumeByQueue.set(activeQueueKey, audio.volume);
 		syncVolume();
+		notify();
+	});
+	mobilePlayback.addEventListener('change', () => {
+		if (mobilePlayback.matches) resetMobileVolume();
+		else if (activeQueueKey !== '') {
+			audio.volume = volumeByQueue.get(activeQueueKey) ?? 1;
+			audio.muted = audio.volume === 0;
+			syncVolume();
+		}
 		notify();
 	});
 	audio.addEventListener('error', () => {

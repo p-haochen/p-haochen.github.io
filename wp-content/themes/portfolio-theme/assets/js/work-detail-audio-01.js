@@ -48,6 +48,14 @@ function createCanonicalPlaylistPlayer(root) {
 	let destroyed = false;
 	const subscribers = new Set();
 	const volumes = new Map();
+	const mobilePlayback = window.matchMedia('(max-width: 700px)');
+	const syncViewportVolume = () => {
+		if (destroyed) return;
+		const storedVolume = volumes.get(queueKey(queue));
+		audio.volume = mobilePlayback.matches ? 1 : (storedVolume ?? 1);
+		audio.muted = audio.volume === 0;
+		notify();
+	};
 	const queueKey = (tracks) => {
 		const workId = Number.parseInt(String(tracks?.[0]?.workId ?? 0), 10) || 0;
 		return workId > 0 ? `work:${workId}` : `queue:${(tracks ?? []).map((track) => track.src).join('|')}`;
@@ -100,6 +108,10 @@ function createCanonicalPlaylistPlayer(root) {
 		queue = tracks.map((track) => ({ ...track }));
 		const storedVolume = volumes.get(queueKey(queue));
 		if (Number.isFinite(storedVolume)) audio.volume = storedVolume;
+		if (mobilePlayback.matches) {
+			audio.volume = 1;
+			audio.muted = false;
+		}
 		if (!load(index)) return false;
 		activated = shouldActivate;
 		return true;
@@ -155,6 +167,7 @@ function createCanonicalPlaylistPlayer(root) {
 		},
 		destroy() {
 			destroyed = true;
+			mobilePlayback.removeEventListener('change', syncViewportVolume);
 			subscribers.clear();
 			if (!audio.paused) audio.pause();
 			audio.remove();
@@ -163,6 +176,7 @@ function createCanonicalPlaylistPlayer(root) {
 	for (const type of ['loadedmetadata', 'durationchange', 'timeupdate', 'play', 'pause', 'volumechange']) {
 		audio.addEventListener(type, notify);
 	}
+	mobilePlayback.addEventListener('change', syncViewportVolume);
 	audio.addEventListener('ended', () => { void api.next(); });
 	return api;
 }
