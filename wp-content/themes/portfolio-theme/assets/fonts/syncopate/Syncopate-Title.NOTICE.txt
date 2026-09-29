@@ -1,0 +1,7 @@
+Syncopate-Title.woff2 is a modified subset of Syncopate-Regular.woff2.
+Created for the PO HAO CHEN homepage title on 2026-09-29 with fontTools
+4.66.0, retaining only the characters in "PO HAO CHEN" and their OpenType
+layout dependencies. The original Syncopate-Regular.woff2 remains unchanged.
+
+The font is distributed under the Apache License, Version 2.0. See LICENSE.txt
+in this directory for the license terms.

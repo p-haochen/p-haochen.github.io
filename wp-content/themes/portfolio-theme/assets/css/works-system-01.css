@@ -787,6 +787,24 @@
 	list-style: none;
 }
 
+.works-grid.is-cover-group-pending .works-card__media img,
+.works-view--music.is-cover-group-pending :is(.music-cover-card__artwork, .music-collection__artwork) img {
+	opacity: 0;
+	animation: works-cover-group-fallback 0.01ms 2000ms forwards;
+}
+
+@keyframes works-cover-group-fallback {
+	to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.works-grid.is-cover-group-pending .works-card__media img,
+	.works-view--music.is-cover-group-pending :is(.music-cover-card__artwork, .music-collection__artwork) img {
+		opacity: 1;
+		animation: none;
+	}
+}
+
 .works-directory__query {
 	width: 100%;
 	max-width: var(--works-directory-max-width) !important;

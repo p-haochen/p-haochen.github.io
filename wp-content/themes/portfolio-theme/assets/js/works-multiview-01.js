@@ -116,30 +116,235 @@ function createEmptyState(view, role, style, roleLabel, styleLabel) {
 	return empty;
 }
 
+const artworkSources = new WeakMap();
+const activeCoverGroups = new WeakMap();
+const releasedCoverGroups = new WeakSet();
+const prefetchedCovers = new Map();
+const coverGroupFallbackMs = 1800;
+const coverGroupHardFallbackMs = 3200;
+
 function hasArtwork(cover) {
 	return Boolean(cover && typeof cover.src === 'string' && cover.src !== '');
 }
 
-function createArtwork(cover, className, options = {}) {
+function createArtwork(cover, className) {
 	const frame = document.createElement('div');
 	frame.className = className;
 	if (!hasArtwork(cover)) return frame;
 	const image = document.createElement('img');
-	image.src = cover.src;
 	image.alt = typeof cover.alt === 'string' && cover.alt !== '' ? cover.alt : '';
-	image.loading = options.priority === true ? 'eager' : 'lazy';
-	if (options.priority === true) image.fetchPriority = 'high';
 	image.decoding = 'async';
-	if (typeof cover.srcset === 'string' && cover.srcset !== '') image.srcset = cover.srcset;
 	const requestedSizes = typeof cover.card_sizes === 'string' && cover.card_sizes !== '' ? cover.card_sizes : cover.sizes;
-	if (typeof requestedSizes === 'string' && requestedSizes !== '') {
-		const sizes = options.priority === true ? requestedSizes.replace(/^\s*auto\s*,\s*/i, '') : requestedSizes;
-		if (sizes !== '') image.sizes = sizes;
-	}
 	if (Number.isFinite(cover.width) && cover.width > 0) image.width = cover.width;
 	if (Number.isFinite(cover.height) && cover.height > 0) image.height = cover.height;
+	artworkSources.set(image, {
+		src: cover.src,
+		srcset: typeof cover.srcset === 'string' ? cover.srcset : '',
+		sizes: typeof requestedSizes === 'string' ? requestedSizes : '',
+	});
 	frame.append(image);
 	return frame;
+}
+
+function coverDisplayWidth(image, frame) {
+	const { width, height } = frame.getBoundingClientRect();
+	const intrinsicWidth = Number.parseInt(image.getAttribute('width') ?? '', 10);
+	const intrinsicHeight = Number.parseInt(image.getAttribute('height') ?? '', 10);
+	const maxWidth = Math.max(1, width - 2);
+	const maxHeight = Math.max(1, height - 2);
+	return Math.max(1, Math.ceil(
+		intrinsicWidth > 0 && intrinsicHeight > 0
+			? Math.min(maxWidth, maxHeight * intrinsicWidth / intrinsicHeight)
+			: maxWidth,
+	));
+}
+
+function measureCriticalCoverWidths(works) {
+	const sourceShell = document.querySelector('.photo-draft-shell');
+	const sampleShell = sourceShell instanceof HTMLElement ? sourceShell.cloneNode(false) : document.createElement('div');
+	if (!(sourceShell instanceof HTMLElement)) {
+		sampleShell.className = 'photo-draft-shell';
+		sampleShell.dataset.portalMotionMode = 'fade';
+		sampleShell.dataset.portalShellMode = 'frame-on-open-b3';
+	}
+	sampleShell.removeAttribute('id');
+	const panel = document.createElement('div');
+	panel.className = 'photo-portal has-route-rail';
+	panel.style.visibility = 'hidden';
+	panel.style.pointerEvents = 'none';
+	panel.setAttribute('aria-hidden', 'true');
+	const surface = document.createElement('div');
+	surface.className = 'photo-portal__surface';
+	const header = document.createElement('div');
+	header.className = 'photo-portal__header';
+	const scroller = document.createElement('div');
+	scroller.className = 'photo-portal__scroller';
+	const content = document.createElement('div');
+	content.className = 'photo-portal__content';
+	const directory = document.createElement('div');
+	directory.className = 'works-directory';
+	const query = document.createElement('div');
+	query.className = 'works-directory__query';
+	const grid = document.createElement('ul');
+	grid.className = 'works-grid works-view works-view--all';
+	const frames = works.map((work) => {
+		const item = document.createElement('li');
+		item.className = 'wp-block-post';
+		const article = document.createElement('article');
+		article.className = 'works-card';
+		const link = document.createElement('a');
+		link.className = 'works-card__media-link';
+		const frame = createArtwork(work.cover, 'works-card__media');
+		link.append(frame);
+		article.append(link);
+		item.append(article);
+		grid.append(item);
+		return frame;
+	});
+	query.append(grid);
+	directory.append(query);
+	content.append(directory);
+	scroller.append(content);
+	surface.append(header, scroller);
+	panel.append(surface);
+	sampleShell.append(panel);
+	document.body.append(sampleShell);
+	try {
+		return frames.map((frame) => coverDisplayWidth(frame.querySelector('img'), frame));
+	} finally {
+		sampleShell.remove();
+	}
+}
+
+function responsiveCoverSource(cover) {
+	const candidates = typeof cover.srcset === 'string' ? cover.srcset.split(',').map((part) => part.trim()) : [];
+	const derivative = (url) => /-\d+(?:x\d+)?\.(?:avif|jpe?g|png|webp)(?:\?|$)/i.test(url);
+	const responsive = candidates.filter((candidate) => derivative(candidate.split(/\s+/)[0] ?? ''));
+	if (responsive.length === 0) return null;
+	const fallback = derivative(cover.src) ? cover.src : responsive[0].split(/\s+/)[0];
+	return { src: fallback, srcset: responsive.join(', ') };
+}
+
+export function prefetchWorksCriticalCovers(works, { priority = 'low' } = {}) {
+	if (!Array.isArray(works) || !document.body) return Promise.resolve([]);
+	try {
+		const count = window.matchMedia('(min-width: 1200px)').matches ? 4 : 3;
+		const selected = sortWorks(works.filter((work) => work && hasArtwork(work.cover)), 'curated')
+			.filter((work) => responsiveCoverSource(work.cover)).slice(0, count);
+		const widths = measureCriticalCoverWidths(selected);
+		const pending = selected.map((work, index) => {
+			const source = responsiveCoverSource(work.cover);
+			const sizes = `${widths[index]}px`;
+			const key = JSON.stringify([source.src, source.srcset, sizes, window.devicePixelRatio]);
+			const shouldPrioritize = priority === 'high' && index < 2;
+			let entry = prefetchedCovers.get(key);
+			if (!entry) {
+				const image = new Image();
+				image.decoding = 'async';
+				image.fetchPriority = shouldPrioritize ? 'high' : 'low';
+				image.sizes = sizes;
+				image.srcset = source.srcset;
+				image.src = source.src;
+				entry = { image, promise: Promise.resolve().then(() => image.decode()) };
+				prefetchedCovers.set(key, entry);
+			} else if (shouldPrioritize) {
+				entry.image.fetchPriority = 'high';
+			}
+			return entry.promise;
+		});
+		return Promise.allSettled(pending);
+	} catch (error) {
+		return Promise.resolve([{ status: 'rejected', reason: error }]);
+	}
+}
+
+function prepareWorksCoverGroup(root) {
+	if (!(root instanceof HTMLElement)) return () => {};
+	if (releasedCoverGroups.has(root)) return () => {};
+	const activeRelease = activeCoverGroups.get(root);
+	if (activeRelease) return activeRelease;
+	const images = [...root.querySelectorAll('.works-card__media img, .music-cover-card__artwork img, .music-collection__artwork img')];
+	if (images.length === 0) {
+		root.classList.remove('is-cover-group-pending');
+		root.dispatchEvent(new CustomEvent('portfolio:works-cover-group-ready', { bubbles: true }));
+		return () => {};
+	}
+	const scroller = root.closest('.photo-portal__scroller');
+	const clip = scroller instanceof HTMLElement ? scroller.getBoundingClientRect() : null;
+	const top = Math.max(0, clip?.top ?? 0);
+	const bottom = Math.min(window.innerHeight, clip?.bottom ?? window.innerHeight);
+	const visibleImages = images.filter((image) => {
+		const frame = image.closest('.works-card__media, .music-cover-card__artwork, .music-collection__artwork');
+		const rect = (frame ?? image).getBoundingClientRect();
+		return rect.width > 0 && rect.height > 0 && rect.bottom > top && rect.top < bottom;
+	});
+	const critical = window.matchMedia('(min-width: 1200px)').matches ? visibleImages.slice(0, 4) : visibleImages;
+	root.classList.toggle('is-cover-group-pending', critical.length > 0);
+	for (const image of critical) {
+		image.style.opacity = '0';
+		image.style.animation = 'none';
+	}
+	let highCount = 0;
+	for (const image of images) {
+		const source = artworkSources.get(image);
+		const visible = critical.includes(image);
+		const frame = image.closest('.works-card__media, .music-cover-card__artwork, .music-collection__artwork');
+		image.loading = visible ? 'eager' : 'lazy';
+		if (visible && highCount < 2) {
+			image.fetchPriority = 'high';
+			highCount += 1;
+		} else {
+			image.removeAttribute('fetchpriority');
+		}
+		if (visible) {
+			if (frame instanceof HTMLElement && (source || !image.sizes)) image.sizes = `${coverDisplayWidth(image, frame)}px`;
+		} else {
+			const fallbackSizes = source?.sizes || image.sizes;
+			if (fallbackSizes) image.sizes = /^\s*auto\s*,/i.test(fallbackSizes) ? fallbackSizes : `auto, ${fallbackSizes}`;
+		}
+		if (!source) continue;
+		if (source.srcset) image.srcset = source.srcset;
+		image.src = source.src;
+	}
+	if (critical.length === 0) {
+		root.dispatchEvent(new CustomEvent('portfolio:works-cover-group-ready', { bubbles: true }));
+		return () => {};
+	}
+	let settled = false;
+	let softTimer = null;
+	let hardTimer = null;
+	const decoded = critical.map(() => false);
+	const release = (timedOut = false) => {
+		if (settled) return;
+		settled = true;
+		window.clearTimeout(softTimer);
+		window.clearTimeout(hardTimer);
+		root.classList.remove('is-cover-group-pending');
+		root.classList.toggle('is-cover-group-fallback', timedOut || decoded.some((ready) => !ready));
+		for (const [index, image] of critical.entries()) {
+			image.style.removeProperty('animation');
+			if (decoded[index]) image.style.removeProperty('opacity');
+		}
+		activeCoverGroups.delete(root);
+		releasedCoverGroups.add(root);
+		root.dispatchEvent(new CustomEvent('portfolio:works-cover-group-ready', { bubbles: true }));
+	};
+	activeCoverGroups.set(root, release);
+	softTimer = window.setTimeout(() => {
+		if (!settled) root.classList.add('is-cover-group-fallback');
+	}, coverGroupFallbackMs);
+	// Success reveals immediately. This is only a hard limit for a stalled decode.
+	hardTimer = window.setTimeout(() => release(true), coverGroupHardFallbackMs);
+	void Promise.allSettled(critical.map((image, index) => Promise.resolve()
+		.then(() => image.decode())
+		.then(() => { decoded[index] = true; })))
+		.then(() => release());
+	return release;
+}
+
+export function preparePrerenderedWorksCovers(container) {
+	const grid = container instanceof HTMLElement ? container.querySelector('.works-grid') : null;
+	return prepareWorksCoverGroup(grid);
 }
 
 function createCategoryLabel(work) {
@@ -179,7 +384,7 @@ function createVisualCard(work, options = {}) {
 	mediaLink.href = work.canonical_url;
 	mediaLink.className = 'works-card__media-link';
 	mediaLink.setAttribute('aria-label', `View ${work.title}`);
-	const media = createArtwork(work.cover, 'works-card__media', { priority: options.priority === true });
+	const media = createArtwork(work.cover, 'works-card__media');
 	media.append(createVisualCardOverlay(work, options));
 	mediaLink.append(media);
 	const caption = document.createElement('div');
@@ -208,11 +413,8 @@ function createVisualCard(work, options = {}) {
 function renderVisualGrid(works, view, role, style, roleLabel, styleLabel) {
 	const list = document.createElement('ul');
 	list.className = `works-grid works-view works-view--${view}`;
-	let hasPrioritizedArtwork = false;
 	for (const work of works) {
-		const priority = !hasPrioritizedArtwork && hasArtwork(work.cover);
-		if (priority) hasPrioritizedArtwork = true;
-		list.append(createVisualCard(work, { showYear: view !== 'all', priority }));
+		list.append(createVisualCard(work, { showYear: view !== 'all' }));
 	}
 	if (works.length === 0) return createEmptyState(view, role, style, roleLabel, styleLabel);
 	return list;
@@ -227,7 +429,7 @@ function playTrack(player, tracks, index) {
 	void player.playQueue(tracks, index);
 }
 
-function createMusicCoverCard(work, player, onRequestOpen, options = {}) {
+function createMusicCoverCard(work, player, onRequestOpen) {
 	const item = document.createElement('li');
 	item.className = `music-cover-card works-card wp-block-post post-${work.id} work_category-music`;
 	annotateWorkItem(item, work);
@@ -236,7 +438,7 @@ function createMusicCoverCard(work, player, onRequestOpen, options = {}) {
 	reveal.className = 'music-cover-card__reveal';
 	reveal.setAttribute('aria-label', `Show actions for ${work.title}`);
 	reveal.setAttribute('aria-expanded', 'false');
-	reveal.append(createArtwork(work.cover, 'music-cover-card__artwork', { priority: options.priority === true }));
+	reveal.append(createArtwork(work.cover, 'music-cover-card__artwork'));
 	item.append(reveal);
 	const overlay = document.createElement('div');
 	overlay.className = 'music-cover-card__overlay';
@@ -559,11 +761,8 @@ function renderMusicView(works, player, role, style, roleLabel, styleLabel) {
 		controller.setOverlayOpen(nextOpen);
 		openCover = nextOpen ? controller : null;
 	};
-	let hasPrioritizedArtwork = false;
 	for (const work of musicWorks) {
-		const priority = !hasPrioritizedArtwork && hasArtwork(work.cover);
-		if (priority) hasPrioritizedArtwork = true;
-		const controller = createMusicCoverCard(work, player, requestCoverOpen, { priority });
+		const controller = createMusicCoverCard(work, player, requestCoverOpen);
 		controllers.push(controller);
 		covers.append(controller.root);
 	}
@@ -715,8 +914,12 @@ function renderView(state, view) {
 	const rendered = view === 'music'
 		? renderMusicView(orderedWorks, state.player, role, style, roleLabel, styleLabel)
 		: { root: renderVisualGrid(orderedWorks, view, role, style, roleLabel, styleLabel), mount() {}, destroy() {} };
-	state.activeCleanup = rendered.destroy;
 	state.container.replaceChildren(rendered.root);
+	const releaseCoverGroup = prepareWorksCoverGroup(rendered.root);
+	state.activeCleanup = () => {
+		releaseCoverGroup();
+		rendered.destroy();
+	};
 	rendered.mount();
 	Object.assign(state.directory.dataset, {
 		activeWorkView: view,
@@ -776,6 +979,7 @@ function hydrateViewStateWithoutRendering(state, view) {
 		activeWorkStyle: style,
 	});
 	state.player?.setRouteIsMusic(view === 'music');
+	state.activeCleanup = prepareWorksCoverGroup(state.container.querySelector('.works-grid'));
 	return {
 		view,
 		sort,

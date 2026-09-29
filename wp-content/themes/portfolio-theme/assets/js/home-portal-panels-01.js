@@ -1,5 +1,5 @@
 import { initializeWorksDirectories, setWorksFilter } from './works-directory-01.js';
-import { initializeWorksMultiView, setWorksFilters, setWorksRole, setWorksSort, setWorksStyle, setWorksView } from './works-multiview-01.js';
+import { initializeWorksMultiView, prefetchWorksCriticalCovers, preparePrerenderedWorksCovers, setWorksFilters, setWorksRole, setWorksSort, setWorksStyle, setWorksView } from './works-multiview-01.js';
 import { createMusicPlayer } from './music-player-01.js';
 import { initializeWorkDetailAudio } from './work-detail-audio-01.js';
 
@@ -85,6 +85,7 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 		});
 		const cache = new Map();
 		const b3PayloadRequests = new Map();
+		const worksPayloadTimeoutMs = 7000;
 		const dynamicWorkDefinitions = new Map();
 		const triggers = [];
 		const initialDocumentSeo = readDocumentSeo();
@@ -807,6 +808,32 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			panel.removeAttribute('aria-busy');
 		}
 
+		function finishInitialB3WorksReveal(event) {
+			if (!isB3Motion || currentKey !== 'work' || !panel.classList.contains('is-b3-works-awaiting-covers')) return;
+			if (!(event.target instanceof HTMLElement) || !content.contains(event.target)) return;
+			if (event.target !== content.querySelector('.works-directory__query .works-grid')) return;
+			const entering = content.classList.contains('is-b3-content-entering');
+			panel.classList.remove('is-b3-works-awaiting-covers');
+			content.inert = false;
+			contextualControls.inert = false;
+			if (!entering && !prefersReducedMotion()) {
+				panel.classList.add('is-b3-works-revealing');
+				let cleanupTimer = null;
+				const finishReveal = () => {
+					content.removeEventListener('transitionend', onRevealTransitionEnd);
+					window.clearTimeout(cleanupTimer);
+					panel.classList.remove('is-b3-works-revealing');
+				};
+				const onRevealTransitionEnd = (transitionEvent) => {
+					if (transitionEvent.target === content && transitionEvent.propertyName === 'opacity') finishReveal();
+				};
+				content.addEventListener('transitionend', onRevealTransitionEnd);
+				// Cleanup is bounded if a browser cancels the transition; this does not delay reveal.
+				cleanupTimer = window.setTimeout(finishReveal, 260);
+			}
+			settlePanelBusyState();
+		}
+
 		function setLoadingState(definition, preserveContent) {
 			panel.setAttribute('aria-busy', 'true');
 			if (!preserveContent) {
@@ -1048,6 +1075,12 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			let restoredWorkLink = null;
 			let mountedWorkDetailAudio = null;
 			const committed = await commitRouteView(() => {
+				if (isB3Motion && key === 'work') {
+					// Keep the outgoing route visible until its exit completes, then gate only the incoming WORKS view.
+					panel.classList.add('is-b3-works-awaiting-covers');
+					content.inert = true;
+					contextualControls.inert = true;
+				}
 				clearContextualControls();
 				destroyActiveWorkDetailAudio();
 				destroyWorksMultiView();
@@ -1079,7 +1112,9 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			}
 			configureRenderedContentHeading(restoredWorkLink === null);
 			if (restoredWorkLink instanceof HTMLElement) restoredWorkLink.focus({ preventScroll: true });
-			settlePanelBusyState();
+			if (!(key === 'work' && panel.classList.contains('is-b3-works-awaiting-covers'))) {
+				settlePanelBusyState();
+			}
 		}
 
 		async function renderError(key, renderToken, animateReplacement, signal) {
@@ -1102,6 +1137,11 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			}, outgoingElement, errorRegion, renderToken, animateReplacement, signal);
 			if (!committed || currentKey !== key || renderToken !== activeRenderToken || signal?.aborted) {
 				return;
+			}
+			if (isB3Motion && key === 'work') {
+				panel.classList.remove('is-b3-works-awaiting-covers', 'is-b3-works-revealing');
+				content.inert = false;
+				contextualControls.inert = false;
 			}
 
 			if (isMotionStudy) {
@@ -1150,7 +1190,7 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 				: isValidPanelPayload(payload, definition.payloadSlug);
 		}
 
-		async function requestB3Payload(definition) {
+		async function requestB3Payload(definition, options = {}) {
 			const cacheKey = definitionCacheKey(definition);
 			const cached = cache.get(cacheKey);
 			if (cached) return cached;
@@ -1159,20 +1199,33 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			if (pending) return pending;
 
 			const request = (async () => {
-				const response = await fetch(definitionRequestUrl(definition), {
-					method: 'GET',
-					credentials: 'same-origin',
-					headers: { Accept: 'application/json' },
-				});
-				if (!response.ok) throw new Error(`Panel request returned HTTP ${response.status}.`);
+				const controller = definition.payloadSlug === 'work' ? new AbortController() : null;
+				const timeout = controller === null
+					? null
+					: window.setTimeout(() => controller.abort(), worksPayloadTimeoutMs);
+				try {
+					const response = await fetch(definitionRequestUrl(definition), {
+						method: 'GET',
+						credentials: 'same-origin',
+						headers: { Accept: 'application/json' },
+						priority: options.priority === 'low' ? 'low' : options.priority === 'high' ? 'high' : 'auto',
+						...(controller ? { signal: controller.signal } : {}),
+					});
+					if (!response.ok) throw new Error(`Panel request returned HTTP ${response.status}.`);
 
-				const payload = await response.json();
-				if (!isValidDefinitionPayload(payload, definition)) {
-					throw new Error('Panel response did not match the expected contract.');
+					const payload = await response.json();
+					if (!isValidDefinitionPayload(payload, definition)) {
+						throw new Error('Panel response did not match the expected contract.');
+					}
+
+					cache.set(cacheKey, payload);
+					return payload;
+				} catch (error) {
+					if (controller?.signal.aborted) throw new Error('WORKS request timed out.');
+					throw error;
+				} finally {
+					if (timeout !== null) window.clearTimeout(timeout);
 				}
-
-				cache.set(cacheKey, payload);
-				return payload;
 			})();
 
 			b3PayloadRequests.set(cacheKey, request);
@@ -1185,33 +1238,98 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			}
 		}
 
-		async function prefetchB3Payloads() {
+		function prefetchWorks(priority = 'low') {
+			const payloadRequest = requestB3Payload(panelDefinitions.work, { priority });
+			return payloadRequest.then((payload) => prefetchWorksCriticalCovers(payload.works, { priority }));
+		}
+
+		function scheduleIdleTask(task) {
+			if ('requestIdleCallback' in window) {
+				window.requestIdleCallback(task);
+			} else {
+				window.setTimeout(task, 0);
+			}
+		}
+
+		function waitForHomepageTitle() {
+			const title = landing.querySelector('.photo-draft__title');
+			if (!(title instanceof HTMLElement) || title.classList.contains('is-font-ready')) return Promise.resolve();
+			return new Promise((resolve) => {
+				const observer = new MutationObserver(() => {
+					if (title.classList.contains('is-font-ready')) finish();
+				});
+				let timer = null;
+				const finish = () => {
+					observer.disconnect();
+					window.clearTimeout(timer);
+					resolve();
+				};
+				observer.observe(title, { attributes: true, attributeFilter: ['class'] });
+				if (title.classList.contains('is-font-ready')) finish();
+				else timer = window.setTimeout(finish, 2000);
+			});
+		}
+
+		async function waitForHomepageCriticalContent() {
+			const background = landing.querySelector('.photo-draft__background img');
+			await Promise.all([
+				waitForHomepageTitle(),
+				background instanceof HTMLImageElement && typeof background.decode === 'function'
+					? background.decode().catch(() => {})
+					: Promise.resolve(),
+			]);
+			await nextPaint();
+		}
+
+		function prefetchOtherB3Payloads() {
 			const definitionsBySlug = new Map(
-				Object.values(panelDefinitions).map((definition) => [definition.payloadSlug, definition]),
+				Object.values(panelDefinitions)
+					.filter((definition) => definition.payloadSlug !== 'work')
+					.map((definition) => [definition.payloadSlug, definition]),
 			);
-			await Promise.allSettled(
-				[...definitionsBySlug.values()].map((definition) => requestB3Payload(definition)),
+			void Promise.allSettled(
+				[...definitionsBySlug.values()].map((definition) => requestB3Payload(definition, { priority: 'low' })),
 			);
 		}
 
 		function scheduleB3Prefetch() {
 			if (!isB3Motion || b3PrefetchScheduled || document.readyState !== 'complete') return;
 			b3PrefetchScheduled = true;
-			const run = () => { void prefetchB3Payloads(); };
-			if ('requestIdleCallback' in window) {
-				window.requestIdleCallback(run, { timeout: 1000 });
-				return;
-			}
-			window.setTimeout(run, 200);
+			void waitForHomepageCriticalContent().then(() => {
+				if (currentKey !== null) return;
+				scheduleIdleTask(() => {
+					if (currentKey !== null) return;
+					let otherPanelsQueued = false;
+					const queueOtherPanels = () => {
+						if (otherPanelsQueued) return;
+						otherPanelsQueued = true;
+						scheduleIdleTask(prefetchOtherB3Payloads);
+					};
+					// This only bounds unrelated background prefetch; it never gates WORKS or its reveal.
+					const otherPanelsFallback = window.setTimeout(queueOtherPanels, 4000);
+					void prefetchWorks('low')
+						.catch(() => {})
+						.finally(() => {
+							window.clearTimeout(otherPanelsFallback);
+							queueOtherPanels();
+						});
+				});
+			});
 		}
 
 		async function loadPanel(key, options) {
 			const definition = definitionForKey(key);
 			if (!definition) return;
+			const preparationIsCurrent = () => options.preparationToken === undefined
+				|| options.preparationToken === activeB3PreparationToken;
 			const cacheKey = definitionCacheKey(definition);
 			const cached = cache.get(cacheKey);
 			if (cached) {
-				await renderPayload(key, cached, options.renderToken, options.animateReplacement, options.signal, options.preservePrerendered === true);
+				if (preparationIsCurrent()) {
+					if (options.commitHistoryOnReady) commitPanelHistory(key, definition, options.historyOptions);
+					await renderPayload(key, cached, options.renderToken, options.animateReplacement, options.signal, options.preservePrerendered === true);
+				}
+				if (options.preparationToken !== undefined) setB3PreparationState(definition, false, options.preparationToken);
 				return;
 			}
 
@@ -1220,26 +1338,31 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			activeController = controller;
 
 			try {
-				const response = await fetch(definitionRequestUrl(definition), {
-					method: 'GET',
-					credentials: 'same-origin',
-					headers: { Accept: 'application/json' },
-					signal: controller.signal,
-				});
-				if (!response.ok) throw new Error(`Panel request returned HTTP ${response.status}.`);
-
-				const payload = await response.json();
+				let payload;
+				if (options.payloadPromise) {
+					payload = await options.payloadPromise;
+				} else {
+					const response = await fetch(definitionRequestUrl(definition), {
+						method: 'GET',
+						credentials: 'same-origin',
+						headers: { Accept: 'application/json' },
+						signal: controller.signal,
+					});
+					if (!response.ok) throw new Error(`Panel request returned HTTP ${response.status}.`);
+					payload = await response.json();
+				}
 				if (!isValidDefinitionPayload(payload, definition)) {
 					throw new Error('Panel response did not match the expected contract.');
 				}
 
 				cache.set(cacheKey, payload);
-				if (requestToken === activeRequestToken && currentKey === key) {
+				if (requestToken === activeRequestToken && currentKey === key && preparationIsCurrent()) {
+					if (options.commitHistoryOnReady) commitPanelHistory(key, definition, options.historyOptions);
 					await renderPayload(key, payload, options.renderToken, options.animateReplacement, options.signal, options.preservePrerendered === true);
 				}
 			} catch (error) {
 				if (error instanceof DOMException && error.name === 'AbortError') return;
-				if (requestToken === activeRequestToken && currentKey === key) {
+				if (requestToken === activeRequestToken && currentKey === key && preparationIsCurrent()) {
 					if (options.preservePrerendered === true) {
 						retainPrerenderedRouteAfterLoadError(key, options.renderToken, options.signal);
 					} else {
@@ -1248,6 +1371,7 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 				}
 			} finally {
 				if (requestToken === activeRequestToken) activeController = null;
+				if (options.preparationToken !== undefined) setB3PreparationState(definition, false, options.preparationToken);
 			}
 		}
 
@@ -1278,6 +1402,23 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 
 		function requestPanel(key, options = {}) {
 			if (isB3Motion && options.preservePrerendered !== true) {
+				if (key === 'work') {
+					if (currentKey === 'work' && !panel.hidden && panel.classList.contains('is-b3-works-awaiting-covers')) return;
+					cancelB3Preparation();
+					const definition = panelDefinitions.work;
+					const preparationToken = activeB3PreparationToken;
+					if (!cache.has(definitionCacheKey(definition))) {
+						setB3PreparationState(definition, true, preparationToken);
+					}
+					const payloadPromise = requestB3Payload(definition, { priority: 'high' });
+					void payloadPromise
+						.then((payload) => preparationToken === activeB3PreparationToken
+							? prefetchWorksCriticalCovers(payload.works, { priority: 'high' })
+							: undefined)
+						.catch(() => {});
+					openPanel(key, { ...options, payloadPromise, deferHistoryUntilPayload: true, preparationToken });
+					return;
+				}
 				void prepareB3Target(key, options);
 				return;
 			}
@@ -1285,22 +1426,7 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			openPanel(key, options);
 		}
 
-		function openPanel(key, options = {}) {
-			const definition = definitionForKey(key);
-			if (!definition) return;
-			if (isB3Motion) cancelB3WorksFilterTransition();
-
-			const panelAlreadyOpen = currentKey !== null && !panel.hidden && panel.classList.contains('is-open');
-			const isOpenSwitch = isB3Motion && panelAlreadyOpen && currentKey !== key;
-			activeController?.abort();
-			activeController = null;
-			activeRequestToken += 1;
-			activeVisualController?.abort();
-			if (isB3Motion) resetB3ContentTransition();
-			activeCloseController?.abort();
-			activeVisualController = new AbortController();
-			activeCloseToken += 1;
-			const renderToken = ++activeRenderToken;
+		function commitPanelHistory(key, definition, options) {
 			const shouldUpdateHistory = options.updateHistory && options.preparedB3Error !== true;
 			const historyReplacement = options.historyReplacement;
 			if (
@@ -1327,6 +1453,41 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 				const nextDepth = currentPortalDepth() + 1;
 				window.history.pushState(portalHistoryState(nextDepth, key), '', definition.hash);
 			}
+		}
+
+		function openPanel(key, options = {}) {
+			const definition = definitionForKey(key);
+			if (!definition) return;
+			if (isB3Motion) cancelB3WorksFilterTransition();
+
+			const panelAlreadyOpen = currentKey !== null && !panel.hidden && panel.classList.contains('is-open');
+			const isOpenSwitch = isB3Motion && panelAlreadyOpen && currentKey !== key;
+			if (isOpenSwitch && panel.classList.contains('is-b3-works-awaiting-covers')) {
+				destroyWorksMultiView();
+				content.replaceChildren();
+			}
+			panel.classList.remove('is-b3-works-awaiting-covers', 'is-b3-works-revealing');
+			const retryingWorkError = isB3Motion && key === 'work' && currentKey === 'work' && !errorRegion.hidden;
+			if (isB3Motion && key === 'work' && (!panelAlreadyOpen || retryingWorkError)) {
+				panel.classList.add('is-b3-works-awaiting-covers');
+				content.inert = true;
+				contextualControls.inert = true;
+			} else {
+				content.inert = false;
+				contextualControls.inert = false;
+			}
+			activeController?.abort();
+			activeController = null;
+			activeRequestToken += 1;
+			activeVisualController?.abort();
+			if (isB3Motion) resetB3ContentTransition();
+			activeCloseController?.abort();
+			activeVisualController = new AbortController();
+			activeCloseToken += 1;
+			const renderToken = ++activeRenderToken;
+			const deferHistoryUntilPayload = options.deferHistoryUntilPayload === true
+				&& !cache.has(definitionCacheKey(definition));
+			if (!deferHistoryUntilPayload) commitPanelHistory(key, definition, options);
 			const preparedPayload = options.preparedB3Payload ?? cache.get(definitionCacheKey(definition));
 			if (preparedPayload) {
 				applyDocumentSeo(preparedPayload.seo);
@@ -1350,6 +1511,9 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 					if (renderToken !== activeRenderToken) return;
 					panel.classList.add('is-open');
 					setShellState('open');
+					if (options.preservePrerendered === true && key === 'work') {
+						preparePrerenderedWorksCovers(content);
+					}
 				});
 				if (isMotionStudy) status.focus({ preventScroll: true });
 				else panelTitle.focus({ preventScroll: true });
@@ -1366,6 +1530,10 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 					animateReplacement: isOpenSwitch,
 					signal: activeVisualController.signal,
 					preservePrerendered: options.preservePrerendered === true,
+					payloadPromise: options.payloadPromise,
+					commitHistoryOnReady: deferHistoryUntilPayload,
+					historyOptions: options,
+					preparationToken: options.preparationToken,
 				});
 			}
 		}
@@ -1400,6 +1568,9 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			if (closeToken !== activeCloseToken || closeSignal.aborted) return;
 
 			panel.hidden = true;
+			panel.classList.remove('is-b3-works-awaiting-covers', 'is-b3-works-revealing');
+			content.inert = false;
+			contextualControls.inert = false;
 			panel.removeAttribute('aria-owns');
 			clearRouteRail();
 			landing.inert = false;
@@ -1580,6 +1751,14 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			anchor.setAttribute('aria-controls', panel.id);
 			anchor.setAttribute('aria-expanded', 'false');
 			triggers.push({ anchor, key });
+			if (isB3Motion && key === 'work' && shell.dataset.portalPrerendered !== 'true') {
+				const prefetchOnIntent = () => {
+					if (currentKey === null) void prefetchWorks('high').catch(() => {});
+				};
+				anchor.addEventListener('pointerenter', prefetchOnIntent);
+				anchor.addEventListener('focus', prefetchOnIntent);
+				anchor.addEventListener('touchstart', prefetchOnIntent, { passive: true });
+			}
 			anchor.addEventListener('click', (event) => {
 				if (!isEnhanceableClick(event, anchor)) return;
 				event.preventDefault();
@@ -1599,6 +1778,7 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 
 		closeButton.addEventListener('click', activateHeaderAction);
 		content.addEventListener('click', handleWorkDetailClick);
+		panel.addEventListener('portfolio:works-cover-group-ready', finishInitialB3WorksReveal);
 		panel.addEventListener('keydown', handlePanelKeydown);
 		if (musicPlayerRoot instanceof HTMLElement) musicPlayerRoot.addEventListener('keydown', handlePanelKeydown);
 		document.addEventListener('keydown', handleStudyEscape);
