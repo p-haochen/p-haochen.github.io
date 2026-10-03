@@ -1034,7 +1034,6 @@ body.portfolio-home-promoted .photo-draft-shell[data-portal-shell-mode="frame-on
 	--photo-portal-header-block-padding: 0rem;
 	--photo-portal-content-start-gap: clamp(1rem, 2vw, 2rem);
 	--photo-portal-works-inline-gutter: clamp(1rem, 2vw, 2rem);
-	--photo-portal-works-center-shift: clamp(0px, calc(50vw - 59rem), 3.5rem);
 	--photo-portal-close-size: 2.75rem;
 	--photo-portal-close-visual-size: 1.875rem;
 	--photo-portal-close-icon-size: 1rem;
@@ -1236,8 +1235,20 @@ body.portfolio-home-promoted .photo-draft-shell[data-portal-shell-mode="frame-on
 
 .photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-portal .works-directory__query {
 	position: relative;
-	left: var(--photo-portal-works-center-shift);
 	margin-block-start: 0 !important;
+}
+
+@media (min-width: 761px) {
+	.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-portal .works-directory__query {
+		/* 100% is the uncapped content width, including the real scrollbar reservation.
+		 * Translate its center to the midpoint between the existing route/filter rails. */
+		left: calc(
+			(100vw - 100%
+				- var(--photo-portal-route-rail-left) - var(--photo-portal-route-rail-width)
+				- var(--photo-portal-filter-rail-right) - var(--photo-portal-filter-rail-width)) / 2
+			- var(--photo-portal-route-rail-gap)
+		);
+	}
 }
 
 .photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-portal__header.has-contextual-controls .photo-portal__contextual-controls {
