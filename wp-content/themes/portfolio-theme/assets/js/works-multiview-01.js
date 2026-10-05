@@ -159,6 +159,24 @@ function coverDisplayWidth(image, frame) {
 	));
 }
 
+let coverResizeFrame = 0;
+window.addEventListener('resize', () => {
+	if (coverResizeFrame) return;
+	coverResizeFrame = window.requestAnimationFrame(() => {
+		coverResizeFrame = 0;
+		// Critical covers use measured sizes; unlike lazy auto sizes, those must
+		// follow native zoom/window resizing or width:auto keeps the old density.
+		// Scan only mounted covers: no retained nodes or repeated reveal lifecycle.
+		for (const image of document.querySelectorAll('.works-card__media img, .music-cover-card__artwork img, .music-collection__artwork img')) {
+			if (image.loading !== 'eager' || !image.srcset || !/^\d+px$/.test(image.sizes)) continue;
+			const frame = image.closest('.works-card__media, .music-cover-card__artwork, .music-collection__artwork');
+			if (!(frame instanceof HTMLElement) || frame.getBoundingClientRect().width === 0) continue;
+			const sizes = `${coverDisplayWidth(image, frame)}px`;
+			if (image.sizes !== sizes) image.sizes = sizes;
+		}
+	});
+}, { passive: true });
+
 function measureCriticalCoverWidths(works) {
 	const sourceShell = document.querySelector('.photo-draft-shell');
 	const sampleShell = sourceShell instanceof HTMLElement ? sourceShell.cloneNode(false) : document.createElement('div');

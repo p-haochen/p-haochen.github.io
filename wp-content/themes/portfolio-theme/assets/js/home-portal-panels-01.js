@@ -117,8 +117,6 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 		let b3LiveRegion = null;
 		let preferredLanguageCode = null;
 		let pendingWorksRestoration = null;
-		let pendingWorksFocus = null;
-		let awaitingWorksDirectory = null;
 		let activeWorksFilterController = null;
 		let activeWorksFilterToken = 0;
 		const musicPlayer = createMusicPlayer(musicPlayerRoot);
@@ -412,6 +410,37 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			panel.classList.remove('has-route-rail');
 		}
 
+		function syncWorksFilterRailPosition() {
+			if (!isB3Motion || currentKey !== 'work') return;
+			const query = content.querySelector('.works-directory__query');
+			const filters = contextualControls.querySelector('.works-directory__filters');
+			if (!(query instanceof HTMLElement) || !(filters instanceof HTMLElement)) return;
+			// The grid is centered by CSS. Only move the filter rail if that actual
+			// envelope needs room; never infer native zoom or alter grid dimensions.
+			filters.style.removeProperty('--photo-portal-filter-visual-right');
+			filters.style.removeProperty('--photo-portal-filter-visual-width');
+			const queryRect = query.getBoundingClientRect();
+			const filterRect = filters.getBoundingClientRect();
+			if (queryRect.width <= 0 || filterRect.width <= 0) return;
+			const inset = Number.parseFloat(getComputedStyle(filters).right);
+			const gap = Math.max(0, Number.parseFloat(getComputedStyle(scroller).paddingRight) - inset - filterRect.width);
+			const sideSpace = scroller.getBoundingClientRect().right - queryRect.right;
+			const filterWidth = Math.min(filterRect.width, Math.max(0, sideSpace));
+			const available = sideSpace - filterWidth - gap;
+			const right = Math.max(0, Math.min(inset, available));
+			if (filterWidth < filterRect.width) filters.style.setProperty('--photo-portal-filter-visual-width', `${filterWidth}px`);
+			if (Number.isFinite(right)) filters.style.setProperty('--photo-portal-filter-visual-right', `${right}px`);
+		}
+
+		let filterRailPositionFrame = 0;
+		function scheduleWorksFilterRailPosition() {
+			if (currentKey !== 'work' || filterRailPositionFrame !== 0) return;
+			filterRailPositionFrame = window.requestAnimationFrame(() => {
+				filterRailPositionFrame = 0;
+				syncWorksFilterRailPosition();
+			});
+		}
+
 		function mountWorksContextualControls(directory) {
 			const controls = directory.querySelector('.works-directory__controls');
 			// Direct-route hydration reuses the directory whose controls are already in the header.
@@ -441,15 +470,13 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			prepareIncomingPortalFragment(key, content);
 
 			const directory = key === 'work' ? content.querySelector('.works-directory') : null;
-			if (directory instanceof HTMLElement) {
-				if (isB3Motion && panel.classList.contains('is-b3-works-awaiting-covers')) awaitingWorksDirectory = directory;
-				mountWorksContextualControls(directory);
-			}
+			if (directory instanceof HTMLElement) mountWorksContextualControls(directory);
 			else clearContextualControls();
 
 			errorMessage.textContent = '';
 			errorRegion.hidden = true;
 			configureRenderedContentHeading(false);
+			syncWorksFilterRailPosition();
 		}
 
 		function settlePrerenderedRouteWithoutHydration(key, definition) {
@@ -816,28 +843,12 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			panel.removeAttribute('aria-busy');
 		}
 
-		function restoreWorksOriginFocus(link) {
-			if (!(link instanceof HTMLElement) || currentKey !== 'work' || !content.contains(link) || content.inert) return;
-			// Touch MUSIC cards restore the action overlay before focusing their original detail link.
-			if (link.closest('.music-cover-card__overlay')?.inert) {
-				link.closest('.music-cover-card')?.querySelector('.music-cover-card__reveal')?.click();
-			}
-			link.focus({ preventScroll: true });
-		}
-
 		function finishInitialB3WorksReveal(event) {
 			if (!isB3Motion || currentKey !== 'work' || !panel.classList.contains('is-b3-works-awaiting-covers')) return;
 			if (!(event.target instanceof HTMLElement) || !content.contains(event.target)) return;
-			const directory = content.querySelector('.works-directory');
-			const activeCoverGroup = directory?.querySelector(':scope > .works-directory__query')?.firstElementChild;
-			// prepareWorksCoverGroup dispatches from the rendered root, not MUSIC's inner grid.
-			// Only the current directory's active root may release this gate; ignore stale/pending groups.
-			if (directory !== awaitingWorksDirectory || event.target !== activeCoverGroup || !event.target.isConnected
-				|| !event.target.matches('.works-grid, .works-view--music, .works-view__empty')
-				|| event.target.classList.contains('is-cover-group-pending')) return;
+			if (event.target !== content.querySelector('.works-directory__query .works-grid')) return;
 			const entering = content.classList.contains('is-b3-content-entering');
 			panel.classList.remove('is-b3-works-awaiting-covers');
-			awaitingWorksDirectory = null;
 			content.inert = false;
 			contextualControls.inert = false;
 			if (!entering && !prefersReducedMotion()) {
@@ -856,11 +867,6 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 				cleanupTimer = window.setTimeout(finishReveal, 260);
 			}
 			settlePanelBusyState();
-			const restoration = pendingWorksFocus;
-			pendingWorksFocus = null;
-			if (restoration?.renderToken === activeRenderToken && content.contains(restoration.link)) {
-				restoreWorksOriginFocus(restoration.link);
-			}
 		}
 
 		function setLoadingState(definition, preserveContent) {
@@ -999,10 +1005,7 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 
 			const restoration = key === 'work' ? pendingWorksRestoration : null;
 			pendingWorksRestoration = null;
-			if (key === 'work' && panel.classList.contains('is-b3-works-awaiting-covers')) awaitingWorksDirectory = directory;
-			const initialView = restoration?.view ?? restoration?.category
-				?? (key === 'work' && window.history.state?.portfolioPanel === 'work' ? window.history.state.portfolioWorksView : null)
-				?? 'all';
+			const initialView = restoration?.view ?? restoration?.category ?? 'all';
 			const initialSorts = restoration?.sorts && typeof restoration.sorts === 'object'
 				? restoration.sorts
 				: window.history.state?.portfolioWorksSorts && typeof window.history.state.portfolioWorksSorts === 'object'
@@ -1025,10 +1028,6 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 				&& key === 'work'
 				&& contextualControls.querySelector('.works-directory__controls') instanceof HTMLElement;
 			const controlsRoot = mountedContextually || controlsAlreadyContextual ? contextualControls : directory;
-			if (isB3Motion && key === 'work' && (!window.history.state?.portfolioPortal || window.history.state.portfolioPanel !== 'work')) {
-				// Hydrated direct entry owns the existing entry: preserve URL/foreign fields, never push.
-				window.history.replaceState(portalHistoryState(currentPortalDepth(), 'work'), '', window.location.href);
-			}
 			const onWorksStateChange = (detail) => {
 				if (!isB3Motion || currentKey !== 'work' || !window.history.state?.portfolioPortal) return;
 				const view = detail.view ?? detail.category ?? 'all';
@@ -1079,10 +1078,9 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 				});
 			}
 
+			syncWorksFilterRailPosition();
 			if (!restoration?.postId) return null;
-			// Multi-view initialization already rendered the restored view. Rendering it again
-			// would cancel its pending cover group and dispatch readiness from the old root.
-			if (directory.dataset.worksMultiViewReady !== 'true') applyWorksView(directory, initialView, { emit: false });
+			applyWorksView(directory, initialView, { emit: false });
 			const originLink = directory.querySelector(`.post-${restoration.postId} a[href*="/works/"]`);
 			return originLink instanceof HTMLElement ? originLink : null;
 		}
@@ -1101,7 +1099,7 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 				panelTitle.textContent = definition.title;
 				status.textContent = '';
 				configureRenderedContentHeading(false);
-				if (!panel.classList.contains('is-b3-works-awaiting-covers')) settlePanelBusyState();
+				settlePanelBusyState();
 				return;
 			}
 			const presentation = languagePresentation(payload);
@@ -1149,11 +1147,7 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 				musicPlayer?.setRouteIsMusic(definition.kind === 'work-detail' && workCategories.some((category) => category?.slug === 'music'));
 			}
 			configureRenderedContentHeading(restoredWorkLink === null);
-			if (restoredWorkLink instanceof HTMLElement) {
-				if (key === 'work' && panel.classList.contains('is-b3-works-awaiting-covers')) {
-					pendingWorksFocus = { link: restoredWorkLink, renderToken };
-				} else restoreWorksOriginFocus(restoredWorkLink);
-			}
+			if (restoredWorkLink instanceof HTMLElement) restoredWorkLink.focus({ preventScroll: true });
 			if (!(key === 'work' && panel.classList.contains('is-b3-works-awaiting-covers'))) {
 				settlePanelBusyState();
 			}
@@ -1500,8 +1494,6 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 		function openPanel(key, options = {}) {
 			const definition = definitionForKey(key);
 			if (!definition) return;
-			pendingWorksFocus = null;
-			awaitingWorksDirectory = null;
 			if (isB3Motion) cancelB3WorksFilterTransition();
 
 			const panelAlreadyOpen = currentKey !== null && !panel.hidden && panel.classList.contains('is-open');
@@ -1583,8 +1575,6 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 		}
 
 		async function finishClose(shouldRestoreFocus) {
-			pendingWorksFocus = null;
-			awaitingWorksDirectory = null;
 			const closeToken = ++activeCloseToken;
 			applyDocumentSeo(landingDocumentSeo);
 			applyDocumentStructuredData(landingDocumentStructuredData);
@@ -1825,6 +1815,10 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 		closeButton.addEventListener('click', activateHeaderAction);
 		content.addEventListener('click', handleWorkDetailClick);
 		panel.addEventListener('portfolio:works-cover-group-ready', finishInitialB3WorksReveal);
+		if (isB3Motion) {
+			window.addEventListener('resize', scheduleWorksFilterRailPosition, { passive: true });
+			if (typeof ResizeObserver === 'function') new ResizeObserver(scheduleWorksFilterRailPosition).observe(scroller);
+		}
 		panel.addEventListener('keydown', handlePanelKeydown);
 		if (musicPlayerRoot instanceof HTMLElement) musicPlayerRoot.addEventListener('keydown', handlePanelKeydown);
 		document.addEventListener('keydown', handleStudyEscape);

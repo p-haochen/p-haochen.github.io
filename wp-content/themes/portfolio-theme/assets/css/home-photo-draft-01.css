@@ -729,6 +729,12 @@ body.portfolio-home-promoted .photo-draft-shell[data-portal-shell-mode="frame-on
 		background: rgb(0 0 0 / 36%);
 	}
 
+	/* Match the theme's collapsed-navigation threshold, not core's 600px.
+	   Only the closed container is hidden; the open overlay keeps all links. */
+	.photo-draft__navigation .wp-block-navigation__responsive-container:not(.is-menu-open) {
+		display: none;
+	}
+
 	.photo-draft__navigation .wp-block-navigation__responsive-container-open svg,
 	.photo-draft__navigation .wp-block-navigation__responsive-container-close svg {
 		width: 1.25rem;
@@ -1190,18 +1196,20 @@ body.portfolio-home-promoted .photo-draft-shell[data-portal-shell-mode="frame-on
 }
 
 .photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-portal__scroller:has(.works-directory) {
+	--photo-portal-works-content-left: max(var(--photo-portal-works-inline-gutter), env(safe-area-inset-left));
 	padding-right: max(
 		calc(var(--photo-portal-filter-rail-right) + var(--photo-portal-filter-rail-width) + var(--photo-portal-filter-rail-gap)),
 		env(safe-area-inset-right)
 	);
-	padding-left: max(var(--photo-portal-works-inline-gutter), env(safe-area-inset-left));
+	padding-left: var(--photo-portal-works-content-left);
 }
 
 .photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-portal.has-route-rail .photo-portal__scroller {
-	padding-left: max(
+	--photo-portal-works-content-left: max(
 		calc(var(--photo-portal-route-rail-left) + var(--photo-portal-route-rail-width) + var(--photo-portal-route-rail-gap)),
 		env(safe-area-inset-left)
 	);
+	padding-left: var(--photo-portal-works-content-left);
 }
 
 .photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-portal.has-route-rail #photo-portal-panel-title {
@@ -1235,20 +1243,10 @@ body.portfolio-home-promoted .photo-draft-shell[data-portal-shell-mode="frame-on
 
 .photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-portal .works-directory__query {
 	position: relative;
+	/* Keep the existing width, but move its containing-block center to the page
+	 * center. Percentage geometry already excludes the real scrollbar gutter. */
+	left: calc(50vw - 50% - var(--photo-portal-works-content-left));
 	margin-block-start: 0 !important;
-}
-
-@media (min-width: 761px) {
-	.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-portal .works-directory__query {
-		/* 100% is the uncapped content width, including the real scrollbar reservation.
-		 * Translate its center to the midpoint between the existing route/filter rails. */
-		left: calc(
-			(100vw - 100%
-				- var(--photo-portal-route-rail-left) - var(--photo-portal-route-rail-width)
-				- var(--photo-portal-filter-rail-right) - var(--photo-portal-filter-rail-width)) / 2
-			- var(--photo-portal-route-rail-gap)
-		);
-	}
 }
 
 .photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-portal__header.has-contextual-controls .photo-portal__contextual-controls {
@@ -1264,10 +1262,10 @@ body.portfolio-home-promoted .photo-draft-shell[data-portal-shell-mode="frame-on
 .photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-portal__contextual-controls .works-directory__filters {
 	position: absolute;
 	top: calc(100% + var(--photo-portal-content-start-gap));
-	right: var(--photo-portal-filter-rail-right);
+	right: max(env(safe-area-inset-right), var(--photo-portal-filter-visual-right, var(--photo-portal-filter-rail-right)));
 	display: flex;
 	flex-direction: column;
-	width: var(--photo-portal-filter-rail-width);
+	width: var(--photo-portal-filter-visual-width, var(--photo-portal-filter-rail-width));
 	align-items: flex-end;
 	justify-content: flex-start;
 	gap: 0;
