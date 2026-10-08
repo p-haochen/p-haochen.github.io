@@ -1,6 +1,8 @@
 const validCategories = new Set(['all', 'music', 'live', 'tech']);
 const directoryStates = new WeakMap();
 const controlRootStates = new WeakMap();
+const standaloneSortDirectories = new WeakSet();
+const standaloneTitleCollator = new Intl.Collator(['en', 'zh-Hant'], { numeric: true, sensitivity: 'base' });
 
 function normalizeCategory(value) {
 	return typeof value === 'string' && validCategories.has(value) ? value : 'all';
@@ -111,8 +113,57 @@ export function initializeWorksDirectories(root = document, options = {}) {
 	return directories;
 }
 
+function initializeStandaloneSort(directory) {
+	if (standaloneSortDirectories.has(directory)) return;
+	const grid = directory.querySelector('.works-grid');
+	const select = directory.querySelector('[data-work-sort]');
+	if (!(grid instanceof HTMLElement) || !(select instanceof HTMLSelectElement)) return;
+
+	// CURATED is the accepted server-rendered order, not Portal menu_order.
+	// Capture once; initial load must not move any card.
+	const entries = directoryCards(directory).filter((card) => card.parentElement === grid).map((card, index) => {
+		const yearText = (card.querySelector('.works-card__caption .works-card__year') ?? card.querySelector('.works-card__year'))?.textContent.trim() ?? '';
+		return {
+			card,
+			index,
+			id: Number(card.className.match(/\bpost-(\d+)\b/)?.[1] ?? index),
+			title: card.querySelector('.works-card__title')?.textContent.trim() ?? '',
+			year: /^\d{4}$/.test(yearText) ? Number.parseInt(yearText, 10) : null,
+		};
+	});
+	standaloneSortDirectories.add(directory);
+	const synchronizeSort = () => {
+		// Portal owns its own comparator, render lifecycle and controls.
+		if (!directory.isConnected || document.querySelector('.photo-draft-shell') || directory.dataset.worksMultiViewReady === 'true') return;
+		if (!grid.isConnected || !select.isConnected || entries.some((entry) => entry.card.parentElement !== grid)) return;
+		const sort = ['newest', 'oldest', 'az'].includes(select.value) ? select.value : 'curated';
+		const ordered = [...entries].sort((left, right) => {
+			if (sort === 'curated') return left.index - right.index;
+			if (sort === 'newest' || sort === 'oldest') {
+				if (left.year === null && right.year !== null) return 1;
+				if (left.year !== null && right.year === null) return -1;
+				if (left.year !== null && right.year !== null && left.year !== right.year) {
+					return sort === 'newest' ? right.year - left.year : left.year - right.year;
+				}
+			}
+			return standaloneTitleCollator.compare(left.title, right.title) || left.id - right.id || left.index - right.index;
+		});
+		const current = directoryCards(directory).filter((card) => card.parentElement === grid);
+		if (current.length !== ordered.length || current.every((card, index) => card === ordered[index].card)) return;
+		// Move only when needed, retaining hidden flags, media and event handlers.
+		grid.append(...ordered.map((entry) => entry.card));
+	};
+	select.addEventListener('change', synchronizeSort);
+	// Native form restoration can follow initialization and does not emit change.
+	// Defer past pageshow so persisted user state is available on history traversal.
+	window.addEventListener('pageshow', () => setTimeout(synchronizeSort, 0));
+	synchronizeSort();
+}
+
 function initializeDocumentDirectories() {
-	initializeWorksDirectories(document);
+	const directories = initializeWorksDirectories(document);
+	if (document.querySelector('.photo-draft-shell')) return;
+	for (const directory of directories) initializeStandaloneSort(directory);
 }
 
 if (document.readyState === 'loading') {
