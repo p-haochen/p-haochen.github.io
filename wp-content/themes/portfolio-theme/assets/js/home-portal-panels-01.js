@@ -117,6 +117,8 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 		let b3LiveRegion = null;
 		let preferredLanguageCode = null;
 		let pendingWorksRestoration = null;
+		let awaitingWorksReveal = null;
+		let pendingWorksFocus = null;
 		let activeWorksFilterController = null;
 		let activeWorksFilterToken = 0;
 		const musicPlayer = createMusicPlayer(musicPlayerRoot);
@@ -845,9 +847,15 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 
 		function finishInitialB3WorksReveal(event) {
 			if (!isB3Motion || currentKey !== 'work' || !panel.classList.contains('is-b3-works-awaiting-covers')) return;
-			if (!(event.target instanceof HTMLElement) || !content.contains(event.target)) return;
-			if (event.target !== content.querySelector('.works-directory__query .works-grid')) return;
+			const directory = content.querySelector('.works-directory');
+			const activeRoot = directory?.querySelector(':scope > .works-directory__query')?.firstElementChild;
+			if (!awaitingWorksReveal || awaitingWorksReveal.renderToken !== activeRenderToken
+				|| awaitingWorksReveal.directory !== directory || !directory?.isConnected) return;
+			if (!(event.target instanceof HTMLElement) || event.target !== activeRoot || !event.target.isConnected
+				|| !event.target.matches('.works-grid, .works-view--music, .works-view__empty')
+				|| event.target.classList.contains('is-cover-group-pending')) return;
 			const entering = content.classList.contains('is-b3-content-entering');
+			awaitingWorksReveal = null;
 			panel.classList.remove('is-b3-works-awaiting-covers');
 			content.inert = false;
 			contextualControls.inert = false;
@@ -867,6 +875,19 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 				cleanupTimer = window.setTimeout(finishReveal, 260);
 			}
 			settlePanelBusyState();
+			const focus = pendingWorksFocus;
+			pendingWorksFocus = null;
+			if (focus?.renderToken === activeRenderToken) restoreWorksOriginFocus(focus.link);
+		}
+
+		function restoreWorksOriginFocus(link) {
+			if (!(link instanceof HTMLElement) || !link.isConnected || currentKey !== 'work'
+				|| !content.contains(link) || content.inert) return;
+			const overlay = link.closest('.music-cover-card__overlay');
+			if (overlay instanceof HTMLElement && overlay.inert) {
+				link.closest('.music-cover-card')?.querySelector('.music-cover-card__reveal')?.click();
+			}
+			link.focus({ preventScroll: true });
 		}
 
 		function setLoadingState(definition, preserveContent) {
@@ -1005,6 +1026,9 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 
 			const restoration = key === 'work' ? pendingWorksRestoration : null;
 			pendingWorksRestoration = null;
+			if (isB3Motion && key === 'work' && panel.classList.contains('is-b3-works-awaiting-covers')) {
+				awaitingWorksReveal = { directory, renderToken: activeRenderToken };
+			}
 			const initialView = restoration?.view ?? restoration?.category ?? 'all';
 			const initialSorts = restoration?.sorts && typeof restoration.sorts === 'object'
 				? restoration.sorts
@@ -1080,7 +1104,7 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 
 			syncWorksFilterRailPosition();
 			if (!restoration?.postId) return null;
-			applyWorksView(directory, initialView, { emit: false });
+			if (directory.dataset.worksMultiViewReady !== 'true') applyWorksView(directory, initialView, { emit: false });
 			const originLink = directory.querySelector(`.post-${restoration.postId} a[href*="/works/"]`);
 			return originLink instanceof HTMLElement ? originLink : null;
 		}
@@ -1111,6 +1135,8 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			let restoredWorkLink = null;
 			let mountedWorkDetailAudio = null;
 			const committed = await commitRouteView(() => {
+				awaitingWorksReveal = null;
+				pendingWorksFocus = null;
 				if (isB3Motion && key === 'work') {
 					// Keep the outgoing route visible until its exit completes, then gate only the incoming WORKS view.
 					panel.classList.add('is-b3-works-awaiting-covers');
@@ -1147,7 +1173,13 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 				musicPlayer?.setRouteIsMusic(definition.kind === 'work-detail' && workCategories.some((category) => category?.slug === 'music'));
 			}
 			configureRenderedContentHeading(restoredWorkLink === null);
-			if (restoredWorkLink instanceof HTMLElement) restoredWorkLink.focus({ preventScroll: true });
+			if (restoredWorkLink instanceof HTMLElement) {
+				if (key === 'work' && panel.classList.contains('is-b3-works-awaiting-covers')) {
+					pendingWorksFocus = { link: restoredWorkLink, renderToken };
+				} else {
+					restoreWorksOriginFocus(restoredWorkLink);
+				}
+			}
 			if (!(key === 'work' && panel.classList.contains('is-b3-works-awaiting-covers'))) {
 				settlePanelBusyState();
 			}
@@ -1494,6 +1526,8 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 		function openPanel(key, options = {}) {
 			const definition = definitionForKey(key);
 			if (!definition) return;
+			awaitingWorksReveal = null;
+			pendingWorksFocus = null;
 			if (isB3Motion) cancelB3WorksFilterTransition();
 
 			const panelAlreadyOpen = currentKey !== null && !panel.hidden && panel.classList.contains('is-open');
@@ -1576,6 +1610,8 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 
 		async function finishClose(shouldRestoreFocus) {
 			const closeToken = ++activeCloseToken;
+			awaitingWorksReveal = null;
+			pendingWorksFocus = null;
 			applyDocumentSeo(landingDocumentSeo);
 			applyDocumentStructuredData(landingDocumentStructuredData);
 			cancelB3Preparation();
@@ -1740,6 +1776,8 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 
 		function handleStudyEscape(event) {
 			if (!isMotionStudy || panel.hidden || event.key !== 'Escape' || panel.contains(event.target)) return;
+			if (event.composedPath().some((node) => node instanceof HTMLDialogElement
+				&& node.classList.contains('work-gallery-lightbox'))) return;
 			event.preventDefault();
 			closePanel({ updateHistory: true, restoreFocus: true });
 		}
