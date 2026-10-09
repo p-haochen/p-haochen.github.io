@@ -998,6 +998,33 @@ button:focus-visible,
 	color: var(--wp--preset--color--accent-contrast);
 }
 
+.portfolio-copyright {
+	font-family: var(--wp--preset--font-family--sans);
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 1.6;
+	overflow-wrap: anywhere;
+}
+
+.site-footer__copyright {
+	display: block;
+}
+
+.work-detail__content > .work-detail__copyright {
+	margin-block: 1.5rem 0;
+	color: var(--wp--preset--color--portal-muted);
+}
+
+@media (min-width: 761px) {
+	.work-detail__content > .work-detail__copyright {
+		grid-column: 1 / -1;
+		grid-row: 4;
+		width: 100%;
+		max-width: var(--works-detail-stream-max-width);
+		margin-inline: auto;
+	}
+}
+
 @keyframes prototype-rise {
 	from {
 		opacity: 0;
