@@ -1,0 +1,124 @@
+{
+  "id": 273,
+  "title": "UVR5 Pro",
+  "html": "\r\n\r\n<div class=\"wp-block-group alignfull work-detail has-global-padding is-layout-constrained wp-block-group-is-layout-constrained\">\r\n\t\r\n\t<div class=\"wp-block-group alignwide work-detail__layout is-layout-flow wp-block-group-is-layout-flow\">\r\n\t\t\r\n\t\t<div class=\"wp-block-group work-detail__header is-layout-flow wp-block-group-is-layout-flow\">\r\n\t\t\t<h1 class=\"work-detail__title wp-block-post-title\">UVR5 Pro</h1><div class=\"work-ctas\" role=\"group\" aria-label=\"Project links\"><div class=\"work-cta-group work-cta-group--download\" role=\"group\" aria-label=\"Downloads\"><span class=\"work-cta-group__icon\" title=\"Download\"><svg class=\"work-cta__icon work-cta__icon--download\" viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19h14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span><a class=\"work-cta work-cta--download\" href=\"https://github.com/p-haochen/uvr5-pro-unofficial/releases/download/v1.0.0/UVR5Pro_1.0.0_macOS_arm64.zip\" target=\"_blank\" rel=\"noopener noreferrer\" data-work-cta-type=\"download\" aria-label=\"Download macOS\"><svg class=\"work-cta__icon work-cta__icon--apple\" viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" aria-hidden=\"true\" focusable=\"false\"><path fill=\"currentColor\" d=\"M16.37 12.6c-.02-2.2 1.8-3.26 1.88-3.31-1.03-1.5-2.62-1.7-3.18-1.73-1.35-.14-2.64.8-3.33.8-.69 0-1.74-.78-2.86-.76-1.47.02-2.83.86-3.59 2.18-1.53 2.66-.39 6.6 1.1 8.76.73 1.06 1.6 2.24 2.73 2.2 1.1-.04 1.51-.71 2.84-.71 1.32 0 1.7.71 2.86.69 1.18-.02 1.93-1.07 2.65-2.13.84-1.22 1.18-2.41 1.2-2.47-.03-.01-2.28-.88-2.3-3.52ZM14.2 6.1c.6-.74 1.01-1.75.9-2.77-.87.04-1.93.58-2.55 1.31-.56.65-1.05 1.69-.92 2.69.97.07 1.97-.49 2.57-1.23Z\"/></svg><span>MACOS</span></a><a class=\"work-cta work-cta--download\" href=\"https://github.com/p-haochen/uvr5-pro-unofficial/releases/download/v1.0.0/UVR5Pro_1.0.0_Windows_x64_Portable.zip.001\" target=\"_blank\" rel=\"noopener noreferrer\" data-work-cta-type=\"download\" aria-label=\"Download Win A\"><svg class=\"work-cta__icon work-cta__icon--windows\" viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" aria-hidden=\"true\" focusable=\"false\"><path fill=\"currentColor\" d=\"M3 5.5 10.5 4.4v7.1H3V5.5Zm0 13 7.5 1.1v-7.1H3v6Zm8.5 1.25L21 21v-8.5h-9.5v7.25Zm0-15.5v7.25H21V3l-9.5 1.25Z\"/></svg><span>WIN A</span></a><a class=\"work-cta work-cta--download\" href=\"https://github.com/p-haochen/uvr5-pro-unofficial/releases/download/v1.0.0/UVR5Pro_1.0.0_Windows_x64_Portable.zip.002\" target=\"_blank\" rel=\"noopener noreferrer\" data-work-cta-type=\"download\" aria-label=\"Download Win B\"><svg class=\"work-cta__icon work-cta__icon--windows\" viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" aria-hidden=\"true\" focusable=\"false\"><path fill=\"currentColor\" d=\"M3 5.5 10.5 4.4v7.1H3V5.5Zm0 13 7.5 1.1v-7.1H3v6Zm8.5 1.25L21 21v-8.5h-9.5v7.25Zm0-15.5v7.25H21V3l-9.5 1.25Z\"/></svg><span>WIN B</span></a></div><a class=\"work-cta work-cta--github work-cta--icon\" href=\"https://github.com/p-haochen/uvr5-pro-unofficial\" target=\"_blank\" rel=\"noopener noreferrer\" data-work-cta-type=\"github\" aria-label=\"GitHub\" title=\"GitHub\"><svg class=\"work-cta__icon work-cta__icon--github\" viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" aria-hidden=\"true\" focusable=\"false\"><path fill=\"currentColor\" d=\"M12 2C6.48 2 2 6.58 2 12.23c0 4.52 2.87 8.35 6.84 9.7.5.1.68-.22.68-.49l-.01-1.7c-2.78.62-3.37-1.37-3.37-1.37-.46-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.62.07-.62 1 .07 1.53 1.06 1.53 1.06.89 1.57 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.04 1.03-2.76-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05A9.36 9.36 0 0 1 12 6.95c.85 0 1.71.12 2.51.34 1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.64 1.03 2.76 0 3.94-2.34 4.8-4.57 5.06.36.32.68.94.68 1.9l-.01 2.81c0 .27.18.6.69.49A10.2 10.2 0 0 0 22 12.23C22 6.58 17.52 2 12 2Z\"/></svg></a></div>\r\n\t\t</div>\r\n\t\t\r\n\r\n\t\t\r\n\t\t<div class=\"wp-block-group work-detail__visual is-layout-flow wp-block-group-is-layout-flow\">\r\n\t\t\t<figure data-cover-orientation=\"landscape\" class=\"work-detail__hero wp-block-post-featured-image\"><img width=\"1600\" height=\"1200\" src=\"/wp-content/uploads/2026/10/UVR5-Pro-Cover.png\" class=\"attachment-full size-full wp-post-image\" alt=\"UVR5 Pro Cover\" style=\"object-fit:cover;\" decoding=\"async\" srcset=\"/wp-content/uploads/2026/10/UVR5-Pro-Cover.png 1600w, /wp-content/uploads/2026/10/UVR5-Pro-Cover-300x225.png 300w, /wp-content/uploads/2026/10/UVR5-Pro-Cover-1024x768.png 1024w, /wp-content/uploads/2026/10/UVR5-Pro-Cover-768x576.png 768w, /wp-content/uploads/2026/10/UVR5-Pro-Cover-1536x1152.png 1536w\" sizes=\"(max-width: 1600px) 100vw, 1600px\" loading=\"eager\" fetchpriority=\"high\" /></figure>\r\n\r\n\t\t\t\r\n\t\t\t<div class=\"wp-block-group work-detail__metadata is-layout-flow wp-block-group-is-layout-flow\">\r\n\t\t\t\t\r\n\t\t\t\t<div class=\"wp-block-group work-detail__metadata-row work-detail__metadata-row--year is-layout-flow wp-block-group-is-layout-flow\">\r\n\t\t\t\t\t\r\n\t\t\t\t\t<p class=\"work-detail__metadata-label wp-block-paragraph\">YEAR</p>\r\n\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t\t\t<p class=\"work-detail__year work-year work-detail__metadata-value wp-block-paragraph\">2026</p>\r\n\t\t\t\t\t\r\n\t\t\t\t</div>\r\n\t\t\t\t\r\n\r\n\t\t\t\t\r\n\t\t\t\t<div class=\"wp-block-group work-detail__metadata-row work-detail__metadata-row--type is-layout-flow wp-block-group-is-layout-flow\">\r\n\t\t\t\t\t\r\n\t\t\t\t\t<p class=\"work-detail__metadata-label wp-block-paragraph\">TYPE</p>\r\n\t\t\t\t\t\r\n\t\t\t\t\t<div class=\"taxonomy-work_category work-detail__categories work-detail__metadata-value wp-block-post-terms\"><a href=\"/work/\" rel=\"tag\">LAB</a></div>\r\n\t\t\t\t</div>\r\n\t\t\t\t\r\n\t\t\t</div>\r\n\t\t\t\r\n\t\t</div>\r\n\t\t\r\n\r\n\t\t\r\n\t\t<div class=\"wp-block-group work-detail__content has-global-padding is-layout-constrained wp-block-group-is-layout-constrained\">\r\n\t\t\t<div class=\"entry-content work-detail__post-content wp-block-post-content has-global-padding is-layout-constrained wp-block-post-content-is-layout-constrained\"><p class=\"wp-block-paragraph\">An unofficial derivative of the open-source Ultimate Vocal Remover, built around a new guided workflow called Smart Separation. Users choose the type of source, the stems they want and a performance priority. The app then recommends models ranked by measured quality, speed and VRAM use, and previews the processing steps, so users don’t have to learn how the AI models differ.</p></div>\r\n\t\t\t<div class=\"work-media\"><section class=\"work-media__section work-media-gallery\" aria-labelledby=\"work-media-gallery-273\"><h2 id=\"work-media-gallery-273\" class=\"work-media__heading\">Gallery</h2><div class=\"work-media-gallery__grid\"><figure class=\"work-media-gallery__item\"><a class=\"work-media-gallery__link\" href=\"/wp-content/uploads/2026/10/UVR5-Pro-Main-Window.png\" data-work-gallery-item data-work-gallery-index=\"0\" data-work-gallery-count=\"2\" aria-haspopup=\"dialog\" aria-label=\"Open image 1 of 2: UVR5 Pro Main Window\"><img width=\"680\" height=\"738\" src=\"/wp-content/uploads/2026/10/UVR5-Pro-Main-Window.png\" class=\"work-media-gallery__image\" alt=\"UVR5 Pro Main Window\" loading=\"lazy\" decoding=\"async\" sizes=\"auto, (max-width: 700px) calc(100vw - 2rem), (max-width: 1599px) calc((100vw - 8rem) / 2), 720px\" srcset=\"/wp-content/uploads/2026/10/UVR5-Pro-Main-Window.png 680w, /wp-content/uploads/2026/10/UVR5-Pro-Main-Window-276x300.png 276w\" /></a></figure><figure class=\"work-media-gallery__item\"><a class=\"work-media-gallery__link\" href=\"/wp-content/uploads/2026/10/UVR5-Pro-Smart-Separation.png\" data-work-gallery-item data-work-gallery-index=\"1\" data-work-gallery-count=\"2\" aria-haspopup=\"dialog\" aria-label=\"Open image 2 of 2: UVR5 Pro Smart Separation\"><img width=\"1000\" height=\"730\" src=\"/wp-content/uploads/2026/10/UVR5-Pro-Smart-Separation.png\" class=\"work-media-gallery__image\" alt=\"UVR5 Pro Smart Separation\" loading=\"lazy\" decoding=\"async\" sizes=\"auto, (max-width: 700px) calc(100vw - 2rem), (max-width: 1599px) calc((100vw - 8rem) / 2), 720px\" srcset=\"/wp-content/uploads/2026/10/UVR5-Pro-Smart-Separation.png 1000w, /wp-content/uploads/2026/10/UVR5-Pro-Smart-Separation-300x219.png 300w, /wp-content/uploads/2026/10/UVR5-Pro-Smart-Separation-768x561.png 768w\" /></a></figure></div></section></div>\r\n\t\t\t\r\n\t\t\t<p class=\"portfolio-copyright work-detail__copyright wp-block-paragraph\">Media © respective rights holders. All rights reserved.</p>\r\n\t\t\t\r\n\t\t</div>\r\n\t\t\r\n\t</div>\r\n\t\r\n</div>\r\n\r\n",
+  "canonical_url": "/works/uvr5-pro/",
+  "seo": {
+    "title": "UVR5 Pro | PO HAO CHEN",
+    "description": "PO HAO CHEN portfolio: UVR5 Pro. 2026 · LAB · MUSIC PRODUCTION, VOCAL PRODUCTION, DRUM PRODUCTION.",
+    "canonical_url": "/works/uvr5-pro/",
+    "image_url": "/wp-content/uploads/2026/10/UVR5-Pro-Cover-1024x768.png",
+    "og_type": "article",
+    "robots": "max-image-preview:large"
+  },
+  "structured_data": {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    "@id": "https://pohaochen.com/works/uvr5-pro/#creative-work",
+    "url": "https://pohaochen.com/works/uvr5-pro/",
+    "name": "UVR5 Pro",
+    "image": "https://pohaochen.com/wp-content/uploads/2026/10/UVR5-Pro-Cover-1024x768.png",
+    "dateCreated": "2026"
+  },
+  "work": {
+    "id": 273,
+    "title": "UVR5 Pro",
+    "canonical_url": "/works/uvr5-pro/",
+    "year": "2026",
+    "menu_order": 195,
+    "categories": [
+      {
+        "slug": "tech",
+        "name": "LAB"
+      }
+    ],
+    "roles": [
+      {
+        "slug": "music-production",
+        "label": "MUSIC PRODUCTION"
+      },
+      {
+        "slug": "vocal-production",
+        "label": "VOCAL PRODUCTION"
+      },
+      {
+        "slug": "drum-production",
+        "label": "DRUM PRODUCTION"
+      },
+      {
+        "slug": "guitar",
+        "label": "GUITAR"
+      },
+      {
+        "slug": "bass",
+        "label": "BASS"
+      },
+      {
+        "slug": "keys-synth",
+        "label": "KEYS / SYNTH"
+      },
+      {
+        "slug": "vocal",
+        "label": "VOCAL"
+      },
+      {
+        "slug": "backing-vocals",
+        "label": "BACKING VOCALS"
+      },
+      {
+        "slug": "mixing",
+        "label": "MIXING"
+      },
+      {
+        "slug": "audio-editing",
+        "label": "AUDIO EDITING"
+      },
+      {
+        "slug": "software-development",
+        "label": "SOFTWARE DEVELOPMENT"
+      }
+    ],
+    "styles": [],
+    "ctas": [
+      {
+        "label": "macOS",
+        "url": "https://github.com/p-haochen/uvr5-pro-unofficial/releases/download/v1.0.0/UVR5Pro_1.0.0_macOS_arm64.zip",
+        "type": "download"
+      },
+      {
+        "label": "Win A",
+        "url": "https://github.com/p-haochen/uvr5-pro-unofficial/releases/download/v1.0.0/UVR5Pro_1.0.0_Windows_x64_Portable.zip.001",
+        "type": "download"
+      },
+      {
+        "label": "Win B",
+        "url": "https://github.com/p-haochen/uvr5-pro-unofficial/releases/download/v1.0.0/UVR5Pro_1.0.0_Windows_x64_Portable.zip.002",
+        "type": "download"
+      },
+      {
+        "label": "GitHub",
+        "url": "https://github.com/p-haochen/uvr5-pro-unofficial",
+        "type": "github"
+      }
+    ],
+    "cover": {
+      "id": 274,
+      "src": "/wp-content/uploads/2026/10/UVR5-Pro-Cover-1024x768.png",
+      "width": 1024,
+      "height": 768,
+      "alt": "UVR5 Pro Cover",
+      "srcset": "/wp-content/uploads/2026/10/UVR5-Pro-Cover-1024x768.png 1024w, /wp-content/uploads/2026/10/UVR5-Pro-Cover-300x225.png 300w, /wp-content/uploads/2026/10/UVR5-Pro-Cover-768x576.png 768w, /wp-content/uploads/2026/10/UVR5-Pro-Cover-1536x1152.png 1536w, /wp-content/uploads/2026/10/UVR5-Pro-Cover.png 1600w",
+      "sizes": "(max-width: 1024px) 100vw, 1024px",
+      "card_sizes": "(max-width: 700px) calc(100vw - 2rem), (max-width: 1199px) calc((100vw - 5rem) / 2), calc((100vw - 10rem) / 4)"
+    },
+    "tracks": [],
+    "seo": {
+      "title": "UVR5 Pro | PO HAO CHEN",
+      "description": "PO HAO CHEN portfolio: UVR5 Pro. 2026 · LAB · MUSIC PRODUCTION, VOCAL PRODUCTION, DRUM PRODUCTION.",
+      "canonical_url": "/works/uvr5-pro/",
+      "image_url": "/wp-content/uploads/2026/10/UVR5-Pro-Cover-1024x768.png",
+      "og_type": "article",
+      "robots": "max-image-preview:large"
+    }
+  }
+}
