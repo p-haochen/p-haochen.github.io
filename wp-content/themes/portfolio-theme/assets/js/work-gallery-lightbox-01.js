@@ -1,5 +1,8 @@
 const GALLERY_ITEM_SELECTOR = '[data-work-gallery-item]';
 const FOCUSABLE_SELECTOR = 'button:not([hidden]):not([disabled]), a[href]:not([hidden]), [tabindex]:not([tabindex="-1"]):not([hidden])';
+const SWIPE_MIN_DISTANCE = 48;
+const SWIPE_MAX_SLOPE = 0.6;
+const SWIPE_MAX_DURATION = 800;
 
 function galleryItemsFor(link) {
 	const gallery = link.closest('.work-media-gallery');
@@ -51,6 +54,18 @@ export function initializeWorkGalleryLightbox(root = document) {
 	let items = [];
 	let activeIndex = 0;
 	let originObserver = null;
+	let swipe = null;
+	let suppressClickUntil = 0;
+	const preloaded = new Set();
+
+	function preload(index) {
+		const item = items[(index + items.length) % items.length];
+		if (!(item instanceof HTMLAnchorElement) || preloaded.has(item.href)) return;
+		preloaded.add(item.href);
+		const preloadImage = new Image();
+		preloadImage.decoding = 'async';
+		preloadImage.src = item.href;
+	}
 
 	function show(index) {
 		if (!(dialog instanceof HTMLDialogElement) || !(image instanceof HTMLImageElement) || items.length === 0) return;
@@ -69,6 +84,37 @@ export function initializeWorkGalleryLightbox(root = document) {
 		if (counter instanceof HTMLElement) counter.textContent = position;
 		if (previousButton instanceof HTMLButtonElement) previousButton.hidden = items.length < 2;
 		if (nextButton instanceof HTMLButtonElement) nextButton.hidden = items.length < 2;
+		if (items.length > 1) {
+			preload(activeIndex + 1);
+			preload(activeIndex - 1);
+		}
+	}
+
+	function handlePointerDown(event) {
+		// A new press is a new gesture: only a click synthesized by the swipe
+		// itself may be suppressed, never a later tap (such as Close).
+		suppressClickUntil = 0;
+		if (event.pointerType === 'mouse' || items.length < 2) return;
+		if (!event.isPrimary || swipe) {
+			swipe = null;
+			return;
+		}
+		swipe = { pointerId: event.pointerId, x: event.clientX, y: event.clientY, time: event.timeStamp };
+	}
+
+	function handlePointerUp(event) {
+		if (!swipe || event.pointerId !== swipe.pointerId) return;
+		const deltaX = event.clientX - swipe.x;
+		const deltaY = event.clientY - swipe.y;
+		const duration = event.timeStamp - swipe.time;
+		swipe = null;
+		if (Math.abs(deltaX) < SWIPE_MIN_DISTANCE || Math.abs(deltaY) > Math.abs(deltaX) * SWIPE_MAX_SLOPE || duration > SWIPE_MAX_DURATION) return;
+		suppressClickUntil = event.timeStamp + 400;
+		show(deltaX < 0 ? activeIndex + 1 : activeIndex - 1);
+	}
+
+	function handlePointerCancel() {
+		swipe = null;
 	}
 
 	function close(options = {}) {
@@ -90,6 +136,9 @@ export function initializeWorkGalleryLightbox(root = document) {
 		origin = null;
 		items = [];
 		activeIndex = 0;
+		swipe = null;
+		suppressClickUntil = 0;
+		preloaded.clear();
 		if (options.restoreFocus !== false && focusTarget instanceof HTMLElement && focusTarget.isConnected) {
 			focusTarget.focus({ preventScroll: true });
 		}
@@ -124,6 +173,10 @@ export function initializeWorkGalleryLightbox(root = document) {
 			}
 		});
 
+		dialog.addEventListener('pointerdown', handlePointerDown);
+		dialog.addEventListener('pointerup', handlePointerUp);
+		dialog.addEventListener('pointercancel', handlePointerCancel);
+
 		document.body.append(dialog);
 		document.documentElement.classList.add('portfolio-lightbox-open');
 		show(activeIndex);
@@ -146,6 +199,10 @@ export function initializeWorkGalleryLightbox(root = document) {
 			return;
 		}
 		if (!(dialog instanceof HTMLDialogElement)) return;
+		if (event.timeStamp < suppressClickUntil && dialog.contains(target)) {
+			suppressClickUntil = 0;
+			return;
+		}
 		if (
 			target.closest('[data-work-gallery-close]')
 			|| target === dialog

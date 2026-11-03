@@ -1010,19 +1010,12 @@ button:focus-visible,
 	display: block;
 }
 
-.work-detail__content > .work-detail__copyright {
-	margin-block: 1.5rem 0;
-	color: var(--wp--preset--color--portal-muted);
-}
-
-@media (min-width: 761px) {
-	.work-detail__content > .work-detail__copyright {
-		grid-column: 1 / -1;
-		grid-row: 4;
-		width: 100%;
-		max-width: var(--works-detail-stream-max-width);
-		margin-inline: auto;
-	}
+.work-detail .work-detail__footer > .work-detail__copyright {
+	margin-block: clamp(3rem, 6vw, 4.5rem) 0;
+	color: var(--work-detail-sub, var(--wp--preset--color--portal-muted));
+	font-size: 0.5625rem;
+	letter-spacing: 0.06em;
+	text-align: center;
 }
 
 @keyframes prototype-rise {
