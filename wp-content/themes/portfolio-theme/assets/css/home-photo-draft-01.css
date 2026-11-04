@@ -128,6 +128,32 @@ body.portfolio-home-photo-draft .wp-site-blocks {
 	object-position: 50% 48%;
 }
 
+/* Motion background: shares the still image's layer (z-index -2) and sits
+   above it by DOM order; it fades in only once its textures are ready. */
+.photo-draft__motion {
+	position: absolute;
+	inset: 0;
+	z-index: -2;
+	display: block;
+	width: 100%;
+	height: 100%;
+	/* The flow layout's block gap would otherwise push the canvas below the still. */
+	margin: 0;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 900ms ease;
+}
+
+.photo-draft__motion.is-ready {
+	opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.photo-draft__motion {
+		display: none;
+	}
+}
+
 .photo-draft__overlay {
 	z-index: -1;
 	margin: 0;
