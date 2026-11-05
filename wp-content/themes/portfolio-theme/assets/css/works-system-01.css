@@ -36,6 +36,48 @@
 	--works-card-caption-row-gap: 0.25rem;
 	--works-card-title-size: clamp(0.9375rem, 1.05vw, 1.0625rem);
 	--works-card-media-background: var(--wp--preset--color--portal-canvas, #0b0c0f);
+	padding-top: clamp(1.25rem, 2.5vw, 2.5rem);
+}
+
+/* Direct /work/: no prototype language control. */
+.portfolio-works-surface:has(.works-directory) .prototype-language-control {
+	display: none;
+}
+
+/* Direct /work/: header navigation centered on the page (desktop/tablet). */
+@media (min-width: 601px) {
+	.portfolio-works-surface:has(.works-directory) .site-header__title {
+		grid-row: 1;
+	}
+
+	.portfolio-works-surface:has(.works-directory) .primary-navigation {
+		grid-column: 1 / -1;
+		grid-row: 1;
+		justify-self: center;
+	}
+}
+
+/* Direct /work/: Role/Style FILTER is Portal-only (no Direct handler or card data). */
+.portfolio-works-surface .works-directory__filter-tool {
+	display: none;
+}
+
+/* Direct /work/: SORT stays open instead of the Portal hover reveal. */
+.portfolio-works-surface .works-directory__sort-panel {
+	color: var(--wp--preset--color--portal-foreground);
+	transform: none;
+	transition: none;
+}
+
+.portfolio-works-surface .works-directory__sort-summary,
+.portfolio-works-surface .works-directory__sort::before {
+	display: none;
+}
+
+@media (max-width: 760px) {
+	.portfolio-works-surface .works-directory__sort-panel {
+		justify-content: flex-start;
+	}
 }
 
 .post-257 .works-card__media {

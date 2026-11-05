@@ -119,7 +119,7 @@ function initializeStandaloneSort(directory) {
 	const select = directory.querySelector('[data-work-sort]');
 	if (!(grid instanceof HTMLElement) || !(select instanceof HTMLSelectElement)) return;
 
-	// CURATED is the accepted server-rendered order, not Portal menu_order.
+	// CURATED is the server-rendered order (menu_order, as in the Portal).
 	// Capture once; initial load must not move any card.
 	const entries = directoryCards(directory).filter((card) => card.parentElement === grid).map((card, index) => {
 		const yearText = (card.querySelector('.works-card__caption .works-card__year') ?? card.querySelector('.works-card__year'))?.textContent.trim() ?? '';
