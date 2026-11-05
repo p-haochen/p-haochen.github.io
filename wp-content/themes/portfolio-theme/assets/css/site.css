@@ -260,7 +260,8 @@ button:focus-visible,
 	--cv-section-gap: clamp(2.5rem, 4vw, 4rem);
 	--cv-section-inline: clamp(0.75rem, 1.5vw, 1.25rem);
 	--cv-body-size: clamp(0.9375rem, 0.28vw + 0.88rem, 1.0625rem);
-	--cv-year-column: 4.5rem;
+	--cv-year-column: 5rem;
+	--cv-hairline: color-mix(in srgb, currentcolor 16%, transparent);
 }
 
 .about-prototype .editorial-section {
@@ -345,20 +346,25 @@ button:focus-visible,
 }
 
 .cv-biography__name {
-	margin-block-end: 0.35rem;
-	font-size: clamp(1.35rem, 2vw, 2rem);
+	margin-block-end: 0.75rem;
+	font-size: clamp(1.75rem, 3.2vw, 3rem);
 	font-weight: 500;
-	letter-spacing: -0.02em;
+	letter-spacing: -0.03em;
+	line-height: 1;
 	opacity: 1;
 }
 
 .cv-biography__role {
-	margin-block-end: clamp(1.25rem, 2.5vw, 2rem);
-	font-size: 0.78rem;
+	margin-block-end: clamp(1.5rem, 2.75vw, 2.25rem);
+	font-size: 0.72rem;
 	font-weight: 650;
-	letter-spacing: 0.1em;
+	letter-spacing: 0.16em;
 	line-height: 1.4;
 	opacity: 0.68;
+}
+
+.cv-biography__copy {
+	max-width: 40rem;
 }
 
 .cv-biography__copy > p {
@@ -373,15 +379,22 @@ button:focus-visible,
 	margin-block-end: 0;
 }
 
+.about-prototype .editorial-section.cv-timeline {
+	padding-block-start: 0;
+}
+
 .cv-timeline .section-body-block {
 	grid-column: 1 / -1;
+	margin-block-start: 0;
 }
 
 .cv-experience__list {
 	display: grid;
-	gap: 0.6rem;
+	gap: 0.7rem;
 	margin: 0;
 	padding: 0;
+	border-bottom: 1px solid var(--cv-hairline);
+	padding-block-end: 1.1rem;
 	list-style: none;
 }
 
@@ -395,17 +408,42 @@ button:focus-visible,
 	line-height: 1.55;
 }
 
+/* Each year is printed once; later rows keep it for assistive tech only. */
+.cv-experience__row.is-year-start {
+	padding-block-start: 1.1rem;
+	border-top: 1px solid var(--cv-hairline);
+}
+
+.cv-experience__row.is-year-start:not(:first-child) {
+	margin-block-start: 0.6rem;
+}
+
+.cv-experience__row:not(.is-year-start) .cv-experience__year {
+	color: transparent;
+}
+
 .cv-experience__year {
-	font-weight: 700;
+	font-weight: 400;
 	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.04em;
 	opacity: 0.68;
 }
 
 .cv-experience__description {
+	display: grid;
+	grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+	column-gap: clamp(1.25rem, 3vw, 3rem);
+	align-items: baseline;
 	min-width: 0;
 	overflow-wrap: normal;
-	opacity: 0.68;
+	opacity: 0.82;
 	word-break: normal;
+}
+
+.cv-experience__roles {
+	font-size: 0.86em;
+	letter-spacing: 0.02em;
+	opacity: 0.72;
 }
 
 .collaboration-list {
@@ -1036,6 +1074,11 @@ button:focus-visible,
 		--cv-profile-gap: clamp(1.25rem, 3.5vw, 2.25rem);
 	}
 
+	.cv-experience__description {
+		grid-template-columns: minmax(0, 1fr);
+		row-gap: 0.15rem;
+	}
+
 	.site-header__inner,
 	.editorial-grid,
 	.site-footer__inner {
@@ -1153,8 +1196,9 @@ button:focus-visible,
 		--cv-profile-gap: 1.5rem;
 		--cv-section-gap: clamp(2.25rem, 10vw, 3.5rem);
 		--cv-section-inline: 0.5rem;
-		--cv-year-column: 3.5rem;
+		--cv-year-column: 3.25rem;
 	}
+
 
 	.cv-biography {
 		grid-template-columns: minmax(0, 1fr);
