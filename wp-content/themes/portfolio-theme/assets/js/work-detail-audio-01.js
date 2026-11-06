@@ -1,4 +1,6 @@
 import { createPlaylistComponent, isPlaylistPlayer } from './playlist-component-01.js';
+import { createMusicPlayer } from './music-player-01.js';
+import { attachMusicCapsule } from './music-player-capsule-01.js';
 
 const controllersByRoot = new WeakMap();
 
@@ -181,6 +183,58 @@ function createCanonicalPlaylistPlayer(root) {
 	return api;
 }
 
+function formatClock(seconds) {
+	const value = Math.max(0, Math.floor(Number(seconds) || 0));
+	return `${Math.floor(value / 60)}:${String(value % 60).padStart(2, '0')}`;
+}
+
+// Work Detail J: the PLAY button under the catalogue and the "now playing" line under the cover.
+function bindDetailControls(detail, player, playlist) {
+	if (!(detail instanceof HTMLElement)) return () => {};
+	const actions = detail.querySelector('[data-work-detail-actions]');
+	const now = detail.querySelector('[data-work-detail-now]');
+	const nowTitle = now?.querySelector('[data-work-detail-now-title]');
+	const nowTime = now?.querySelector('[data-work-detail-now-time]');
+	let button = null;
+	let label = null;
+	if (actions instanceof HTMLElement) {
+		button = document.createElement('button');
+		button.type = 'button';
+		button.className = 'work-detail__play';
+		button.innerHTML = '<svg class="work-detail__play-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg><svg class="work-detail__pause-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4 2.5h3v11H4zM9 2.5h3v11H9z" fill="currentColor"/></svg>';
+		label = document.createElement('span');
+		label.textContent = 'PLAY';
+		button.append(label);
+		button.addEventListener('click', () => playlist.toggleWork());
+		actions.prepend(button);
+		actions.hidden = false;
+	}
+	const render = (state) => {
+		const owned = playlist.ownsQueue(state);
+		const playing = owned && state.playing === true;
+		if (button && label) {
+			button.classList.toggle('is-playing', playing);
+			button.setAttribute('aria-pressed', String(playing));
+			label.textContent = playing ? 'PAUSE' : 'PLAY';
+		}
+		if (now instanceof HTMLElement) {
+			const shown = owned && state.activated !== false && Boolean(state.activeTrack);
+			now.classList.toggle('is-shown', shown);
+			now.classList.toggle('is-playing', playing);
+			if (nowTitle instanceof HTMLElement) nowTitle.textContent = shown ? state.activeTrack.title : '';
+			if (nowTime instanceof HTMLElement) nowTime.textContent = shown ? formatClock(state.currentTime) : '';
+		}
+	};
+	const unsubscribe = player.subscribe(render);
+	render(player.getState());
+	return () => {
+		if (typeof unsubscribe === 'function') unsubscribe();
+		button?.remove();
+		if (actions instanceof HTMLElement && actions.childElementCount === 0) actions.hidden = true;
+		now?.classList.remove('is-shown', 'is-playing');
+	};
+}
+
 export function initializeWorkDetailAudio(root, options = {}) {
 	if (!(root instanceof HTMLElement)) return null;
 	const existing = controllersByRoot.get(root);
@@ -197,7 +251,7 @@ export function initializeWorkDetailAudio(root, options = {}) {
 	const work = { id: workId, title, cover: readCover(root, tracks), tracks };
 	const player = hasPortalPlayer ? options.player : createCanonicalPlaylistPlayer(root);
 	if (hasPortalPlayer && typeof player.setInlineActive === 'function') player.setInlineActive(true);
-	const playlist = createPlaylistComponent(work, player, { announceStatus: !hasPortalPlayer });
+	const playlist = createPlaylistComponent(work, player, { announceStatus: !hasPortalPlayer, showHeader: false });
 	if (!playlist) {
 		if (!hasPortalPlayer) player.destroy();
 		return null;
@@ -206,8 +260,10 @@ export function initializeWorkDetailAudio(root, options = {}) {
 	if (!hasPortalPlayer) player.mount();
 	root.classList.add('work-detail-audio--enhanced');
 	playlist.mount();
+	const releaseDetailControls = bindDetailControls(root.closest('.work-detail'), player, playlist);
 	const controller = {
 		destroy() {
+			releaseDetailControls();
 			playlist.destroy();
 			if (hasPortalPlayer && typeof player.setInlineActive === 'function') player.setInlineActive(false);
 			if (!hasPortalPlayer) player.destroy();
@@ -220,7 +276,16 @@ export function initializeWorkDetailAudio(root, options = {}) {
 
 function bootstrapCanonicalWorkDetailAudio() {
 	if (!document.body.classList.contains('single-portfolio_work')) return;
-	initializeWorkDetailAudio(document.querySelector('[data-work-detail-audio]'));
+	const audioRoot = document.querySelector('[data-work-detail-audio]');
+	// A Direct Work page plays through the same pop-up player (capsule) as the Portal.
+	const capsuleRoot = document.querySelector('[data-music-capsule]');
+	const player = capsuleRoot instanceof HTMLElement ? createMusicPlayer(capsuleRoot) : null;
+	if (player) {
+		attachMusicCapsule(capsuleRoot, player);
+		initializeWorkDetailAudio(audioRoot, { player });
+		return;
+	}
+	initializeWorkDetailAudio(audioRoot);
 }
 
 if (document.readyState === 'loading') {

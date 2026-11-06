@@ -49,11 +49,14 @@ function normalizeTrack(track) {
 		artwork: typeof track.artwork === 'string' ? track.artwork : '',
 		artworkAlt: typeof track.artworkAlt === 'string' ? track.artworkAlt : '',
 		providerLinks: normalizeProviderLinks(track.providerLinks),
+		workUrl: typeof track.workUrl === 'string' ? track.workUrl : '',
+		duration: Number.isFinite(Number(track.duration)) && Number(track.duration) > 0 ? Number(track.duration) : 0,
+		peaks: Array.isArray(track.peaks) ? track.peaks.map((value) => Math.max(0, Math.min(99, Number(value) || 0))) : [],
 	};
 }
 
 function freezeTrack(track) {
-	return Object.freeze({ ...track, providerLinks: Object.freeze({ ...track.providerLinks }) });
+	return Object.freeze({ ...track, providerLinks: Object.freeze({ ...track.providerLinks }), peaks: Object.freeze([...track.peaks]) });
 }
 
 function queueKeyForTracks(tracks) {
@@ -66,9 +69,10 @@ function queueKeyForTracks(tracks) {
 export function createMusicPlayer(root) {
 	if (!(root instanceof HTMLElement)) return null;
 	const audio = root.querySelector('[data-music-player-audio]');
-	const artwork = root.querySelector('.music-player__artwork');
-	const title = root.querySelector('.music-player__title');
-	const release = root.querySelector('.music-player__release');
+	const pick = (hook, legacy) => root.querySelector(`[${hook}]`) ?? root.querySelector(legacy);
+	const artwork = pick('data-music-player-artwork', '.music-player__artwork');
+	const title = pick('data-music-player-title', '.music-player__title');
+	const release = pick('data-music-player-release', '.music-player__release');
 	const liveRegion = root.parentElement?.querySelector('[data-music-player-live]') ?? root.querySelector('.music-player__live');
 	const previousButton = root.querySelector('[data-music-player-action="previous"]');
 	const playButton = root.querySelector('[data-music-player-action="play"]');
@@ -79,8 +83,8 @@ export function createMusicPlayer(root) {
 	const volume = root.querySelector('[data-music-player-volume]');
 	const volumeOn = muteButton?.querySelector('[data-volume-state="on"]');
 	const volumeMuted = muteButton?.querySelector('[data-volume-state="muted"]');
-	const currentTime = root.querySelector('.music-player__current-time');
-	const duration = root.querySelector('.music-player__duration');
+	const currentTime = pick('data-music-player-current-time', '.music-player__current-time');
+	const duration = pick('data-music-player-duration', '.music-player__duration');
 	const providers = root.querySelector('[data-music-player-providers]');
 	if (
 		!(audio instanceof HTMLAudioElement)
@@ -202,7 +206,8 @@ export function createMusicPlayer(root) {
 		const playing = isPlaybackAccepted();
 		playButton.setAttribute('aria-label', playing ? 'Pause' : 'Play');
 		playButton.setAttribute('aria-pressed', String(playing));
-		playButton.textContent = playing ? 'Ⅱ' : '▶';
+		// The capsule draws its own play / pause icons; the older bar uses text glyphs.
+		if (playButton.childElementCount === 0) playButton.textContent = playing ? 'Ⅱ' : '▶';
 		root.classList.toggle('is-playing', playing);
 	}
 

@@ -93,10 +93,11 @@ h1:where(.wp-block-heading).has-background,h2:where(.wp-block-heading).has-backg
 @font-face{font-family:"Inter Variable";font-style:normal;font-weight:100 900;font-display:fallback;src:url('/wp-content/themes/portfolio-theme/assets/fonts/inter/InterVariable.woff2') format('woff2');font-stretch:normal;}
 @font-face{font-family:"Inter Variable";font-style:normal;font-weight:100 900;font-display:fallback;src:url('/wp-content/themes/portfolio-theme/assets/fonts/noto-sans-tc/NotoSansTC-Variable-subset.woff2') format('woff2');font-stretch:normal;}
 </style>
-<link rel="icon" href="/wp-content/uploads/2026/08/cropped-ChatGPT-Image-2026年9月1日-上午07_19_51-32x32.png" sizes="32x32" />
-<link rel="icon" href="/wp-content/uploads/2026/08/cropped-ChatGPT-Image-2026年9月1日-上午07_19_51-192x192.png" sizes="192x192" />
-<link rel="apple-touch-icon" href="/wp-content/uploads/2026/08/cropped-ChatGPT-Image-2026年9月1日-上午07_19_51-180x180.png" />
-<meta name="msapplication-TileImage" content="/wp-content/uploads/2026/08/cropped-ChatGPT-Image-2026年9月1日-上午07_19_51-270x270.png" />
+<link rel="icon" href="/wp-content/themes/portfolio-theme/assets/images/site-icon-t.svg" type="image/svg+xml">
+<link rel="icon" href="/wp-content/themes/portfolio-theme/assets/images/site-icon-t-32x32.png" sizes="32x32">
+<link rel="icon" href="/wp-content/themes/portfolio-theme/assets/images/site-icon-t-192x192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="/wp-content/themes/portfolio-theme/assets/images/site-icon-t-180x180.png">
+<meta name="msapplication-TileImage" content="/wp-content/themes/portfolio-theme/assets/images/site-icon-t-270x270.png">
 </head>
 
 <body class="wp-singular page-template-default page page-id-6 wp-embed-responsive wp-theme-portfolio-theme portfolio-works-surface">
@@ -190,63 +191,34 @@ h1:where(.wp-block-heading).has-background,h2:where(.wp-block-heading).has-backg
 					<summary>ROLE</summary>
 					<div class="works-filter-panel__section-body">
 						<label class="works-filter-panel__option works-filter-panel__option--all" data-work-role-option="all" for="works-filter-panel-2-role-all">
-							<input id="works-filter-panel-2-role-all" type="radio" name="portfolio-work-role" value="all" data-work-role checked>
+							<input id="works-filter-panel-2-role-all" type="checkbox" name="portfolio-work-role" value="all" data-work-role checked>
 							<span>ALL ROLES</span>
 						</label>
-								<div class="works-filter-panel__group" data-work-filter-group="frequent">
-			<h4 class="works-filter-panel__group-title">FREQUENT</h4>
-			<div class="works-filter-panel__options">
-																					<label class="works-filter-panel__option" data-work-role-option="music-production" for="works-filter-panel-2-role-frequent-music-production">
-							<input id="works-filter-panel-2-role-frequent-music-production" type="radio" name="portfolio-work-role" value="music-production" data-work-role>
-							<span>MUSIC PRODUCTION</span>
-						</label>
-																										<label class="works-filter-panel__option" data-work-role-option="composition" for="works-filter-panel-2-role-frequent-composition">
-							<input id="works-filter-panel-2-role-frequent-composition" type="radio" name="portfolio-work-role" value="composition" data-work-role>
-							<span>COMPOSITION</span>
-						</label>
-																										<label class="works-filter-panel__option" data-work-role-option="arrangement" for="works-filter-panel-2-role-frequent-arrangement">
-							<input id="works-filter-panel-2-role-frequent-arrangement" type="radio" name="portfolio-work-role" value="arrangement" data-work-role>
-							<span>ARRANGEMENT</span>
-						</label>
-																										<label class="works-filter-panel__option" data-work-role-option="vocal-production" for="works-filter-panel-2-role-frequent-vocal-production">
-							<input id="works-filter-panel-2-role-frequent-vocal-production" type="radio" name="portfolio-work-role" value="vocal-production" data-work-role>
-							<span>VOCAL PRODUCTION</span>
-						</label>
-																										<label class="works-filter-panel__option" data-work-role-option="guitar" for="works-filter-panel-2-role-frequent-guitar">
-							<input id="works-filter-panel-2-role-frequent-guitar" type="radio" name="portfolio-work-role" value="guitar" data-work-role>
-							<span>GUITAR</span>
-						</label>
-																										<label class="works-filter-panel__option" data-work-role-option="bass" for="works-filter-panel-2-role-frequent-bass">
-							<input id="works-filter-panel-2-role-frequent-bass" type="radio" name="portfolio-work-role" value="bass" data-work-role>
-							<span>BASS</span>
-						</label>
-																										<label class="works-filter-panel__option" data-work-role-option="mixing" for="works-filter-panel-2-role-frequent-mixing">
-							<input id="works-filter-panel-2-role-frequent-mixing" type="radio" name="portfolio-work-role" value="mixing" data-work-role>
-							<span>MIXING</span>
-						</label>
-																										<label class="works-filter-panel__option" data-work-role-option="live-electronics" for="works-filter-panel-2-role-frequent-live-electronics">
-							<input id="works-filter-panel-2-role-frequent-live-electronics" type="radio" name="portfolio-work-role" value="live-electronics" data-work-role>
-							<span>LIVE ELECTRONICS</span>
-						</label>
-												</div>
-		</div>
-				<div class="works-filter-panel__group" data-work-filter-group="production">
+								<div class="works-filter-panel__group" data-work-filter-group="production">
 			<h4 class="works-filter-panel__group-title">PRODUCTION</h4>
 			<div class="works-filter-panel__options">
 																					<label class="works-filter-panel__option" data-work-role-option="music-production" for="works-filter-panel-2-role-production-music-production">
-							<input id="works-filter-panel-2-role-production-music-production" type="radio" name="portfolio-work-role" value="music-production" data-work-role>
+							<input id="works-filter-panel-2-role-production-music-production" type="checkbox" name="portfolio-work-role" value="music-production" data-work-role>
 							<span>MUSIC PRODUCTION</span>
 						</label>
+																										<label class="works-filter-panel__option" data-work-role-option="composition" for="works-filter-panel-2-role-production-composition">
+							<input id="works-filter-panel-2-role-production-composition" type="checkbox" name="portfolio-work-role" value="composition" data-work-role>
+							<span>COMPOSITION</span>
+						</label>
+																										<label class="works-filter-panel__option" data-work-role-option="arrangement" for="works-filter-panel-2-role-production-arrangement">
+							<input id="works-filter-panel-2-role-production-arrangement" type="checkbox" name="portfolio-work-role" value="arrangement" data-work-role>
+							<span>ARRANGEMENT</span>
+						</label>
 																										<label class="works-filter-panel__option" data-work-role-option="vocal-production" for="works-filter-panel-2-role-production-vocal-production">
-							<input id="works-filter-panel-2-role-production-vocal-production" type="radio" name="portfolio-work-role" value="vocal-production" data-work-role>
+							<input id="works-filter-panel-2-role-production-vocal-production" type="checkbox" name="portfolio-work-role" value="vocal-production" data-work-role>
 							<span>VOCAL PRODUCTION</span>
 						</label>
 																										<label class="works-filter-panel__option" data-work-role-option="drum-production" for="works-filter-panel-2-role-production-drum-production">
-							<input id="works-filter-panel-2-role-production-drum-production" type="radio" name="portfolio-work-role" value="drum-production" data-work-role>
+							<input id="works-filter-panel-2-role-production-drum-production" type="checkbox" name="portfolio-work-role" value="drum-production" data-work-role>
 							<span>DRUM PRODUCTION</span>
 						</label>
 																										<label class="works-filter-panel__option" data-work-role-option="music-direction" for="works-filter-panel-2-role-production-music-direction">
-							<input id="works-filter-panel-2-role-production-music-direction" type="radio" name="portfolio-work-role" value="music-direction" data-work-role>
+							<input id="works-filter-panel-2-role-production-music-direction" type="checkbox" name="portfolio-work-role" value="music-direction" data-work-role>
 							<span>MUSIC DIRECTION</span>
 						</label>
 												</div>
@@ -255,27 +227,27 @@ h1:where(.wp-block-heading).has-background,h2:where(.wp-block-heading).has-backg
 			<h4 class="works-filter-panel__group-title">PERFORMANCE</h4>
 			<div class="works-filter-panel__options">
 																					<label class="works-filter-panel__option" data-work-role-option="guitar" for="works-filter-panel-2-role-performance-guitar">
-							<input id="works-filter-panel-2-role-performance-guitar" type="radio" name="portfolio-work-role" value="guitar" data-work-role>
+							<input id="works-filter-panel-2-role-performance-guitar" type="checkbox" name="portfolio-work-role" value="guitar" data-work-role>
 							<span>GUITAR</span>
 						</label>
 																										<label class="works-filter-panel__option" data-work-role-option="bass" for="works-filter-panel-2-role-performance-bass">
-							<input id="works-filter-panel-2-role-performance-bass" type="radio" name="portfolio-work-role" value="bass" data-work-role>
+							<input id="works-filter-panel-2-role-performance-bass" type="checkbox" name="portfolio-work-role" value="bass" data-work-role>
 							<span>BASS</span>
 						</label>
 																										<label class="works-filter-panel__option" data-work-role-option="keys-synth" for="works-filter-panel-2-role-performance-keys-synth">
-							<input id="works-filter-panel-2-role-performance-keys-synth" type="radio" name="portfolio-work-role" value="keys-synth" data-work-role>
+							<input id="works-filter-panel-2-role-performance-keys-synth" type="checkbox" name="portfolio-work-role" value="keys-synth" data-work-role>
 							<span>KEYS / SYNTH</span>
 						</label>
 																										<label class="works-filter-panel__option" data-work-role-option="vocal" for="works-filter-panel-2-role-performance-vocal">
-							<input id="works-filter-panel-2-role-performance-vocal" type="radio" name="portfolio-work-role" value="vocal" data-work-role>
+							<input id="works-filter-panel-2-role-performance-vocal" type="checkbox" name="portfolio-work-role" value="vocal" data-work-role>
 							<span>VOCAL</span>
 						</label>
 																										<label class="works-filter-panel__option" data-work-role-option="backing-vocals" for="works-filter-panel-2-role-performance-backing-vocals">
-							<input id="works-filter-panel-2-role-performance-backing-vocals" type="radio" name="portfolio-work-role" value="backing-vocals" data-work-role>
+							<input id="works-filter-panel-2-role-performance-backing-vocals" type="checkbox" name="portfolio-work-role" value="backing-vocals" data-work-role>
 							<span>BACKING VOCALS</span>
 						</label>
 																										<label class="works-filter-panel__option" data-work-role-option="live-electronics" for="works-filter-panel-2-role-performance-live-electronics">
-							<input id="works-filter-panel-2-role-performance-live-electronics" type="radio" name="portfolio-work-role" value="live-electronics" data-work-role>
+							<input id="works-filter-panel-2-role-performance-live-electronics" type="checkbox" name="portfolio-work-role" value="live-electronics" data-work-role>
 							<span>LIVE ELECTRONICS</span>
 						</label>
 												</div>
@@ -284,23 +256,23 @@ h1:where(.wp-block-heading).has-background,h2:where(.wp-block-heading).has-backg
 			<h4 class="works-filter-panel__group-title">ENGINEERING</h4>
 			<div class="works-filter-panel__options">
 																					<label class="works-filter-panel__option" data-work-role-option="recording" for="works-filter-panel-2-role-engineering-recording">
-							<input id="works-filter-panel-2-role-engineering-recording" type="radio" name="portfolio-work-role" value="recording" data-work-role>
+							<input id="works-filter-panel-2-role-engineering-recording" type="checkbox" name="portfolio-work-role" value="recording" data-work-role>
 							<span>RECORDING</span>
 						</label>
 																										<label class="works-filter-panel__option" data-work-role-option="live-sound-engineering" for="works-filter-panel-2-role-engineering-live-sound-engineering">
-							<input id="works-filter-panel-2-role-engineering-live-sound-engineering" type="radio" name="portfolio-work-role" value="live-sound-engineering" data-work-role>
+							<input id="works-filter-panel-2-role-engineering-live-sound-engineering" type="checkbox" name="portfolio-work-role" value="live-sound-engineering" data-work-role>
 							<span>LIVE SOUND ENGINEERING</span>
 						</label>
 																										<label class="works-filter-panel__option" data-work-role-option="mixing" for="works-filter-panel-2-role-engineering-mixing">
-							<input id="works-filter-panel-2-role-engineering-mixing" type="radio" name="portfolio-work-role" value="mixing" data-work-role>
+							<input id="works-filter-panel-2-role-engineering-mixing" type="checkbox" name="portfolio-work-role" value="mixing" data-work-role>
 							<span>MIXING</span>
 						</label>
 																										<label class="works-filter-panel__option" data-work-role-option="mastering" for="works-filter-panel-2-role-engineering-mastering">
-							<input id="works-filter-panel-2-role-engineering-mastering" type="radio" name="portfolio-work-role" value="mastering" data-work-role>
+							<input id="works-filter-panel-2-role-engineering-mastering" type="checkbox" name="portfolio-work-role" value="mastering" data-work-role>
 							<span>MASTERING</span>
 						</label>
 																										<label class="works-filter-panel__option" data-work-role-option="audio-editing" for="works-filter-panel-2-role-engineering-audio-editing">
-							<input id="works-filter-panel-2-role-engineering-audio-editing" type="radio" name="portfolio-work-role" value="audio-editing" data-work-role>
+							<input id="works-filter-panel-2-role-engineering-audio-editing" type="checkbox" name="portfolio-work-role" value="audio-editing" data-work-role>
 							<span>AUDIO EDITING</span>
 						</label>
 												</div>
@@ -309,27 +281,27 @@ h1:where(.wp-block-heading).has-background,h2:where(.wp-block-heading).has-backg
 			<h4 class="works-filter-panel__group-title">CREATIVE / TECH</h4>
 			<div class="works-filter-panel__options">
 																					<label class="works-filter-panel__option" data-work-role-option="sound-design" for="works-filter-panel-2-role-creative-tech-sound-design">
-							<input id="works-filter-panel-2-role-creative-tech-sound-design" type="radio" name="portfolio-work-role" value="sound-design" data-work-role>
+							<input id="works-filter-panel-2-role-creative-tech-sound-design" type="checkbox" name="portfolio-work-role" value="sound-design" data-work-role>
 							<span>SOUND DESIGN</span>
 						</label>
 																										<label class="works-filter-panel__option" data-work-role-option="interactive-audio" for="works-filter-panel-2-role-creative-tech-interactive-audio">
-							<input id="works-filter-panel-2-role-creative-tech-interactive-audio" type="radio" name="portfolio-work-role" value="interactive-audio" data-work-role>
+							<input id="works-filter-panel-2-role-creative-tech-interactive-audio" type="checkbox" name="portfolio-work-role" value="interactive-audio" data-work-role>
 							<span>INTERACTIVE AUDIO</span>
 						</label>
 																										<label class="works-filter-panel__option" data-work-role-option="max-msp" for="works-filter-panel-2-role-creative-tech-max-msp">
-							<input id="works-filter-panel-2-role-creative-tech-max-msp" type="radio" name="portfolio-work-role" value="max-msp" data-work-role>
+							<input id="works-filter-panel-2-role-creative-tech-max-msp" type="checkbox" name="portfolio-work-role" value="max-msp" data-work-role>
 							<span>MAX/MSP</span>
 						</label>
 																										<label class="works-filter-panel__option" data-work-role-option="spatial-multichannel-audio" for="works-filter-panel-2-role-creative-tech-spatial-multichannel-audio">
-							<input id="works-filter-panel-2-role-creative-tech-spatial-multichannel-audio" type="radio" name="portfolio-work-role" value="spatial-multichannel-audio" data-work-role>
+							<input id="works-filter-panel-2-role-creative-tech-spatial-multichannel-audio" type="checkbox" name="portfolio-work-role" value="spatial-multichannel-audio" data-work-role>
 							<span>SPATIAL / MULTICHANNEL AUDIO</span>
 						</label>
 																										<label class="works-filter-panel__option" data-work-role-option="show-music-programming" for="works-filter-panel-2-role-creative-tech-show-music-programming">
-							<input id="works-filter-panel-2-role-creative-tech-show-music-programming" type="radio" name="portfolio-work-role" value="show-music-programming" data-work-role>
+							<input id="works-filter-panel-2-role-creative-tech-show-music-programming" type="checkbox" name="portfolio-work-role" value="show-music-programming" data-work-role>
 							<span>SHOW / MUSIC PROGRAMMING</span>
 						</label>
 																										<label class="works-filter-panel__option" data-work-role-option="software-development" for="works-filter-panel-2-role-creative-tech-software-development">
-							<input id="works-filter-panel-2-role-creative-tech-software-development" type="radio" name="portfolio-work-role" value="software-development" data-work-role>
+							<input id="works-filter-panel-2-role-creative-tech-software-development" type="checkbox" name="portfolio-work-role" value="software-development" data-work-role>
 							<span>SOFTWARE DEVELOPMENT</span>
 						</label>
 												</div>
@@ -340,43 +312,35 @@ h1:where(.wp-block-heading).has-background,h2:where(.wp-block-heading).has-backg
 					<summary>STYLE / GENRE</summary>
 					<div class="works-filter-panel__section-body">
 						<label class="works-filter-panel__option works-filter-panel__option--all" data-work-style-option="all" for="works-filter-panel-2-style-all">
-							<input id="works-filter-panel-2-style-all" type="radio" name="portfolio-work-style" value="all" data-work-style checked>
+							<input id="works-filter-panel-2-style-all" type="checkbox" name="portfolio-work-style" value="all" data-work-style checked>
 							<span>ALL STYLES</span>
 						</label>
-								<div class="works-filter-panel__group" data-work-filter-group="frequent">
-			<h4 class="works-filter-panel__group-title">FREQUENT</h4>
+								<div class="works-filter-panel__group" data-work-filter-group="pop">
+			<h4 class="works-filter-panel__group-title">POP</h4>
 			<div class="works-filter-panel__options">
-																					<label class="works-filter-panel__option" data-work-style-option="pop" for="works-filter-panel-2-style-frequent-pop">
-							<input id="works-filter-panel-2-style-frequent-pop" type="radio" name="portfolio-work-style" value="pop" data-work-style>
+																					<label class="works-filter-panel__option" data-work-style-option="pop" for="works-filter-panel-2-style-pop-pop">
+							<input id="works-filter-panel-2-style-pop-pop" type="checkbox" name="portfolio-work-style" value="pop" data-work-style>
 							<span>POP</span>
 						</label>
-																										<label class="works-filter-panel__option" data-work-style-option="rock" for="works-filter-panel-2-style-frequent-rock">
-							<input id="works-filter-panel-2-style-frequent-rock" type="radio" name="portfolio-work-style" value="rock" data-work-style>
-							<span>ROCK</span>
-						</label>
-																										<label class="works-filter-panel__option" data-work-style-option="j-pop" for="works-filter-panel-2-style-frequent-j-pop">
-							<input id="works-filter-panel-2-style-frequent-j-pop" type="radio" name="portfolio-work-style" value="j-pop" data-work-style>
+																										<label class="works-filter-panel__option" data-work-style-option="j-pop" for="works-filter-panel-2-style-pop-j-pop">
+							<input id="works-filter-panel-2-style-pop-j-pop" type="checkbox" name="portfolio-work-style" value="j-pop" data-work-style>
 							<span>J-POP</span>
-						</label>
-																										<label class="works-filter-panel__option" data-work-style-option="electronic" for="works-filter-panel-2-style-frequent-electronic">
-							<input id="works-filter-panel-2-style-frequent-electronic" type="radio" name="portfolio-work-style" value="electronic" data-work-style>
-							<span>ELECTRONIC</span>
-						</label>
-																										<label class="works-filter-panel__option" data-work-style-option="ambient" for="works-filter-panel-2-style-frequent-ambient">
-							<input id="works-filter-panel-2-style-frequent-ambient" type="radio" name="portfolio-work-style" value="ambient" data-work-style>
-							<span>AMBIENT</span>
 						</label>
 												</div>
 		</div>
 				<div class="works-filter-panel__group" data-work-filter-group="rock">
 			<h4 class="works-filter-panel__group-title">ROCK</h4>
 			<div class="works-filter-panel__options">
-																					<label class="works-filter-panel__option" data-work-style-option="metal" for="works-filter-panel-2-style-rock-metal">
-							<input id="works-filter-panel-2-style-rock-metal" type="radio" name="portfolio-work-style" value="metal" data-work-style>
+																					<label class="works-filter-panel__option" data-work-style-option="rock" for="works-filter-panel-2-style-rock-rock">
+							<input id="works-filter-panel-2-style-rock-rock" type="checkbox" name="portfolio-work-style" value="rock" data-work-style>
+							<span>ROCK</span>
+						</label>
+																										<label class="works-filter-panel__option" data-work-style-option="metal" for="works-filter-panel-2-style-rock-metal">
+							<input id="works-filter-panel-2-style-rock-metal" type="checkbox" name="portfolio-work-style" value="metal" data-work-style>
 							<span>METAL</span>
 						</label>
 																										<label class="works-filter-panel__option" data-work-style-option="symphonic-metal" for="works-filter-panel-2-style-rock-symphonic-metal">
-							<input id="works-filter-panel-2-style-rock-symphonic-metal" type="radio" name="portfolio-work-style" value="symphonic-metal" data-work-style>
+							<input id="works-filter-panel-2-style-rock-symphonic-metal" type="checkbox" name="portfolio-work-style" value="symphonic-metal" data-work-style>
 							<span>SYMPHONIC METAL</span>
 						</label>
 												</div>
@@ -384,20 +348,24 @@ h1:where(.wp-block-heading).has-background,h2:where(.wp-block-heading).has-backg
 				<div class="works-filter-panel__group" data-work-filter-group="electronic">
 			<h4 class="works-filter-panel__group-title">ELECTRONIC</h4>
 			<div class="works-filter-panel__options">
-																					<label class="works-filter-panel__option" data-work-style-option="edm" for="works-filter-panel-2-style-electronic-edm">
-							<input id="works-filter-panel-2-style-electronic-edm" type="radio" name="portfolio-work-style" value="edm" data-work-style>
+																					<label class="works-filter-panel__option" data-work-style-option="electronic" for="works-filter-panel-2-style-electronic-electronic">
+							<input id="works-filter-panel-2-style-electronic-electronic" type="checkbox" name="portfolio-work-style" value="electronic" data-work-style>
+							<span>ELECTRONIC</span>
+						</label>
+																										<label class="works-filter-panel__option" data-work-style-option="edm" for="works-filter-panel-2-style-electronic-edm">
+							<input id="works-filter-panel-2-style-electronic-edm" type="checkbox" name="portfolio-work-style" value="edm" data-work-style>
 							<span>EDM</span>
 						</label>
 																										<label class="works-filter-panel__option" data-work-style-option="ambient" for="works-filter-panel-2-style-electronic-ambient">
-							<input id="works-filter-panel-2-style-electronic-ambient" type="radio" name="portfolio-work-style" value="ambient" data-work-style>
+							<input id="works-filter-panel-2-style-electronic-ambient" type="checkbox" name="portfolio-work-style" value="ambient" data-work-style>
 							<span>AMBIENT</span>
 						</label>
 																										<label class="works-filter-panel__option" data-work-style-option="experimental" for="works-filter-panel-2-style-electronic-experimental">
-							<input id="works-filter-panel-2-style-electronic-experimental" type="radio" name="portfolio-work-style" value="experimental" data-work-style>
+							<input id="works-filter-panel-2-style-electronic-experimental" type="checkbox" name="portfolio-work-style" value="experimental" data-work-style>
 							<span>EXPERIMENTAL</span>
 						</label>
 																										<label class="works-filter-panel__option" data-work-style-option="synth-pop" for="works-filter-panel-2-style-electronic-synth-pop">
-							<input id="works-filter-panel-2-style-electronic-synth-pop" type="radio" name="portfolio-work-style" value="synth-pop" data-work-style>
+							<input id="works-filter-panel-2-style-electronic-synth-pop" type="checkbox" name="portfolio-work-style" value="synth-pop" data-work-style>
 							<span>SYNTH POP</span>
 						</label>
 												</div>
@@ -406,19 +374,19 @@ h1:where(.wp-block-heading).has-background,h2:where(.wp-block-heading).has-backg
 			<h4 class="works-filter-panel__group-title">OTHER</h4>
 			<div class="works-filter-panel__options">
 																					<label class="works-filter-panel__option" data-work-style-option="symphonic" for="works-filter-panel-2-style-other-symphonic">
-							<input id="works-filter-panel-2-style-other-symphonic" type="radio" name="portfolio-work-style" value="symphonic" data-work-style>
+							<input id="works-filter-panel-2-style-other-symphonic" type="checkbox" name="portfolio-work-style" value="symphonic" data-work-style>
 							<span>SYMPHONIC</span>
 						</label>
 																										<label class="works-filter-panel__option" data-work-style-option="hip-hop" for="works-filter-panel-2-style-other-hip-hop">
-							<input id="works-filter-panel-2-style-other-hip-hop" type="radio" name="portfolio-work-style" value="hip-hop" data-work-style>
+							<input id="works-filter-panel-2-style-other-hip-hop" type="checkbox" name="portfolio-work-style" value="hip-hop" data-work-style>
 							<span>HIP HOP</span>
 						</label>
 																										<label class="works-filter-panel__option" data-work-style-option="r-and-b" for="works-filter-panel-2-style-other-r-and-b">
-							<input id="works-filter-panel-2-style-other-r-and-b" type="radio" name="portfolio-work-style" value="r-and-b" data-work-style>
+							<input id="works-filter-panel-2-style-other-r-and-b" type="checkbox" name="portfolio-work-style" value="r-and-b" data-work-style>
 							<span>R&amp;B</span>
 						</label>
 																										<label class="works-filter-panel__option" data-work-style-option="acg" for="works-filter-panel-2-style-other-acg">
-							<input id="works-filter-panel-2-style-other-acg" type="radio" name="portfolio-work-style" value="acg" data-work-style>
+							<input id="works-filter-panel-2-style-other-acg" type="checkbox" name="portfolio-work-style" value="acg" data-work-style>
 							<span>ACG</span>
 						</label>
 												</div>
@@ -1209,6 +1177,7 @@ h1:where(.wp-block-heading).has-background,h2:where(.wp-block-heading).has-backg
 {"prefetch":[{"source":"document","where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":["/wp-*.php","/wp-admin/*","/wp-content/uploads/*","/wp-content/*","/wp-content/plugins/*","/wp-content/themes/portfolio-theme/*","/*\\?(.+)"]}},{"not":{"selector_matches":"a[rel~=\"nofollow\"]"}},{"not":{"selector_matches":".no-prefetch, .no-prefetch a"}}]},"eagerness":"conservative"}]}
 </script>
 <script data-wp-router-options="{&quot;loadOnClientNavigation&quot;:true}" fetchpriority="low" id="@wordpress/block-library/navigation/view-js-module" src="/wp-includes/js/dist/script-modules/block-library/navigation/view.min.js?ver=1bf28ded04f9f188bdcb" type="module"></script>
+<script id="portfolio-theme-site-icon-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/site-icon-01.js?ver=0.6.14" type="module"></script>
 <script id="portfolio-theme-contact-form-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/contact-form-01.js?ver=0.6.14" type="module"></script>
 <script id="portfolio-theme-works-directory-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/works-directory-01.js?ver=0.6.14" type="module"></script>
 <script id="wp-emoji-settings" type="application/json">

@@ -1,19 +1,19 @@
-.portfolio-works-surface {
+:is(.portfolio-works-surface, .portfolio-direct-surface) {
 	color-scheme: dark;
 	color: var(--wp--preset--color--portal-foreground);
 	background: var(--wp--preset--color--portal-canvas);
 }
 
-.portfolio-works-surface :is(.wp-site-blocks, .site-header, .site-footer) {
+:is(.portfolio-works-surface, .portfolio-direct-surface) :is(.wp-site-blocks, .site-header, .site-footer) {
 	color: var(--wp--preset--color--portal-foreground);
 	background: var(--wp--preset--color--portal-canvas);
 }
 
-.portfolio-works-surface :is(.site-header, .site-footer) {
+:is(.portfolio-works-surface, .portfolio-direct-surface) :is(.site-header, .site-footer) {
 	border-color: var(--wp--preset--color--portal-line);
 }
 
-.portfolio-works-surface :is(.site-header, .site-footer) a {
+:is(.portfolio-works-surface, .portfolio-direct-surface) :is(.site-header, .site-footer) a {
 	color: inherit;
 }
 
@@ -39,18 +39,18 @@
 	padding-top: clamp(1.25rem, 2.5vw, 2.5rem);
 }
 
-/* Direct /work/: no prototype language control. */
-.portfolio-works-surface:has(.works-directory) .prototype-language-control {
+/* Direct /work/, Direct CV and Direct Contact: no prototype language control. */
+:is(.portfolio-works-surface:has(.works-directory), .portfolio-direct-surface) .prototype-language-control {
 	display: none;
 }
 
-/* Direct /work/: header navigation centered on the page (desktop/tablet). */
+/* Direct /work/, Direct CV and Direct Contact: header navigation centered on the page (desktop/tablet). */
 @media (min-width: 601px) {
-	.portfolio-works-surface:has(.works-directory) .site-header__title {
+	:is(.portfolio-works-surface:has(.works-directory), .portfolio-direct-surface) .site-header__title {
 		grid-row: 1;
 	}
 
-	.portfolio-works-surface:has(.works-directory) .primary-navigation {
+	:is(.portfolio-works-surface:has(.works-directory), .portfolio-direct-surface) .primary-navigation {
 		grid-column: 1 / -1;
 		grid-row: 1;
 		justify-self: center;

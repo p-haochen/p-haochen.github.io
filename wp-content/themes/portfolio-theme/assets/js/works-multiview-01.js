@@ -1,4 +1,6 @@
 import { createPlaylistComponent, playlistTracksForWork } from './playlist-component-01.js';
+import { createMusicCollections } from './music-collections-01.js';
+import { createSignalView, isSignalSoundOn, onSignalSoundChange, setSignalSound, signalSoundLevel } from './works-signal-01.js';
 
 const validViews = new Set(['all', 'music', 'live', 'tech']);
 const validSorts = new Set(['curated', 'newest', 'oldest', 'az']);
@@ -18,12 +20,40 @@ function normalizeSort(value) {
 	return typeof value === 'string' && validSorts.has(value) ? value : 'curated';
 }
 
+// ROLE and STYLE accept several values: kept as one comma-separated string ("guitar,bass"), or 'all'.
+// Works match when they have any of the chosen roles (and any of the chosen styles).
+function parseMulti(value, labels) {
+	if (typeof value !== 'string') return [];
+	return [...new Set(value.split(',').map((item) => item.trim()).filter((item) => labels.has(item)))];
+}
+
 function normalizeRole(value, roleLabels) {
-	return typeof value === 'string' && roleLabels.has(value) ? value : 'all';
+	const list = parseMulti(value, roleLabels);
+	return list.length > 0 ? list.join(',') : 'all';
 }
 
 function normalizeStyle(value, styleLabels) {
-	return typeof value === 'string' && styleLabels.has(value) ? value : 'all';
+	const list = parseMulti(value, styleLabels);
+	return list.length > 0 ? list.join(',') : 'all';
+}
+
+function multiValues(value) {
+	return value === 'all' || typeof value !== 'string' || value === '' ? [] : value.split(',');
+}
+
+function matchesAny(value, slugs) {
+	const wanted = multiValues(value);
+	return wanted.length === 0 || wanted.some((slug) => slugs.includes(slug));
+}
+
+function keepAvailable(value, available) {
+	const list = multiValues(value).filter((slug) => available.has(slug));
+	return list.length > 0 ? list.join(',') : 'all';
+}
+
+function multiLabel(value, labels, fallback) {
+	const list = multiValues(value);
+	return list.length === 0 ? fallback : list.map((slug) => labels.get(slug) ?? slug).join(' + ');
 }
 
 function workYear(work) {
@@ -754,7 +784,7 @@ function createCollectionModule(work, player) {
 	return { root: fallback, mount() {}, destroy() {} };
 }
 
-function renderMusicView(works, player, role, style, roleLabel, styleLabel) {
+function renderMusicView(works, player, role, style, roleLabel, styleLabel, signalTop = null) {
 	const musicWorks = works;
 	const controllers = [];
 	const root = document.createElement('div');
@@ -763,28 +793,36 @@ function renderMusicView(works, player, role, style, roleLabel, styleLabel) {
 		root.append(createEmptyState('music', role, style, roleLabel, styleLabel));
 		return { root, mount() {}, destroy() {} };
 	}
-	const coverBrowser = document.createElement('section');
-	coverBrowser.className = 'music-cover-browser';
-	coverBrowser.setAttribute('aria-labelledby', 'music-cover-browser-title');
-	const coverHeading = document.createElement('h2');
-	coverHeading.id = 'music-cover-browser-title';
-	coverHeading.className = 'screen-reader-text';
-	coverHeading.textContent = 'Music cover browser';
-	const covers = document.createElement('ul');
-	covers.className = 'music-cover-browser__grid';
+	// Portal signal design: the node network / string list replaces the cover browser;
+	// the MUSIC COLLECTIONS players below stay as they are.
 	let openCover = null;
-	const requestCoverOpen = (controller) => {
-		if (openCover && openCover !== controller) openCover.setOverlayOpen(false);
-		const nextOpen = !controller.isOpen();
-		controller.setOverlayOpen(nextOpen);
-		openCover = nextOpen ? controller : null;
-	};
-	for (const work of musicWorks) {
-		const controller = createMusicCoverCard(work, player, requestCoverOpen);
-		controllers.push(controller);
-		covers.append(controller.root);
+	let coverBrowser;
+	if (signalTop) {
+		controllers.push(signalTop);
+		coverBrowser = signalTop.root;
+	} else {
+		coverBrowser = document.createElement('section');
+		coverBrowser.className = 'music-cover-browser';
+		coverBrowser.setAttribute('aria-labelledby', 'music-cover-browser-title');
+		const coverHeading = document.createElement('h2');
+		coverHeading.id = 'music-cover-browser-title';
+		coverHeading.className = 'screen-reader-text';
+		coverHeading.textContent = 'Music cover browser';
+		const covers = document.createElement('ul');
+		covers.className = 'music-cover-browser__grid';
+		const requestCoverOpen = (controller) => {
+			if (openCover && openCover !== controller) openCover.setOverlayOpen(false);
+			const nextOpen = !controller.isOpen();
+			controller.setOverlayOpen(nextOpen);
+			openCover = nextOpen ? controller : null;
+		};
+		for (const work of musicWorks) {
+			const controller = createMusicCoverCard(work, player, requestCoverOpen);
+			controllers.push(controller);
+			covers.append(controller.root);
+		}
+		coverBrowser.append(coverHeading, covers);
 	}
-	coverBrowser.append(coverHeading, covers);
 
 	const collections = document.createElement('section');
 	collections.className = 'music-collections-browser';
@@ -795,15 +833,30 @@ function renderMusicView(works, player, role, style, roleLabel, styleLabel) {
 	collectionsHeading.textContent = 'MUSIC COLLECTIONS';
 	const grouping = document.createElement('p');
 	grouping.className = 'music-collections-browser__grouping';
-	grouping.textContent = 'BY RELEASE';
-	collectionsHeader.append(collectionsHeading, grouping);
 	const collectionGrid = document.createElement('div');
 	collectionGrid.className = 'music-collections-browser__grid';
 	const releases = musicWorks.filter((work) => tracksForWork(work).length > 0);
-	for (const work of releases) {
-		const controller = createCollectionModule(work, player);
-		controllers.push(controller);
-		collectionGrid.append(controller.root);
+	// Session summary: releases, tracks and total running time.
+	const trackCount = releases.reduce((total, work) => total + tracksForWork(work).length, 0);
+	const runtime = Math.floor(releases.reduce((total, work) => total + tracksForWork(work).reduce((sum, track) => sum + (Number(track.duration) || 0), 0), 0));
+	const clock = runtime >= 3600
+		? `${Math.floor(runtime / 3600)}:${String(Math.floor((runtime % 3600) / 60)).padStart(2, '0')}:${String(runtime % 60).padStart(2, '0')}`
+		: `${Math.floor(runtime / 60)}:${String(runtime % 60).padStart(2, '0')}`;
+	grouping.textContent = [`${releases.length} RELEASES`, `${trackCount} TRACKS`, runtime > 0 ? clock : ''].filter(Boolean).join(' · ');
+	collectionsHeader.append(collectionsHeading, grouping);
+	// Portal signal design: CRATE / LINER / TABLE, switched from the section header.
+	const styled = signalTop ? createMusicCollections(releases, player) : null;
+	if (styled) {
+		controllers.push(styled);
+		collectionGrid.classList.add('has-collection-styles');
+		collectionGrid.append(styled.root);
+		collectionsHeader.insertBefore(styled.switcher, grouping);
+	} else {
+		for (const work of releases) {
+			const controller = createCollectionModule(work, player);
+			controllers.push(controller);
+			collectionGrid.append(controller.root);
+		}
 	}
 	if (releases.length === 0) {
 		const empty = document.createElement('p');
@@ -822,6 +875,9 @@ function renderMusicView(works, player, role, style, roleLabel, styleLabel) {
 	document.addEventListener('pointerdown', onDocumentPointerDown, true);
 	return {
 		root,
+		layout() {
+			signalTop?.layout?.();
+		},
 		mount() {
 			controllers.forEach((controller) => controller.mount?.());
 		},
@@ -861,14 +917,13 @@ function syncDimensionControl(state, dimension, viewWorks, value) {
 		}
 	}
 
-	let selectedApplied = false;
+	const selected = multiValues(value);
 	for (const input of state.controlsRoot.querySelectorAll(`[data-work-${dimension}]`)) {
 		if (!(input instanceof HTMLInputElement)) continue;
 		const slug = input.value;
 		const option = input.closest(`[data-work-${dimension}-option]`);
 		if (option instanceof HTMLElement) option.hidden = slug !== 'all' && !available.has(slug);
-		input.checked = slug === value && !selectedApplied;
-		if (input.checked) selectedApplied = true;
+		input.checked = slug === 'all' ? selected.length === 0 : selected.includes(slug);
 	}
 
 	const section = state.controlsRoot.querySelector(`[data-work-filter-section="${dimension}"]`);
@@ -889,9 +944,9 @@ function syncFilterSummary(state, role, style) {
 	const collapsedSummary = host.querySelector('[data-work-filter-collapsed-summary]');
 	const chips = host.querySelector('[data-work-filter-chips]');
 	const active = [
-		role === 'all' ? null : { dimension: 'role', slug: role, label: state.roleLabels.get(role) ?? role },
-		style === 'all' ? null : { dimension: 'style', slug: style, label: state.styleLabels.get(style) ?? style },
-	].filter(Boolean);
+		...multiValues(role).map((slug) => ({ dimension: 'role', slug, label: state.roleLabels.get(slug) ?? slug })),
+		...multiValues(style).map((slug) => ({ dimension: 'style', slug, label: state.styleLabels.get(slug) ?? slug })),
+	];
 	const activeLabel = active.length === 0 ? 'ALL' : `${active.length} ACTIVE`;
 	if (summary instanceof HTMLElement) summary.textContent = activeLabel;
 	if (collapsedSummary instanceof HTMLElement) collapsedSummary.textContent = '';
@@ -920,19 +975,21 @@ function renderView(state, view) {
 	const availableStyles = new Set(viewWorks.flatMap((work) => styleSlugs(work)).filter((slug) => state.styleLabels.has(slug)));
 	let role = normalizeRole(state.roles[view], state.roleLabels);
 	let style = normalizeStyle(state.styles[view], state.styleLabels);
-	if (role !== 'all' && !availableRoles.has(role)) role = 'all';
-	if (style !== 'all' && !availableStyles.has(style)) style = 'all';
+	role = keepAvailable(role, availableRoles);
+	style = keepAvailable(style, availableStyles);
 	state.roles[view] = role;
 	state.styles[view] = style;
-	const matchingWorks = viewWorks.filter((work) => (role === 'all' || roleSlugs(work).includes(role))
-		&& (style === 'all' || styleSlugs(work).includes(style)));
+	const matchingWorks = viewWorks.filter((work) => matchesAny(role, roleSlugs(work)) && matchesAny(style, styleSlugs(work)));
 	const orderedWorks = sortWorks(matchingWorks, sort);
-	const roleLabel = state.roleLabels.get(role) ?? 'ALL ROLES';
-	const styleLabel = state.styleLabels.get(style) ?? 'ALL STYLES';
-	const rendered = view === 'music'
-		? renderMusicView(orderedWorks, state.player, role, style, roleLabel, styleLabel)
-		: { root: renderVisualGrid(orderedWorks, view, role, style, roleLabel, styleLabel), mount() {}, destroy() {} };
+	const roleLabel = multiLabel(role, state.roleLabels, 'ALL ROLES');
+	const styleLabel = multiLabel(style, state.styleLabels, 'ALL STYLES');
+	const rendered = state.signal
+		? renderSignalView(state, orderedWorks, view, sort, role, style, roleLabel, styleLabel)
+		: view === 'music'
+			? renderMusicView(orderedWorks, state.player, role, style, roleLabel, styleLabel)
+			: { root: renderVisualGrid(orderedWorks, view, role, style, roleLabel, styleLabel), mount() {}, destroy() {} };
 	state.container.replaceChildren(rendered.root);
+	rendered.layout?.();
 	const releaseCoverGroup = prepareWorksCoverGroup(rendered.root);
 	state.activeCleanup = () => {
 		releaseCoverGroup();
@@ -958,10 +1015,14 @@ function renderView(state, view) {
 	if (sortHost instanceof HTMLElement) {
 		sortHost.classList.toggle('has-active-value', sort !== 'curated');
 		sortHost.dataset.activeSortLabel = sortControl.selectedOptions[0]?.textContent?.trim() ?? 'CURATED';
+		// The whole SORT pill is the select's hit area; this keeps the pill as wide as the chosen label.
+		const sortField = sortControl.closest('.works-directory__sort-field');
+		if (sortField instanceof HTMLElement) sortField.dataset.sortLabel = sortHost.dataset.activeSortLabel;
 		const summary = sortHost.querySelector('[data-work-sort-summary]');
 		if (summary instanceof HTMLElement) summary.textContent = '';
 	}
 	state.player?.setRouteIsMusic(view === 'music');
+	if (state.signal) syncSignalBar(state, view, role, style, matchingWorks.length);
 	const detail = {
 		view,
 		sort,
@@ -970,9 +1031,192 @@ function renderView(state, view) {
 		roles: { ...state.roles },
 		style,
 		styles: { ...state.styles },
+		display: state.display,
 		visibleCount: matchingWorks.length,
 	};
 	if (state.controller) Object.assign(state.controller, detail);
+	return detail;
+}
+
+/* ---------- Portal signal design (accepted WORKS prototype) ---------- */
+const signalDisplays = new Set(['covers', 'list']);
+const signalDisplayKey = 'portfolio:works-display';
+let lastSignalDisplay = null;
+
+function normalizeSignalDisplay(value) {
+	return signalDisplays.has(value) ? value : 'covers';
+}
+
+function rememberedSignalDisplay() {
+	if (lastSignalDisplay) return lastSignalDisplay;
+	try {
+		return normalizeSignalDisplay(window.sessionStorage.getItem(signalDisplayKey));
+	} catch {
+		return 'covers';
+	}
+}
+
+function rememberSignalDisplay(display) {
+	lastSignalDisplay = display;
+	try {
+		window.sessionStorage.setItem(signalDisplayKey, display);
+	} catch {
+		// Storage can be unavailable (private mode); the in-memory value still applies.
+	}
+}
+
+const signalHelpers = { createArtwork, annotateWorkItem, categorySlugs };
+
+function renderSignalView(state, orderedWorks, view, sort, role, style, roleLabel, styleLabel) {
+	const grouped = sort === 'newest' || sort === 'oldest';
+	if (orderedWorks.length === 0) {
+		const root = createEmptyState(view, role, style, roleLabel, styleLabel);
+		return { root, mount() {}, destroy() {} };
+	}
+	const signal = createSignalView({ works: orderedWorks, view, display: state.display, grouped, helpers: signalHelpers });
+	if (view === 'music') return renderMusicView(orderedWorks, state.player, role, style, roleLabel, styleLabel, signal);
+	// No .works-view classes here: the legacy card-grid rules must not reach the signal views.
+	signal.root.dataset.workView = view;
+	return signal;
+}
+
+const signalIcons = {
+	covers: '<svg viewBox="0 0 14 14" aria-hidden="true" focusable="false"><rect x="1" y="1" width="5" height="5" rx="1" fill="none" stroke="currentColor" stroke-width="1.2"/><rect x="8" y="1" width="5" height="5" rx="1" fill="none" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="8" width="5" height="5" rx="1" fill="none" stroke="currentColor" stroke-width="1.2"/><rect x="8" y="8" width="5" height="5" rx="1" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>',
+	list: '<svg viewBox="0 0 14 14" aria-hidden="true" focusable="false"><path d="M1 3h12M1 7h12M1 11h12" stroke="currentColor" stroke-width="1.2"/></svg>',
+	dsp: '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M2 6h3l4-3v10l-4-3H2z" fill="currentColor"/><path d="M11.5 5.5a3.5 3.5 0 0 1 0 5M13 3.5a6 6 0 0 1 0 9" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>',
+};
+const enhancedSignalBars = new WeakMap();
+
+function enhanceSignalBar(controlsRoot) {
+	const controls = controlsRoot.querySelector('.works-directory__controls') ?? (controlsRoot.matches('.works-directory__controls') ? controlsRoot : null);
+	if (!(controls instanceof HTMLElement)) return null;
+	const existing = enhancedSignalBars.get(controls);
+	if (existing) return existing;
+	controls.classList.add('works-bar');
+	const title = document.createElement('p');
+	title.className = 'works-bar__title';
+	title.setAttribute('aria-hidden', 'true');
+	const word = document.createElement('span');
+	word.className = 'works-bar__word';
+	word.textContent = 'WORKS';
+	const count = document.createElement('sup');
+	count.className = 'works-bar__count';
+	title.append(word, count);
+	controls.prepend(title);
+	for (const button of controls.querySelectorAll('[data-work-filter]')) {
+		const sup = document.createElement('sup');
+		sup.className = 'works-bar__n';
+		sup.setAttribute('aria-hidden', 'true');
+		button.append(sup);
+	}
+	const trigger = controls.querySelector('[data-work-filter-disclosure]');
+	const badge = document.createElement('b');
+	badge.className = 'works-bar__badge';
+	badge.setAttribute('aria-hidden', 'true');
+	badge.hidden = true;
+	trigger?.append(badge);
+	const tools = controls.querySelector('.works-directory__tools') ?? controls;
+	const dsp = document.createElement('button');
+	dsp.type = 'button';
+	dsp.className = 'works-bar__dsp';
+	dsp.dataset.workSignalDsp = '';
+	dsp.setAttribute('aria-pressed', String(isSignalSoundOn()));
+	dsp.setAttribute('aria-label', 'Sound effects (DSP)');
+	dsp.innerHTML = `${signalIcons.dsp}<span class="works-bar__dsp-text"></span><span class="works-bar__dsp-level" aria-hidden="true"><i></i></span>`;
+	const displayGroup = document.createElement('div');
+	displayGroup.className = 'works-bar__display';
+	displayGroup.setAttribute('role', 'group');
+	displayGroup.setAttribute('aria-label', 'Works display');
+	for (const [value, label] of [['covers', 'Covers'], ['list', 'List']]) {
+		const button = document.createElement('button');
+		button.type = 'button';
+		button.dataset.workDisplay = value;
+		button.setAttribute('aria-label', label);
+		button.setAttribute('aria-pressed', 'false');
+		button.title = label;
+		button.innerHTML = signalIcons[value];
+		displayGroup.append(button);
+	}
+	tools.append(dsp, displayGroup);
+	const bar = { controls, count, badge, dsp, displayGroup, meterFrame: 0 };
+	const level = dsp.querySelector('.works-bar__dsp-level i');
+	const syncDsp = (on) => {
+		dsp.setAttribute('aria-pressed', String(on));
+		dsp.querySelector('.works-bar__dsp-text').textContent = on ? 'DSP ON' : 'DSP OFF';
+		window.cancelAnimationFrame(bar.meterFrame);
+		const meter = () => {
+			const value = signalSoundLevel();
+			level.style.transform = `scaleY(${Math.max(0.04, value).toFixed(3)})`;
+			bar.meterFrame = isSignalSoundOn() || value > 0.05 ? window.requestAnimationFrame(meter) : 0;
+		};
+		meter();
+	};
+	syncDsp(isSignalSoundOn());
+	const unsubscribe = onSignalSoundChange((on) => {
+		if (!dsp.isConnected) { unsubscribe(); return; }
+		syncDsp(on);
+	});
+	enhancedSignalBars.set(controls, bar);
+	return bar;
+}
+
+// The count runs through every integer on its way to the new total (24 -> 23 -> ... -> 19):
+// one number per step, at most 55 ms a step, a whole run capped near 600 ms.
+const signalCountReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+function stepSignalCount(bar, target) {
+	const node = bar.count;
+	window.cancelAnimationFrame(bar.countFrame ?? 0);
+	const shown = Number.isInteger(bar.shownCount) ? bar.shownCount : Number.parseInt(node.textContent ?? '', 10);
+	if (signalCountReducedMotion.matches || !Number.isInteger(shown) || shown === target || !node.isConnected) {
+		bar.shownCount = target;
+		node.textContent = String(target).padStart(2, '0');
+		return;
+	}
+	bar.shownCount = shown;
+	const direction = Math.sign(target - shown);
+	const stepMs = Math.min(55, 600 / Math.abs(target - shown));
+	let last = performance.now() - stepMs;
+	const step = (now) => {
+		if (now - last >= stepMs) {
+			last = now - last > stepMs * 2 ? now : last + stepMs;
+			bar.shownCount += direction;
+			node.textContent = String(bar.shownCount).padStart(2, '0');
+		}
+		if (bar.shownCount !== target) bar.countFrame = window.requestAnimationFrame(step);
+	};
+	bar.countFrame = window.requestAnimationFrame(step);
+}
+
+function syncSignalBar(state, view, role, style, visibleCount) {
+	const bar = enhanceSignalBar(state.controlsRoot);
+	if (!bar) return;
+	stepSignalCount(bar, visibleCount);
+	const matches = (work) => matchesAny(role, roleSlugs(work)) && matchesAny(style, styleSlugs(work));
+	for (const button of bar.controls.querySelectorAll('[data-work-filter]')) {
+		const sup = button.querySelector('.works-bar__n');
+		const count = worksForView(state.works, normalizeView(button.dataset.workFilter)).filter(matches).length;
+		if (sup) sup.textContent = String(count);
+		button.classList.toggle('is-empty', count === 0);
+	}
+	const active = multiValues(role).length + multiValues(style).length;
+	bar.badge.hidden = active === 0;
+	bar.badge.textContent = String(active);
+	for (const button of bar.displayGroup.querySelectorAll('[data-work-display]')) {
+		button.setAttribute('aria-pressed', String(button.dataset.workDisplay === state.display));
+	}
+	state.directory.dataset.activeWorkDisplay = state.display;
+}
+
+export function setWorksDisplay(directory, display, options = {}) {
+	const state = directoryStates.get(directory);
+	if (!state) return emptyDetail();
+	state.display = normalizeSignalDisplay(display);
+	rememberSignalDisplay(state.display);
+	const detail = renderView(state, normalizeView(state.directory.dataset.activeWorkView));
+	if (options.emit !== false) {
+		directory.dispatchEvent(new CustomEvent('portfolio:works-display-change', { bubbles: true, detail }));
+		if (typeof state.onDisplayChange === 'function') state.onDisplayChange(detail);
+	}
 	return detail;
 }
 
@@ -983,12 +1227,11 @@ function hydrateViewStateWithoutRendering(state, view) {
 	const availableStyles = new Set(viewWorks.flatMap((work) => styleSlugs(work)).filter((slug) => state.styleLabels.has(slug)));
 	let role = normalizeRole(state.roles[view], state.roleLabels);
 	let style = normalizeStyle(state.styles[view], state.styleLabels);
-	if (role !== 'all' && !availableRoles.has(role)) role = 'all';
-	if (style !== 'all' && !availableStyles.has(style)) style = 'all';
+	role = keepAvailable(role, availableRoles);
+	style = keepAvailable(style, availableStyles);
 	state.roles[view] = role;
 	state.styles[view] = style;
-	const visibleCount = viewWorks.filter((work) => (role === 'all' || roleSlugs(work).includes(role))
-		&& (style === 'all' || styleSlugs(work).includes(style))).length;
+	const visibleCount = viewWorks.filter((work) => matchesAny(role, roleSlugs(work)) && matchesAny(style, styleSlugs(work))).length;
 	Object.assign(state.directory.dataset, {
 		activeWorkView: view,
 		activeWorkCategory: view,
@@ -1026,11 +1269,60 @@ function setFilterPanelOpen(controlsRoot, open, restoreFocus = true) {
 	}
 }
 
+// Every chosen value of one dimension (ROLE or STYLE), apart from ALL.
+function checkedValues(controlsRoot, dimension) {
+	return [...controlsRoot.querySelectorAll(`[data-work-${dimension}]`)]
+		.filter((input) => input instanceof HTMLInputElement && input.checked && input.value !== 'all')
+		.map((input) => input.value)
+		.join(',');
+}
+
 function controlsState(controlsRoot) {
 	let state = controlsStates.get(controlsRoot);
 	if (state) return state;
 	state = { directory: null };
 	controlsStates.set(controlsRoot, state);
+	// The filter panel closes from its × button or a press anywhere outside it; nothing inside it
+	// (options, group titles, empty space, quick repeated clicks) closes it.
+	const isPanelOpen = () => {
+		const panel = controlsRoot.querySelector('[data-work-filter-panel]');
+		return panel instanceof HTMLElement && !panel.hidden ? panel : null;
+	};
+	document.addEventListener('pointerdown', (event) => {
+		const panel = isPanelOpen();
+		if (!panel || !(event.target instanceof Element) || !event.target.isConnected) return;
+		// While a View Transition runs, presses land on the transition overlay (the root element),
+		// even when they are on the panel: those are not "outside" presses.
+		if (event.target === document.documentElement || document.activeViewTransition) return;
+		if (panel.contains(event.target) || event.target.closest('[data-work-filter-disclosure]')) return;
+		setFilterPanelOpen(controlsRoot, false, false);
+	}, true);
+	// A running View Transition makes the root element the hit target, so a quick second press on the
+	// controls or the filter panel would be lost. Finish that transition on press, then hand the click
+	// to the control under the pointer once the real page can be hit again.
+	let pendingRetarget = null;
+	const isOverControls = (x, y) => [controlsRoot, isPanelOpen()].some((node) => {
+		if (!(node instanceof HTMLElement)) return false;
+		const rect = node.getBoundingClientRect();
+		return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+	});
+	document.addEventListener('pointerdown', (event) => {
+		const transition = document.activeViewTransition;
+		if (!transition || event.target !== document.documentElement || event.button !== 0 || !controlsRoot.isConnected) return;
+		if (!isOverControls(event.clientX, event.clientY)) return;
+		pendingRetarget = { x: event.clientX, y: event.clientY, pointerId: event.pointerId, transition };
+		transition.skipTransition();
+	}, true);
+	document.addEventListener('pointerup', (event) => {
+		const pending = pendingRetarget;
+		pendingRetarget = null;
+		if (!pending || pending.pointerId !== event.pointerId) return;
+		const resolve = () => {
+			const control = document.elementFromPoint(pending.x, pending.y)?.closest('label, button, input');
+			if (control instanceof HTMLElement && controlsRoot.contains(control)) control.click();
+		};
+		pending.transition.finished.then(resolve, resolve);
+	}, true);
 	controlsRoot.addEventListener('click', (event) => {
 		const target = event.target instanceof Element ? event.target : null;
 		const trigger = target?.closest('[data-work-filter-disclosure]');
@@ -1042,10 +1334,22 @@ function controlsState(controlsRoot) {
 			setFilterPanelOpen(controlsRoot, false);
 			return;
 		}
+		if (target?.closest('[data-work-signal-dsp]')) {
+			setSignalSound(!isSignalSoundOn());
+			return;
+		}
 		const directory = state.directory;
 		if (!(directory instanceof HTMLElement) || !directory.isConnected) return;
 		const directoryState = directoryStates.get(directory);
 		if (!directoryState) return;
+		const displayButton = target?.closest('[data-work-display]');
+		if (displayButton instanceof HTMLButtonElement) {
+			const display = normalizeSignalDisplay(displayButton.dataset.workDisplay);
+			if (display === directoryState.display) return;
+			if (typeof directoryState.onDisplayRequest === 'function') directoryState.onDisplayRequest({ directory, display, button: displayButton });
+			else setWorksDisplay(directory, display);
+			return;
+		}
 		const viewButton = target?.closest('[data-work-filter]');
 		if (viewButton instanceof HTMLButtonElement) {
 			const view = normalizeView(viewButton.dataset.workFilter);
@@ -1055,12 +1359,20 @@ function controlsState(controlsRoot) {
 		}
 		const chip = target?.closest('[data-work-filter-chip]');
 		if (chip instanceof HTMLButtonElement) {
+			// Each chip removes only its own value; the others stay chosen.
+			const view = normalizeView(directory.dataset.activeWorkView);
+			const without = (value) => {
+				const rest = multiValues(value).filter((slug) => slug !== chip.dataset.workFilterValue);
+				return rest.length > 0 ? rest.join(',') : 'all';
+			};
 			if (chip.dataset.workFilterChip === 'role') {
-				if (typeof directoryState.onRoleRequest === 'function') directoryState.onRoleRequest({ directory, role: 'all', button: chip });
-				else setWorksRole(directory, 'all');
+				const role = without(directoryState.roles[view]);
+				if (typeof directoryState.onRoleRequest === 'function') directoryState.onRoleRequest({ directory, role, button: chip });
+				else setWorksRole(directory, role);
 			} else {
-				if (typeof directoryState.onStyleRequest === 'function') directoryState.onStyleRequest({ directory, style: 'all', button: chip });
-				else setWorksStyle(directory, 'all');
+				const style = without(directoryState.styles[view]);
+				if (typeof directoryState.onStyleRequest === 'function') directoryState.onStyleRequest({ directory, style, button: chip });
+				else setWorksStyle(directory, style);
 			}
 			return;
 		}
@@ -1083,11 +1395,11 @@ function controlsState(controlsRoot) {
 			if (typeof directoryState.onSortRequest === 'function') directoryState.onSortRequest({ directory, sort, select: sortSelect });
 			else setWorksSort(directory, sort);
 		} else if (roleInput instanceof HTMLInputElement) {
-			const role = normalizeRole(roleInput.value, directoryState.roleLabels);
+			const role = roleInput.value === 'all' ? 'all' : normalizeRole(checkedValues(controlsRoot, 'role'), directoryState.roleLabels);
 			if (typeof directoryState.onRoleRequest === 'function') directoryState.onRoleRequest({ directory, role, input: roleInput });
 			else setWorksRole(directory, role);
 		} else if (styleInput instanceof HTMLInputElement) {
-			const style = normalizeStyle(styleInput.value, directoryState.styleLabels);
+			const style = styleInput.value === 'all' ? 'all' : normalizeStyle(checkedValues(controlsRoot, 'style'), directoryState.styleLabels);
 			if (typeof directoryState.onStyleRequest === 'function') directoryState.onStyleRequest({ directory, style, input: styleInput });
 			else setWorksStyle(directory, style);
 		}
@@ -1213,6 +1525,11 @@ export function initializeWorksMultiView(directory, options = {}) {
 		onStyleChange: typeof options.onStyleChange === 'function' ? options.onStyleChange : null,
 		onFiltersRequest: typeof options.onFiltersRequest === 'function' ? options.onFiltersRequest : null,
 		onFiltersChange: typeof options.onFiltersChange === 'function' ? options.onFiltersChange : null,
+		onDisplayRequest: typeof options.onDisplayRequest === 'function' ? options.onDisplayRequest : null,
+		onDisplayChange: typeof options.onDisplayChange === 'function' ? options.onDisplayChange : null,
+		// Portal only: the accepted signal design (node network / string list). Direct keeps its cards.
+		signal: options.signal === true,
+		display: options.signal === true ? rememberedSignalDisplay() : 'covers',
 		activeCleanup() {},
 		controller: null,
 	};
@@ -1242,6 +1559,7 @@ export function initializeWorksMultiView(directory, options = {}) {
 		setRole: (role, settings) => setWorksRole(directory, role, settings),
 		setStyle: (style, settings) => setWorksStyle(directory, style, settings),
 		setFilters: (filters, settings) => setWorksFilters(directory, filters, settings),
+		setDisplay: (display, settings) => setWorksDisplay(directory, display, settings),
 		destroy() {
 			if (destroyed) return;
 			destroyed = true;
@@ -1257,7 +1575,7 @@ export function initializeWorksMultiView(directory, options = {}) {
 	};
 	state.controller = controller;
 	const initialView = normalizeView(options.initialView);
-	const initialDetail = options.preserveInitialMarkup === true
+	const initialDetail = options.preserveInitialMarkup === true && !state.signal
 		? hydrateViewStateWithoutRendering(state, initialView)
 		: renderView(state, initialView);
 	Object.assign(controller, initialDetail);

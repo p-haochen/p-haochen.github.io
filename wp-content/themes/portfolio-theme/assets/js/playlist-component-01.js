@@ -1,13 +1,3 @@
-let playlistControlId = 0;
-
-function formatTime(value) {
-	if (!Number.isFinite(value) || value < 0) return '0:00';
-	const hours = Math.floor(value / 3600);
-	const minutes = Math.floor(value / 60);
-	const seconds = Math.floor(value % 60).toString().padStart(2, '0');
-	return hours > 0 ? `${hours}:${String(minutes % 60).padStart(2, '0')}:${seconds}` : `${minutes}:${seconds}`;
-}
-
 function sameTrack(track, candidate) {
 	if (!track || !candidate || typeof candidate !== 'object' || track.src !== candidate.src) return false;
 	const trackWorkId = Number.parseInt(String(track.workId ?? 0), 10) || 0;
@@ -23,10 +13,6 @@ function queuesMatch(queue, tracks) {
 	return Array.isArray(queue)
 		&& queue.length === tracks.length
 		&& queue.every((track, index) => sameTrack(tracks[index], track));
-}
-
-function clampVolume(value, fallback = 1) {
-	return Number.isFinite(value) ? Math.min(1, Math.max(0, value)) : fallback;
 }
 
 export function playlistTracksForWork(work) {
@@ -62,7 +48,7 @@ export function isPlaylistPlayer(player) {
 
 function createArtwork(cover) {
 	const frame = document.createElement('div');
-	frame.className = 'music-collection__artwork';
+	frame.className = 'music-collection__artwork track-list__artwork';
 	if (!cover || typeof cover.src !== 'string' || cover.src === '') return frame;
 	const image = document.createElement('img');
 	image.src = cover.src;
@@ -77,126 +63,107 @@ function createArtwork(cover) {
 	return frame;
 }
 
-function createVolumeToggle(workTitle) {
-	const button = document.createElement('button');
-	button.type = 'button';
-	button.className = 'music-collection__volume-toggle';
-	button.dataset.musicCollectionVolumeToggle = '';
-	button.setAttribute('aria-label', `Mute ${workTitle}`);
-	const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-	svg.setAttribute('viewBox', '0 0 24 24');
-	svg.setAttribute('focusable', 'false');
-	svg.setAttribute('aria-hidden', 'true');
-	const speaker = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-	speaker.setAttribute('d', 'M4 9v6h4l5 4V5L8 9H4Z');
-	speaker.setAttribute('fill', 'currentColor');
-	const waves = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-	waves.dataset.volumeState = 'on';
-	waves.setAttribute('d', 'M16 8.5a5 5 0 0 1 0 7M18.7 6a8.5 8.5 0 0 1 0 12');
-	const muted = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-	muted.dataset.volumeState = 'muted';
-	muted.setAttribute('d', 'm16.75 9 4.5 4.5m0-4.5-4.5 4.5');
-	for (const detail of [waves, muted]) {
-		detail.setAttribute('fill', 'none');
-		detail.setAttribute('stroke', 'currentColor');
-		detail.setAttribute('stroke-width', '1.5');
-		detail.setAttribute('stroke-linecap', 'round');
-	}
-	svg.append(speaker, waves, muted);
-	button.append(svg);
-	return { button, waves, muted };
+function formatLength(seconds) {
+	const value = Math.max(0, Math.floor(Number(seconds) || 0));
+	return value > 0 ? `${Math.floor(value / 60)}:${String(value % 60).padStart(2, '0')}` : '';
 }
 
+function createStateIcon() {
+	const icon = document.createElement('span');
+	icon.className = 'track-list__state';
+	const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+	svg.setAttribute('viewBox', '0 0 16 16');
+	svg.setAttribute('aria-hidden', 'true');
+	svg.setAttribute('focusable', 'false');
+	const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+	path.setAttribute('d', 'M4 2.5v11l9-5.5z');
+	path.setAttribute('fill', 'currentColor');
+	svg.append(path);
+	const meter = document.createElement('b');
+	meter.setAttribute('aria-hidden', 'true');
+	meter.append(document.createElement('i'), document.createElement('i'), document.createElement('i'));
+	icon.append(svg, meter);
+	return icon;
+}
+
+// A track's own small waveform: a dim copy, and an ember copy clipped to the progress.
+function createMiniWave(peaks) {
+	const box = document.createElement('span');
+	box.className = 'track-list__wave';
+	box.setAttribute('aria-hidden', 'true');
+	if (!Array.isArray(peaks) || peaks.length === 0) {
+		box.classList.add('is-empty');
+		return { box, draw() {} };
+	}
+	const rest = document.createElement('canvas');
+	const played = document.createElement('canvas');
+	played.className = 'track-list__wave-played';
+	box.append(rest, played);
+	return {
+		box,
+		draw() {
+			const width = box.clientWidth;
+			const height = box.clientHeight;
+			if (!width || !height) return;
+			const ratio = Math.min(2, window.devicePixelRatio || 1);
+			const style = getComputedStyle(box);
+			const colors = [
+				style.getPropertyValue('--track-wave-rest').trim() || 'rgb(240 238 232 / 45%)',
+				style.getPropertyValue('--track-wave-played').trim() || '#ed661c',
+			];
+			[rest, played].forEach((canvas, layer) => {
+				canvas.width = Math.round(width * ratio);
+				canvas.height = Math.round(height * ratio);
+				const context = canvas.getContext('2d');
+				if (!context) return;
+				context.setTransform(ratio, 0, 0, ratio, 0, 0);
+				context.fillStyle = colors[layer];
+				const count = Math.floor(width / 3);
+				for (let index = 0; index < count; index += 1) {
+					const peak = (peaks[Math.floor(index / count * peaks.length)] ?? 0) / 99;
+					const bar = Math.max(1, peak * (height / 2 - 1));
+					context.fillRect(index * 3, height / 2 - bar, 2, bar * 2);
+				}
+			});
+		},
+	};
+}
+
+/**
+ * A Work's tracks as a list. Pressing a track plays it in the shared pop-up
+ * player (capsule); the list only shows which track plays and how far it is.
+ *
+ * @param {object}  work
+ * @param {object}  player  music-player-01 controller (or a compatible one).
+ * @param {object}  [options]
+ * @param {boolean} [options.showHeader=true]      Show the Work's cover and title (MUSIC collections).
+ * @param {boolean} [options.announceStatus=false] Announce play / pause in a live region.
+ */
 export function createPlaylistComponent(work, player, options = {}) {
 	if (!work || typeof work.title !== 'string' || !isPlaylistPlayer(player)) return null;
 	const tracks = playlistTracksForWork(work);
 	if (tracks.length === 0) return null;
 	const announceStatus = options.announceStatus === true;
+	const showHeader = options.showHeader !== false;
 
 	const module = document.createElement('article');
-	module.className = 'portfolio-playlist music-collection';
+	module.className = showHeader ? 'portfolio-playlist track-list track-list--collection' : 'portfolio-playlist track-list';
 	module.dataset.workId = String(work.id ?? tracks[0]?.workId ?? '');
-	const heading = document.createElement('h3');
-	heading.className = 'music-collection__title';
-	heading.textContent = work.title;
-	const now = document.createElement('div');
-	now.className = 'music-collection__now';
-	now.append(createArtwork(work.cover));
-	const current = document.createElement('div');
-	current.className = 'music-collection__current';
-	const metadata = document.createElement('div');
-	metadata.className = 'music-collection__metadata';
-	const label = document.createElement('p');
-	label.className = 'music-collection__eyebrow';
-	label.textContent = 'NOW PLAYING';
-	const currentTitle = document.createElement('p');
-	currentTitle.className = 'music-collection__current-title';
-	currentTitle.textContent = tracks[0].title;
-	const controls = document.createElement('div');
-	controls.className = 'music-collection__controls';
-	const control = (labelText, text, className = '') => {
-		const button = document.createElement('button');
-		button.type = 'button';
-		button.setAttribute('aria-label', labelText);
-		button.textContent = text;
-		if (className !== '') button.className = className;
-		return button;
-	};
-	const previousButton = control(`Previous track in ${work.title}`, '◀', 'music-collection__previous');
-	const playButton = control(`Play current track in ${work.title}`, '▶', 'music-collection__play');
-	const nextButton = control(`Next track in ${work.title}`, '▶', 'music-collection__next');
-	controls.append(previousButton, playButton, nextButton);
-
-	const controlId = ++playlistControlId;
-	const timeline = document.createElement('div');
-	timeline.className = 'music-collection__timeline';
-	const seekId = `portfolio-playlist-seek-${work.id ?? 'work'}-${controlId}`;
-	const seekLabel = document.createElement('label');
-	seekLabel.className = 'screen-reader-text';
-	seekLabel.htmlFor = seekId;
-	seekLabel.textContent = `Playback position for ${work.title}`;
-	const seek = document.createElement('input');
-	seek.id = seekId;
-	seek.dataset.musicCollectionSeek = '';
-	seek.type = 'range';
-	seek.min = '0';
-	seek.max = '0';
-	seek.step = '0.1';
-	seek.value = '0';
-	const time = document.createElement('output');
-	time.className = 'music-collection__time';
-	time.dataset.musicCollectionTime = '';
-	time.htmlFor = seekId;
-	time.textContent = '0:00 / 0:00';
-	timeline.append(seekLabel, seek, time);
-
-	const volumeControl = document.createElement('div');
-	volumeControl.className = 'music-collection__volume';
-	const volumeId = `portfolio-playlist-volume-${work.id ?? 'work'}-${controlId}`;
-	const volumeLabel = document.createElement('label');
-	volumeLabel.className = 'screen-reader-text';
-	volumeLabel.htmlFor = volumeId;
-	volumeLabel.textContent = `Volume for ${work.title}`;
-	const volume = document.createElement('input');
-	volume.id = volumeId;
-	volume.dataset.musicCollectionVolume = '';
-	volume.type = 'range';
-	volume.min = '0';
-	volume.max = '1';
-	volume.step = '0.01';
-	volume.value = String(typeof player.getVolumeForQueue === 'function' ? player.getVolumeForQueue(tracks) : 1);
-	const volumeToggle = createVolumeToggle(work.title);
-	volumeControl.append(volumeLabel, volumeToggle.button, volume);
-	metadata.append(label, currentTitle);
-	current.append(metadata, timeline, controls, volumeControl);
-	now.append(current);
+	if (showHeader) {
+		const header = document.createElement('div');
+		header.className = 'track-list__header';
+		const heading = document.createElement('h3');
+		heading.className = 'track-list__heading';
+		heading.textContent = work.title;
+		header.append(createArtwork(work.cover), heading);
+		module.append(header);
+	}
 
 	const list = document.createElement('ol');
-	list.className = 'music-collection__tracks';
-	list.tabIndex = 0;
+	list.className = 'track-list__rows';
 	list.setAttribute('aria-label', `${work.title} track list`);
 	const buttons = [];
-	const equalizers = [];
+	const waves = [];
 	const listeners = [];
 	const on = (target, type, listener) => {
 		target.addEventListener(type, listener);
@@ -206,42 +173,33 @@ export function createPlaylistComponent(work, player, options = {}) {
 		const item = document.createElement('li');
 		const button = document.createElement('button');
 		button.type = 'button';
-		button.dataset.musicCollectionTrack = '';
-		button.dataset.musicCollectionTrackIndex = String(index);
-		button.setAttribute('aria-current', 'false');
-		button.setAttribute('aria-label', `Play track ${index + 1}: ${track.title}`);
-		const number = document.createElement('span');
-		number.className = 'music-collection__track-number';
-		number.textContent = String(index + 1).padStart(2, '0');
+		button.className = 'track-list__row';
+		button.dataset.trackListIndex = String(index);
+		button.setAttribute('aria-pressed', 'false');
 		const title = document.createElement('span');
-		title.className = 'music-collection__track-title';
+		title.className = 'track-list__title';
 		title.textContent = track.title;
-		const equalizer = document.createElement('span');
-		equalizer.className = 'music-collection__equalizer';
-		equalizer.dataset.musicCollectionEqualizer = '';
-		equalizer.setAttribute('aria-hidden', 'true');
-		equalizer.append(document.createElement('i'), document.createElement('i'), document.createElement('i'));
-		button.append(number, title, equalizer);
+		const wave = createMiniWave(track.peaks);
+		const length = document.createElement('span');
+		length.className = 'track-list__length';
+		length.textContent = formatLength(track.duration);
+		button.append(createStateIcon(), title, wave.box, length);
 		item.append(button);
 		list.append(item);
 		buttons.push(button);
-		equalizers.push(equalizer);
+		waves.push(wave);
 	}
 	const liveRegion = document.createElement('p');
-	liveRegion.className = 'music-collection__status screen-reader-text';
+	liveRegion.className = 'track-list__status screen-reader-text';
 	if (announceStatus) {
 		liveRegion.setAttribute('role', 'status');
 		liveRegion.setAttribute('aria-live', 'polite');
 		liveRegion.setAttribute('aria-atomic', 'true');
 	}
-	module.append(heading, now, list, liveRegion);
+	module.append(list, liveRegion);
 
-	let selectedIndex = 0;
 	let destroyed = false;
-	let lastScrolledIndex = -1;
-	let lastSnapshot = null;
 	let wasPlaying = false;
-	let lastNonZeroVolume = Math.max(0.01, clampVolume(Number.parseFloat(volume.value), 1) || 1);
 	const ownsQueue = (snapshot) => queuesMatch(snapshot?.queue, tracks);
 	const requestPlayback = (operation) => {
 		try { void Promise.resolve(operation()).catch(() => {}); } catch { /* Player owns error status. */ }
@@ -249,107 +207,57 @@ export function createPlaylistComponent(work, player, options = {}) {
 
 	function render(snapshot = {}) {
 		if (destroyed) return;
-		lastSnapshot = snapshot;
-		const ownsActiveQueue = ownsQueue(snapshot);
-		const activeIndex = ownsActiveQueue && Number.isInteger(snapshot.activeIndex)
+		const owned = ownsQueue(snapshot);
+		const activeIndex = owned && Number.isInteger(snapshot.activeIndex)
 			&& snapshot.activeIndex >= 0 && snapshot.activeIndex < tracks.length ? snapshot.activeIndex : -1;
-		if (activeIndex >= 0) selectedIndex = activeIndex;
-		const selectedTrack = tracks[selectedIndex] ?? tracks[0];
 		const playing = activeIndex >= 0 && snapshot.playing === true;
-		const duration = activeIndex >= 0 && Number.isFinite(snapshot.duration) ? Math.max(0, snapshot.duration) : 0;
-		const elapsed = activeIndex >= 0 && Number.isFinite(snapshot.currentTime)
-			? Math.max(0, duration > 0 ? Math.min(snapshot.currentTime, duration) : snapshot.currentTime) : 0;
-		const storedVolume = typeof player.getVolumeForQueue === 'function' ? player.getVolumeForQueue(tracks) : 1;
-		const nextVolume = ownsActiveQueue ? clampVolume(snapshot.volume, storedVolume) : clampVolume(storedVolume);
-		currentTitle.textContent = selectedTrack.title;
-		buttons.forEach((button, index) => button.setAttribute('aria-current', String(index === activeIndex)));
-		equalizers.forEach((equalizer, index) => {
-			equalizer.classList.toggle('is-active', index === activeIndex);
-			equalizer.classList.toggle('is-playing', index === activeIndex && playing);
+		const total = activeIndex >= 0 ? (Number(snapshot.duration) || Number(tracks[activeIndex].duration) || 0) : 0;
+		const progress = total > 0 ? Math.min(100, (Number(snapshot.currentTime) || 0) / total * 100) : 0;
+		buttons.forEach((button, index) => {
+			const current = index === activeIndex;
+			button.classList.toggle('is-current', current);
+			button.classList.toggle('is-playing', current && playing);
+			button.setAttribute('aria-pressed', String(current && playing));
+			button.setAttribute('aria-label', `${current && playing ? 'Pause' : 'Play'} track ${index + 1}: ${tracks[index].title}`);
+			if (current) button.style.setProperty('--track-progress', `${progress.toFixed(2)}%`);
+			else button.style.removeProperty('--track-progress');
 		});
-		previousButton.disabled = tracks.length < 2;
-		nextButton.disabled = tracks.length < 2;
-		playButton.setAttribute('aria-label', `${playing ? 'Pause' : 'Play'} current track in ${work.title}`);
-		playButton.setAttribute('aria-pressed', String(playing));
-		playButton.textContent = playing ? 'Ⅱ' : '▶';
-		seek.disabled = activeIndex < 0;
-		seek.max = String(duration);
-		if (document.activeElement !== seek) seek.value = String(elapsed);
-		time.textContent = `${formatTime(elapsed)} / ${formatTime(duration)}`;
-		syncVolumeUi(nextVolume);
-		if (announceStatus && playing && !wasPlaying) liveRegion.textContent = `Now playing: ${selectedTrack.title}`;
-		else if (announceStatus && !playing && wasPlaying) liveRegion.textContent = `Paused: ${selectedTrack.title}`;
+		module.classList.toggle('is-active', activeIndex >= 0);
+		const selected = tracks[Math.max(0, activeIndex)];
+		if (announceStatus && playing && !wasPlaying) liveRegion.textContent = `Now playing: ${selected.title}`;
+		else if (announceStatus && !playing && wasPlaying) liveRegion.textContent = `Paused: ${selected.title}`;
 		wasPlaying = playing;
-
-		if (activeIndex < 0 || activeIndex === lastScrolledIndex || !module.isConnected) return;
-		lastScrolledIndex = activeIndex;
-		const row = buttons[activeIndex]?.closest('li');
-		if (!(row instanceof HTMLElement) || row.parentElement !== list) return;
-		const rowRect = row.getBoundingClientRect();
-		const listRect = list.getBoundingClientRect();
-		if (rowRect.top < listRect.top) list.scrollTop -= Math.ceil(listRect.top - rowRect.top) + 1;
-		else if (rowRect.bottom > listRect.bottom) list.scrollTop += Math.ceil(rowRect.bottom - listRect.bottom) + 1;
 	}
 
-	function syncVolumeUi(value) {
-		const nextVolume = clampVolume(value);
-		const isMuted = nextVolume <= 0;
-		if (!isMuted) lastNonZeroVolume = nextVolume;
-		if (document.activeElement !== volume) volume.value = String(nextVolume);
-		volumeToggle.button.dataset.muted = String(isMuted);
-		volumeToggle.button.setAttribute('aria-pressed', String(isMuted));
-		volumeToggle.button.setAttribute('aria-label', `${isMuted ? 'Restore volume for' : 'Mute'} ${work.title}`);
-		volumeToggle.waves.toggleAttribute('hidden', isMuted);
-		volumeToggle.muted.toggleAttribute('hidden', !isMuted);
-	}
-
-	function writeVolume(value) {
-		const nextVolume = clampVolume(value);
-		if (nextVolume > 0) lastNonZeroVolume = nextVolume;
-		volume.value = String(nextVolume);
-		syncVolumeUi(nextVolume);
-		if (typeof player.setVolumeForQueue === 'function') player.setVolumeForQueue(tracks, nextVolume);
-		else if (ownsQueue(player.getState())) player.setVolume(nextVolume);
-	}
-
-	const startLocalSelection = (index) => {
-		selectedIndex = (index + tracks.length) % tracks.length;
-		render(lastSnapshot ?? player.getState());
-		requestPlayback(() => player.playQueue(tracks, selectedIndex));
-	};
-	on(previousButton, 'click', () => ownsQueue(player.getState())
-		? requestPlayback(() => player.previous()) : startLocalSelection(selectedIndex - 1));
-	on(playButton, 'click', () => ownsQueue(player.getState())
-		? requestPlayback(() => player.toggle()) : startLocalSelection(selectedIndex));
-	on(nextButton, 'click', () => ownsQueue(player.getState())
-		? requestPlayback(() => player.next()) : startLocalSelection(selectedIndex + 1));
-	on(seek, 'input', () => {
-		if (!ownsQueue(player.getState())) return;
-		const seconds = Number.parseFloat(seek.value);
-		if (Number.isFinite(seconds)) player.seekTo(seconds);
-	});
-	on(volume, 'input', () => {
-		const value = Number.parseFloat(volume.value);
-		if (!Number.isFinite(value)) return;
-		writeVolume(value);
-	});
-	on(volumeToggle.button, 'click', () => {
-		const currentVolume = clampVolume(Number.parseFloat(volume.value));
-		writeVolume(currentVolume > 0 ? 0 : lastNonZeroVolume);
-	});
 	buttons.forEach((button, index) => on(button, 'click', () => {
-		selectedIndex = index;
-		requestPlayback(() => player.playQueue(tracks, index));
+		const snapshot = player.getState();
+		if (ownsQueue(snapshot) && snapshot.activeIndex === index) requestPlayback(() => player.toggle());
+		else requestPlayback(() => player.playQueue(tracks, index));
 	}));
 
+	const drawWaves = () => waves.forEach((wave) => wave.draw());
+	const resizeObserver = typeof ResizeObserver === 'function' ? new ResizeObserver(drawWaves) : null;
+	resizeObserver?.observe(list);
 	const unsubscribe = player.subscribe(render);
 	render(player.getState());
 	return {
 		root: module,
-		mount() { render(player.getState()); },
+		tracks,
+		ownsQueue,
+		/** Play this Work from its first track, or pause / resume it when it is already the queue. */
+		toggleWork() {
+			const snapshot = player.getState();
+			if (ownsQueue(snapshot)) requestPlayback(() => player.toggle());
+			else requestPlayback(() => player.playQueue(tracks, 0));
+		},
+		mount() {
+			render(player.getState());
+			window.requestAnimationFrame(drawWaves);
+		},
 		destroy() {
 			if (destroyed) return;
 			destroyed = true;
+			resizeObserver?.disconnect();
 			if (typeof unsubscribe === 'function') unsubscribe();
 			listeners.splice(0).forEach((remove) => remove());
 		},

@@ -802,11 +802,17 @@ body.portfolio-home-promoted .photo-draft-shell[data-portal-shell-mode="frame-on
 		padding: 4.5rem 0 4.25rem;
 	}
 
+	/* The open menu's three pages share the free space evenly: equal room above, between and below. */
 	.photo-draft__navigation .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__container {
 		display: grid;
+		align-content: space-evenly;
+		align-self: stretch;
+		row-gap: 0;
 		width: 100%;
-		border-top: 1px solid var(--photo-line);
+		height: 100%;
+		border-top: 0;
 	}
+
 
 	.photo-draft__navigation .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item {
 		width: 100%;
@@ -1136,27 +1142,126 @@ body.portfolio-home-promoted .photo-draft-shell[data-portal-shell-mode="frame-on
 	background: transparent;
 }
 
-.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-draft__navigation .wp-block-navigation-item__content::after {
-	position: absolute;
-	right: var(--photo-portal-header-gap);
-	bottom: 0.55rem;
-	left: var(--photo-portal-header-gap);
-	height: 2px;
-	background: #fff;
-	content: "";
-	opacity: 1;
-	transform: scaleX(0);
-	transform-origin: left center;
-	transition: transform 170ms var(--b3-motion-easing);
+/* Terminal cursor active state (docs/prototypes/nav-terminal-cursor): the page you are on carries a
+   blinking ember block cursor after its name; hovering another page shows a dim blinking underscore.
+   Both live on the label so they sit right after the text in the header and in the open mobile menu,
+   inside the item's own padding, without changing the navigation's width or position. */
+.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-draft__navigation .wp-block-navigation-item__content {
+	color: rgb(240 238 232 / 62%);
+	transition: color 160ms ease;
 }
 
-.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-draft__navigation .wp-block-navigation-item__content:hover {
-	color: inherit;
+.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-draft__navigation .wp-block-navigation-item__content::after {
+	content: none;
+}
+
+.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-draft__navigation .wp-block-navigation-item__content:is(:hover, :focus-visible, [aria-current="page"]) {
+	color: #fff;
 	background: transparent;
 }
 
-.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-draft__navigation .wp-block-navigation-item__content:is(:hover, :focus-visible, [aria-current="page"])::after {
-	transform: scaleX(1);
+.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-draft__navigation .wp-block-navigation-item__label {
+	position: relative;
+}
+
+.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-draft__navigation .wp-block-navigation-item__content[aria-current="page"] .wp-block-navigation-item__label::after {
+	position: absolute;
+	top: calc(50% - 0.53em);
+	left: calc(100% + 4px);
+	width: 0.53em;
+	height: 1.06em;
+	background: #ed661c;
+	box-shadow: 0 0 8px rgb(237 102 28 / 80%), 0 0 0 1px rgb(0 0 0 / 25%);
+	content: "";
+	pointer-events: none;
+	animation: photo-nav-cursor-blink 1.05s steps(1) infinite;
+}
+
+.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-draft__navigation .wp-block-navigation-item__content:not([aria-current="page"]):is(:hover, :focus-visible) .wp-block-navigation-item__label::after {
+	position: absolute;
+	bottom: 50%;
+	left: calc(100% + 0.2em);
+	color: rgb(240 238 232 / 38%);
+	content: "_";
+	pointer-events: none;
+	transform: translateY(55%);
+	animation: photo-nav-cursor-blink 1.05s steps(1) infinite;
+}
+
+/* Homepage (no panel open): there is no current page, so hovering a page types it — the ember block
+   cursor sweeps across the name while it decodes (nav-cursor-01.js), then blinks after it. The name
+   glows a little so it reads over the photograph. */
+.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"]:not([data-portal-shell-state="open"]):not([data-portal-shell-state="opening"]) .photo-draft__navigation .wp-block-navigation-item__content:is(:hover, :focus-visible) {
+	text-shadow: 0 0 14px rgb(237 102 28 / 55%), 0 1px 3px rgb(0 0 0 / 70%);
+}
+
+.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"]:not([data-portal-shell-state="open"]):not([data-portal-shell-state="opening"]) .photo-draft__navigation .wp-block-navigation-item__content:is(:hover, :focus-visible) .wp-block-navigation-item__label::after {
+	position: absolute;
+	top: calc(50% - 0.53em);
+	bottom: auto;
+	left: calc(100% + 4px);
+	width: 0.53em;
+	height: 1.06em;
+	background: #ed661c;
+	box-shadow: 0 0 10px rgb(237 102 28 / 85%), 0 0 0 1px rgb(0 0 0 / 25%);
+	color: transparent;
+	content: "";
+	pointer-events: none;
+	transform: none;
+	animation:
+		photo-nav-cursor-type 0.38s steps(6, end) both,
+		photo-nav-cursor-blink 1.05s steps(1) 0.38s infinite;
+}
+
+@keyframes photo-nav-cursor-type {
+	from {
+		left: 0;
+		opacity: 1;
+	}
+
+	to {
+		left: calc(100% + 4px);
+		opacity: 1;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"]:not([data-portal-shell-state="open"]):not([data-portal-shell-state="opening"]) .photo-draft__navigation .wp-block-navigation-item__content:is(:hover, :focus-visible) .wp-block-navigation-item__label::after {
+		animation: none;
+	}
+}
+
+/* While the cursor steps across from the previous page (nav-cursor-01.js), the new page's own cursor waits. */
+.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-draft__navigation.is-nav-cursor-moving .wp-block-navigation-item__content[aria-current="page"] .wp-block-navigation-item__label::after {
+	visibility: hidden;
+}
+
+.photo-nav-cursor-ghost {
+	position: fixed;
+	z-index: 100001;
+	top: 0;
+	left: 0;
+	background: #ed661c;
+	box-shadow: 0 0 8px rgb(237 102 28 / 80%), 0 0 0 1px rgb(0 0 0 / 25%);
+	pointer-events: none;
+}
+
+@keyframes photo-nav-cursor-blink {
+	0%,
+	55% {
+		opacity: 1;
+	}
+
+	56%,
+	100% {
+		opacity: 0;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-draft__navigation .wp-block-navigation-item__label::after {
+		animation: none;
+	}
 }
 
 .photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-draft__navigation-shell::before {
@@ -1238,7 +1343,8 @@ body.portfolio-home-promoted .photo-draft-shell[data-portal-shell-mode="frame-on
 	padding-left: var(--photo-portal-works-content-left);
 }
 
-.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-portal.has-route-rail #photo-portal-panel-title {
+.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-portal.has-route-rail #photo-portal-panel-title,
+.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-portal.has-hidden-title #photo-portal-panel-title {
 	position: absolute;
 	width: 1px;
 	height: 1px;
@@ -1453,6 +1559,71 @@ body.portfolio-home-promoted .photo-draft-shell[data-portal-shell-mode="frame-on
 	.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-portal__contextual-controls .works-directory__filters {
 		animation: none;
 	}
+}
+
+/* The site name in the open Portal header uses the same size as the page tabs beside it. */
+.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-draft__brand {
+	font-size: var(--photo-promoted-navigation-size);
+}
+
+/* Brand mark J (docs/prototypes/brand-mark): H, a Λ drawn as a waveform that vibrates like a
+   plucked string while music plays or on hover, O; then the name and the role line, which
+   decodes through every credited job (brand-mark-01.js). */
+.photo-draft-shell[data-portal-motion-mode="fade"] .photo-draft__brand[data-brand-mark] {
+	gap: 0.8em;
+	letter-spacing: normal;
+	text-decoration: none;
+	text-transform: none;
+}
+
+.photo-draft__brand-mark {
+	flex: none;
+	width: auto;
+	height: 1em;
+	overflow: visible;
+}
+
+.photo-draft__brand-mark :is(path, circle) {
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 1.5;
+	stroke-linecap: square;
+	vector-effect: non-scaling-stroke;
+}
+
+.photo-draft__brand-mark .photo-draft__brand-wave {
+	stroke: #ed661c;
+}
+
+.photo-draft__brand-rule {
+	flex: none;
+	width: 1px;
+	height: 1.6em;
+	background: rgb(240 238 232 / 16%);
+}
+
+.photo-draft__brand-text {
+	display: grid;
+	gap: 0.25em;
+	font: 500 0.5em/1 ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+.photo-draft__brand-text b {
+	color: var(--photo-foreground);
+	font-weight: 600;
+}
+
+.photo-draft__brand-role {
+	min-width: 18ch;
+	color: #ed661c;
+}
+
+.photo-draft__brand:focus-visible {
+	outline: 1px solid #ed661c;
+	outline-offset: 4px;
 }
 
 .photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-draft__brand {

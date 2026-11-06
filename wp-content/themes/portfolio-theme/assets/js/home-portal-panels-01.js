@@ -1,6 +1,7 @@
 import { initializeWorksDirectories, setWorksFilter } from './works-directory-01.js';
-import { initializeWorksMultiView, prefetchWorksCriticalCovers, preparePrerenderedWorksCovers, setWorksFilters, setWorksRole, setWorksSort, setWorksStyle, setWorksView } from './works-multiview-01.js';
+import { initializeWorksMultiView, prefetchWorksCriticalCovers, preparePrerenderedWorksCovers, setWorksDisplay, setWorksFilters, setWorksRole, setWorksSort, setWorksStyle, setWorksView } from './works-multiview-01.js';
 import { createMusicPlayer } from './music-player-01.js';
+import { attachMusicCapsule } from './music-player-capsule-01.js';
 import { initializeWorkDetailAudio } from './work-detail-audio-01.js';
 
 const siteHeader = document.querySelector('#photo-draft-site-header');
@@ -53,7 +54,9 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 				hash: '#work',
 				payloadSlug: 'work',
 				title: 'WORKS',
-				railLabel: 'PORTFOLIO',
+				// The signal design's horizontal bar carries the WORKS title and every control.
+				hideTitle: true,
+				worksSignal: true,
 				canonicalPath: '/work/',
 			},
 			services: {
@@ -72,14 +75,14 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 				hash: '#cv',
 				payloadSlug: 'about',
 				title: 'CV',
-				railLabel: 'CV',
+				hideTitle: true,
 				canonicalPath: '/about/#cv-placeholder',
 			},
 			contact: {
 				hash: '#contact',
 				payloadSlug: 'contact',
 				title: 'Contact',
-				railLabel: 'CONTACT',
+				hideTitle: true,
 				canonicalPath: '/contact/',
 			},
 		});
@@ -122,6 +125,15 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 		let activeWorksFilterController = null;
 		let activeWorksFilterToken = 0;
 		const musicPlayer = createMusicPlayer(musicPlayerRoot);
+		// Player 2 (capsule): its Work links open the Work as a Portal panel so the music keeps playing.
+		if (musicPlayer) {
+			attachMusicCapsule(musicPlayerRoot, musicPlayer, {
+				openWork(track, event) {
+					if (!(event.currentTarget instanceof HTMLAnchorElement) || !isUnmodifiedPrimaryClick(event, event.currentTarget)) return false;
+					return openWorkPanel(track.workId, track.release, track.workUrl, event.currentTarget);
+				},
+			});
+		}
 		let activeWorkDetailAudio = null;
 		let activeWorksMultiView = null;
 		applyDocumentSeo(initialDocumentSeo);
@@ -298,6 +310,7 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 		function mountWorkDetailAudio(key) {
 			destroyActiveWorkDetailAudio();
 			if (definitionForKey(key)?.kind !== 'work-detail') return;
+			prefetchWorkNeighbours();
 			const audioRoot = content.querySelector('[data-work-detail-audio]');
 			activeWorkDetailAudio = initializeWorkDetailAudio(audioRoot, { player: musicPlayer });
 			return activeWorkDetailAudio;
@@ -404,16 +417,18 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			routeRail.textContent = label;
 			routeRail.hidden = label === '';
 			panel.classList.toggle('has-route-rail', label !== '');
+			panel.classList.toggle('has-hidden-title', isB3Motion && definition?.hideTitle === true);
+			panel.classList.toggle('is-works-signal', isB3Motion && definition?.worksSignal === true);
 		}
 
 		function clearRouteRail() {
 			routeRail.textContent = '';
 			routeRail.hidden = true;
-			panel.classList.remove('has-route-rail');
+			panel.classList.remove('has-route-rail', 'has-hidden-title', 'is-works-signal');
 		}
 
 		function syncWorksFilterRailPosition() {
-			if (!isB3Motion || currentKey !== 'work') return;
+			if (!isB3Motion || currentKey !== 'work' || panel.classList.contains('is-works-signal')) return;
 			const query = content.querySelector('.works-directory__query');
 			const filters = contextualControls.querySelector('.works-directory__filters');
 			if (!(query instanceof HTMLElement) || !(filters instanceof HTMLElement)) return;
@@ -852,7 +867,7 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			if (!awaitingWorksReveal || awaitingWorksReveal.renderToken !== activeRenderToken
 				|| awaitingWorksReveal.directory !== directory || !directory?.isConnected) return;
 			if (!(event.target instanceof HTMLElement) || event.target !== activeRoot || !event.target.isConnected
-				|| !event.target.matches('.works-grid, .works-view--music, .works-view__empty')
+				|| !event.target.matches('.works-grid, .works-signal, .works-view--music, .works-view__empty')
 				|| event.target.classList.contains('is-cover-group-pending')) return;
 			const entering = content.classList.contains('is-b3-content-entering');
 			awaitingWorksReveal = null;
@@ -952,6 +967,30 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			return setWorksFilters(directory, filters, options);
 		}
 
+		// Signal design: the prototype's View Transition. The same work glides to its new
+		// place; works that appear or leave switch on/off like a monitor (see works-signal-01.css).
+		function waitForSignalCovers(directory, limit) {
+			return new Promise((resolve) => {
+				const root = directory.querySelector(':scope > .works-directory__query')?.firstElementChild;
+				if (!(root instanceof HTMLElement) || !root.classList.contains('is-cover-group-pending')) { resolve(); return; }
+				const timer = window.setTimeout(done, limit);
+				root.addEventListener('portfolio:works-cover-group-ready', done, { once: true });
+				function done() { window.clearTimeout(timer); resolve(); }
+			});
+		}
+
+		async function runSignalViewTransition(directory, update) {
+			if (prefersReducedMotion() || typeof document.startViewTransition !== 'function') {
+				update();
+				return;
+			}
+			const transition = document.startViewTransition(async () => {
+				update();
+				await waitForSignalCovers(directory, 320);
+			});
+			await transition.finished.catch(() => {});
+		}
+
 		async function requestB3WorksFilterTransition(request) {
 			const directory = request?.directory;
 			const view = typeof (request?.view ?? request?.category) === 'string' ? (request.view ?? request.category) : null;
@@ -959,6 +998,15 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			const role = typeof request?.role === 'string' ? request.role : null;
 			const style = typeof request?.style === 'string' ? request.style : null;
 			if (!(directory instanceof HTMLElement) || (view === null && sort === null && role === null && style === null)) return;
+			// Filtering or sorting from inside MUSIC COLLECTIONS keeps the reader there: the section stays where
+			// it was on screen while the works above it change. Anything else starts again from the top.
+			const collectionsOffset = () => {
+				const section = content.querySelector('.music-collections-browser');
+				if (!(section instanceof HTMLElement)) return null;
+				return section.getBoundingClientRect().top - scroller.getBoundingClientRect().top;
+			};
+			const before = view === null ? collectionsOffset() : null;
+			const keepCollections = before !== null && before < scroller.clientHeight * 0.5;
 			const applyRequestedState = () => {
 				const detail = role !== null && style !== null
 					? applyWorksFilters(directory, { role, style })
@@ -969,7 +1017,9 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 					: sort !== null
 						? applyWorksSort(directory, sort)
 						: applyWorksView(directory, view);
-				scroller.scrollTop = 0;
+				const after = keepCollections ? collectionsOffset() : null;
+				if (after !== null) scroller.scrollTop += after - before;
+				else scroller.scrollTop = 0;
 				return detail;
 			};
 			if (!isB3Motion || currentKey !== 'work' || !directory.isConnected) {
@@ -986,6 +1036,11 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 					? directory.dataset.activeWorkSort === sort
 					: (directory.dataset.activeWorkView ?? directory.dataset.activeWorkCategory) === view;
 			if (activeWorksFilterController === null && alreadyActive) return;
+			if (panel.classList.contains('is-works-signal')) {
+				cancelB3WorksFilterTransition();
+				await runSignalViewTransition(directory, applyRequestedState);
+				return;
+			}
 
 			cancelB3WorksFilterTransition();
 			const token = ++activeWorksFilterToken;
@@ -1080,7 +1135,16 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 					initialStyles,
 					controlsRoot,
 					preserveInitialMarkup: options.preserveInitialMarkup === true,
+					signal: isB3Motion && key === 'work',
 					player: musicPlayer,
+					onDisplayRequest(request) {
+						cancelB3WorksFilterTransition();
+						void runSignalViewTransition(request.directory, () => {
+							setWorksDisplay(request.directory, request.display);
+							scroller.scrollTop = 0;
+						});
+					},
+					onDisplayChange: onWorksStateChange,
 					onViewRequest(request) { void requestB3WorksFilterTransition(request); },
 					onViewChange: onWorksStateChange,
 					onSortRequest(request) { void requestB3WorksFilterTransition(request); },
@@ -1313,7 +1377,8 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 
 		function scheduleIdleTask(task) {
 			if ('requestIdleCallback' in window) {
-				window.requestIdleCallback(task);
+				// The homepage animates continuously, so an idle moment may never come: run it within 1.5 s anyway.
+				window.requestIdleCallback(task, { timeout: 1500 });
 			} else {
 				window.setTimeout(task, 0);
 			}
@@ -1363,10 +1428,15 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 		function scheduleB3Prefetch() {
 			if (!isB3Motion || b3PrefetchScheduled || document.readyState !== 'complete') return;
 			b3PrefetchScheduled = true;
-			void waitForHomepageCriticalContent().then(() => {
-				if (currentKey !== null) return;
+			// Warm every panel in the background, even once a panel is open, so a first visit to WORKS,
+			// CV or CONTACT does not wait for the server.
+			// Bounded: a slow background image or title font must not hold the prefetch back for long.
+			const critical = Promise.race([
+				waitForHomepageCriticalContent(),
+				new Promise((resolve) => { window.setTimeout(resolve, 2500); }),
+			]);
+			void critical.then(() => {
 				scheduleIdleTask(() => {
-					if (currentKey !== null) return;
 					let otherPanelsQueued = false;
 					const queueOtherPanels = () => {
 						if (otherPanelsQueued) return;
@@ -1698,7 +1768,12 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			const hasValidOrigin = currentPortalDepth() > 0 && postId > 0 && validCategories.has(view);
 
 			if (hasValidOrigin) {
-				window.history.back();
+				// Skip any work pages opened one after another (previous / next, the player) and land on WORKS.
+				const worksDepth = Number.parseInt(String(historyState.portfolioWorksDepth ?? ''), 10);
+				const steps = Number.isInteger(worksDepth) && worksDepth >= 0 && worksDepth < currentPortalDepth()
+					? currentPortalDepth() - worksDepth
+					: 1;
+				window.history.go(-steps);
 				return;
 			}
 
@@ -1782,9 +1857,59 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			closePanel({ updateHistory: true, restoreFocus: true });
 		}
 
+		// Open one Work as a Portal panel from inside the Portal (player, previous / next links).
+		function openWorkPanel(postId, title, url, restoreTarget) {
+			const definition = createWorkDefinition(Number.parseInt(String(postId), 10), String(title ?? ''), String(url ?? ''));
+			if (!definition) return false;
+			if (currentKey === definition.key) return true;
+			requestPanel(definition.key, { updateHistory: true, restoreTarget });
+			return true;
+		}
+
+		// Prefetch a Work page when the pointer rests on, focus reaches, or a finger touches one of its links
+		// (WORKS covers and list rows, MUSIC COLLECTIONS titles, previous / next), so opening it is instant.
+		let workIntentTimer = 0;
+		function workDefinitionFromLink(anchor) {
+			const pagerId = Number.parseInt(anchor.dataset.workPagerId ?? '', 10);
+			if (pagerId > 0) return createWorkDefinition(pagerId, anchor.dataset.workPagerTitle ?? '', anchor.href);
+			const card = anchor.closest('.wp-block-post');
+			const postClass = card ? [...card.classList].find((className) => /^post-[1-9]\d*$/.test(className)) : null;
+			const postId = postClass ? Number.parseInt(postClass.slice('post-'.length), 10) : 0;
+			const title = card?.dataset.workTitle?.trim() || anchor.textContent?.trim() || '';
+			return postId > 0 ? createWorkDefinition(postId, title, anchor.href) : null;
+		}
+		function prefetchWork(definition, priority = 'low') {
+			if (!definition || cache.has(definitionCacheKey(definition))) return;
+			void requestB3Payload(definition, { priority }).catch(() => {});
+		}
+		function onWorkLinkIntent(event) {
+			if (!isB3Motion || !(event.target instanceof Element)) return;
+			const anchor = event.target.closest('a[href*="/works/"]');
+			if (!(anchor instanceof HTMLAnchorElement) || !content.contains(anchor)) return;
+			window.clearTimeout(workIntentTimer);
+			const immediate = event.type !== 'pointerover';
+			workIntentTimer = window.setTimeout(() => prefetchWork(workDefinitionFromLink(anchor), 'high'), immediate ? 0 : 90);
+		}
+		// On a Work page, quietly prefetch its previous and next Works.
+		function prefetchWorkNeighbours() {
+			scheduleIdleTask(() => {
+				for (const anchor of content.querySelectorAll('a[data-work-pager-id]')) {
+					if (anchor instanceof HTMLAnchorElement) prefetchWork(workDefinitionFromLink(anchor));
+				}
+			});
+		}
+
+		function handleWorkPagerClick(event) {
+			if (!isB3Motion || !(event.target instanceof Element)) return;
+			const anchor = event.target.closest('a[data-work-pager-id]');
+			if (!(anchor instanceof HTMLAnchorElement) || !content.contains(anchor)) return;
+			if (definitionForKey(currentKey)?.kind !== 'work-detail' || !isUnmodifiedPrimaryClick(event, anchor)) return;
+			if (openWorkPanel(anchor.dataset.workPagerId, anchor.dataset.workPagerTitle, anchor.href, anchor)) event.preventDefault();
+		}
+
 		function handleWorkDetailClick(event) {
 			if (!isB3Motion || currentKey !== 'work' || !(event.target instanceof Element)) return;
-			const anchor = event.target.closest('.works-card a[href*="/works/"]');
+			const anchor = event.target.closest('.works-card a[href*="/works/"], .works-signal a[href*="/works/"], .music-collections a[href*="/works/"]');
 			if (!(anchor instanceof HTMLAnchorElement) || !content.contains(anchor)) return;
 			if (!isUnmodifiedPrimaryClick(event, anchor)) return;
 
@@ -1809,6 +1934,9 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 					portfolioWorksFilter: view,
 					portfolioWorksView: view,
 					portfolioWorksOriginPostId: postId,
+					// Where the WORKS list sits in history: work pages opened from here (and from their own
+					// previous / next links or the player) carry it, so Back to Works can return straight to it.
+					portfolioWorksDepth: currentPortalDepth(),
 				}),
 				'',
 				window.location.href,
@@ -1828,6 +1956,15 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			if (isB3Motion && key === 'work' && shell.dataset.portalPrerendered !== 'true') {
 				const prefetchOnIntent = () => {
 					if (currentKey === null) void prefetchWorks('high').catch(() => {});
+				};
+				anchor.addEventListener('pointerenter', prefetchOnIntent);
+				anchor.addEventListener('focus', prefetchOnIntent);
+				anchor.addEventListener('touchstart', prefetchOnIntent, { passive: true });
+			} else if (isB3Motion && key !== 'work') {
+				// CV / CONTACT: start loading as soon as the pointer or focus reaches the link.
+				const prefetchOnIntent = () => {
+					const definition = definitionForKey(key);
+					if (definition && currentKey !== key) void requestB3Payload(definition, { priority: 'high' }).catch(() => {});
 				};
 				anchor.addEventListener('pointerenter', prefetchOnIntent);
 				anchor.addEventListener('focus', prefetchOnIntent);
@@ -1852,6 +1989,10 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 
 		closeButton.addEventListener('click', activateHeaderAction);
 		content.addEventListener('click', handleWorkDetailClick);
+		content.addEventListener('click', handleWorkPagerClick);
+		content.addEventListener('pointerover', onWorkLinkIntent, { passive: true });
+		content.addEventListener('focusin', onWorkLinkIntent);
+		content.addEventListener('touchstart', onWorkLinkIntent, { passive: true });
 		panel.addEventListener('portfolio:works-cover-group-ready', finishInitialB3WorksReveal);
 		if (isB3Motion) {
 			window.addEventListener('resize', scheduleWorksFilterRailPosition, { passive: true });

@@ -255,16 +255,18 @@ button:focus-visible,
 
 .about-prototype {
 	--cv-content-width: 70rem;
-	--cv-profile-columns: minmax(0, 18rem) minmax(0, 1fr);
-	--cv-profile-gap: clamp(2.25rem, 4.5vw, 4rem);
+	--cv-profile-columns: minmax(0, 20rem) minmax(0, 1fr);
+	--cv-profile-gap: clamp(2.5rem, 6vw, 6rem);
 	--cv-section-gap: clamp(2.5rem, 4vw, 4rem);
 	--cv-section-inline: clamp(0.75rem, 1.5vw, 1.25rem);
 	--cv-body-size: clamp(0.9375rem, 0.28vw + 0.88rem, 1.0625rem);
-	--cv-year-column: 5rem;
 	--cv-hairline: color-mix(in srgb, currentcolor 16%, transparent);
+	--cv-accent: var(--wp--preset--color--portal-focus, #d2bd7a);
+	--cv-ease: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .about-prototype .editorial-section {
+	position: relative;
 	box-sizing: border-box;
 	width: min(100%, var(--cv-content-width));
 	max-width: var(--cv-content-width);
@@ -277,24 +279,13 @@ button:focus-visible,
 	padding-block-start: 0;
 }
 
+/* Direct CV: clear the site header (the Portal panel brings its own inset). */
+.portfolio-direct-surface .about-prototype > .editorial-section:first-child {
+	padding-block-start: clamp(2rem, 3.5vw, 3.5rem);
+}
+
 .about-prototype .editorial-section + .editorial-section {
 	border-top: 0;
-}
-
-.cv-section-heading {
-	grid-column: 1 / -1;
-	display: flex;
-	gap: 0.75rem;
-	align-items: center;
-	margin: 0 0 clamp(1rem, 1.5vw, 1.5rem);
-}
-
-.cv-section-heading::after {
-	width: min(7.5rem, 18vw);
-	height: 1px;
-	background: currentcolor;
-	content: "";
-	opacity: 0.65;
 }
 
 .cv-section-heading .section-index {
@@ -304,16 +295,12 @@ button:focus-visible,
 	white-space: nowrap;
 }
 
-.cv-section-heading + .cv-biography {
-	margin-block-start: 0;
-}
-
 .cv-biography {
 	grid-column: 1 / -1;
 	display: grid;
 	grid-template-columns: var(--cv-profile-columns);
 	gap: var(--cv-profile-gap);
-	align-items: start;
+	align-items: center;
 	min-width: 0;
 }
 
@@ -330,7 +317,7 @@ button:focus-visible,
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
-	object-position: 50% 35%;
+	object-position: 50% 40%;
 }
 
 .cv-biography__content,
@@ -370,7 +357,7 @@ button:focus-visible,
 .cv-biography__copy > p {
 	margin-block-end: 1.15em;
 	font-size: var(--cv-body-size);
-	line-height: 1.75;
+	line-height: 1.8;
 	opacity: 0.68;
 	text-wrap: pretty;
 }
@@ -379,61 +366,70 @@ button:focus-visible,
 	margin-block-end: 0;
 }
 
+/* Selected Experience "arrangement": years run left to right like a DAW timeline.
+ * Without the enhancement script (and on narrow screens) it stays a vertical list. */
 .about-prototype .editorial-section.cv-timeline {
-	padding-block-start: 0;
+	padding-block-start: clamp(1.5rem, 3vw, 2.75rem);
 }
 
-.cv-timeline .section-body-block {
-	grid-column: 1 / -1;
+/* The section heading is screen-reader only, so the timeline needs no flow gap after it. */
+.about-prototype .cv-timeline .cv-arrangement {
 	margin-block-start: 0;
+}
+
+.cv-arrangement {
+	grid-column: 1 / -1;
+	min-width: 0;
+}
+
+.cv-arrangement__block {
+	position: relative;
+	margin-block-end: 2.25rem;
+}
+
+.cv-experience__year {
+	margin: 0 0 1.1rem;
+	padding-block-end: 0.6rem;
+	border-bottom: 1px solid var(--cv-hairline);
+	font-size: 0.85rem;
+	font-weight: 400;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.1em;
+	line-height: 1.4;
+	opacity: 0.68;
+	transition: color 300ms ease;
+}
+
+.cv-arrangement__mark {
+	padding: 0;
+	border: 0;
+	color: inherit;
+	background: none;
+	font: inherit;
+	letter-spacing: inherit;
+	cursor: pointer;
 }
 
 .cv-experience__list {
 	display: grid;
-	gap: 0.7rem;
+	gap: 1.2rem;
 	margin: 0;
 	padding: 0;
-	border-bottom: 1px solid var(--cv-hairline);
-	padding-block-end: 1.1rem;
 	list-style: none;
 }
 
 .cv-experience__row {
-	display: grid;
-	grid-template-columns: var(--cv-year-column) minmax(0, 1fr);
-	gap: 0.8rem;
-	align-items: baseline;
 	margin: 0;
+	padding-inline-start: 0.85rem;
+	border-left: 2px solid color-mix(in srgb, currentcolor 14%, transparent);
 	font-size: var(--cv-body-size);
-	line-height: 1.55;
-}
-
-/* Each year is printed once; later rows keep it for assistive tech only. */
-.cv-experience__row.is-year-start {
-	padding-block-start: 1.1rem;
-	border-top: 1px solid var(--cv-hairline);
-}
-
-.cv-experience__row.is-year-start:not(:first-child) {
-	margin-block-start: 0.6rem;
-}
-
-.cv-experience__row:not(.is-year-start) .cv-experience__year {
-	color: transparent;
-}
-
-.cv-experience__year {
-	font-weight: 400;
-	font-variant-numeric: tabular-nums;
-	letter-spacing: 0.04em;
-	opacity: 0.68;
+	line-height: 1.5;
+	transition: opacity 450ms ease, border-color 450ms ease;
 }
 
 .cv-experience__description {
 	display: grid;
-	grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-	column-gap: clamp(1.25rem, 3vw, 3rem);
-	align-items: baseline;
+	gap: 0.2rem;
 	min-width: 0;
 	overflow-wrap: normal;
 	opacity: 0.82;
@@ -441,9 +437,142 @@ button:focus-visible,
 }
 
 .cv-experience__roles {
-	font-size: 0.86em;
+	font-size: 0.84em;
 	letter-spacing: 0.02em;
 	opacity: 0.72;
+}
+
+.cv-arrangement__head {
+	display: none;
+}
+
+.cv-arrangement.is-enhanced .cv-arrangement__block:not(.is-current) .cv-experience__row {
+	opacity: 0.45;
+}
+
+.cv-arrangement.is-enhanced .cv-arrangement__block.is-current .cv-experience__row {
+	border-left-color: var(--cv-accent);
+}
+
+.cv-arrangement.is-enhanced .cv-arrangement__block.is-current .cv-experience__year {
+	color: var(--cv-accent);
+}
+
+@media (min-width: 761px) {
+	.cv-arrangement.is-enhanced .cv-arrangement__pin {
+		position: sticky;
+		top: 0;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		/* Top-aligned: centring in a viewport-tall pin left a large gap under the biography. */
+		align-content: start;
+	}
+
+	.cv-arrangement.is-enhanced .cv-arrangement__stage {
+		position: relative;
+		margin-block-start: clamp(1rem, 2vh, 1.5rem);
+	}
+
+	.cv-arrangement.is-enhanced .cv-arrangement__view {
+		position: relative;
+		overflow: hidden;
+		padding-block: 0.25rem 0.5rem;
+		cursor: grab;
+		touch-action: pan-y;
+		-webkit-mask-image: linear-gradient(90deg, transparent, #000 2.5rem, #000 calc(100% - 2.5rem), transparent);
+		mask-image: linear-gradient(90deg, transparent, #000 2.5rem, #000 calc(100% - 2.5rem), transparent);
+	}
+
+	.cv-arrangement.is-enhanced .cv-arrangement__view.is-dragging {
+		cursor: grabbing;
+		user-select: none;
+	}
+
+	.cv-arrangement.is-enhanced .cv-arrangement__track {
+		display: flex;
+		width: max-content;
+		padding-inline: 2.5rem;
+		will-change: transform;
+	}
+
+	.cv-arrangement.is-enhanced .cv-arrangement__block {
+		display: grid;
+		grid-template-rows: auto auto;
+		align-content: start;
+		margin: 0;
+	}
+
+	.cv-arrangement.is-enhanced .cv-arrangement__block::before {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		width: 1px;
+		background: color-mix(in srgb, currentcolor 9%, transparent);
+		content: "";
+	}
+
+	.cv-arrangement.is-enhanced .cv-experience__year {
+		margin-block-end: 1.5rem;
+		padding: 0 1.1rem 0.75rem;
+	}
+
+	.cv-arrangement.is-enhanced .cv-experience__list {
+		grid-template-rows: repeat(6, auto);
+		grid-auto-columns: 17.5rem;
+		grid-auto-flow: column;
+		column-gap: 2rem;
+		align-content: start;
+		padding: 0 2.25rem 0 1.1rem;
+	}
+
+	.cv-arrangement.is-enhanced .cv-arrangement__head {
+		position: absolute;
+		top: -0.75rem;
+		bottom: 0;
+		left: 0;
+		display: block;
+		width: 1px;
+		background: color-mix(in srgb, var(--cv-accent) 75%, transparent);
+		pointer-events: none;
+		transform: translateX(var(--cv-head-x, 0px));
+	}
+
+	.cv-arrangement.is-enhanced .cv-arrangement__head::before {
+		position: absolute;
+		top: 0;
+		left: -4px;
+		border: 4.5px solid transparent;
+		border-top: 6px solid var(--cv-accent);
+		border-bottom: 0;
+		content: "";
+	}
+}
+
+@media (hover: hover) {
+	.cv-arrangement__mark:hover {
+		color: var(--cv-accent);
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.cv-biography__media img {
+		animation: cv-focus-in 1500ms var(--cv-ease) both;
+	}
+}
+
+@keyframes cv-focus-in {
+	from {
+		opacity: 0;
+		filter: blur(14px);
+		transform: scale(1.05);
+	}
+
+	to {
+		opacity: 1;
+		filter: none;
+		transform: none;
+	}
 }
 
 .collaboration-list {
@@ -719,216 +848,350 @@ button:focus-visible,
 }
 
 .contact-prototype {
+	--contact-fg: var(--wp--preset--color--portal-foreground, #f0eee8);
+	--contact-muted: var(--wp--preset--color--portal-muted, #aaa69f);
+	--contact-canvas: var(--wp--preset--color--portal-canvas, #0b0c0f);
+	--contact-accent: var(--wp--preset--color--portal-focus, #d2bd7a);
+	--contact-rule: color-mix(in srgb, var(--contact-fg) 22%, transparent);
+	--contact-ease: cubic-bezier(0.23, 1, 0.32, 1);
+	--contact-node: 3.5rem;
 	width: 100%;
 	padding: clamp(2rem, 5vw, 5rem) clamp(1rem, 3vw, 3rem);
-	color: var(--wp--preset--color--portal-foreground, #f1f0ec);
+	color: var(--contact-fg);
 }
 
-.contact-layout {
+/* Direct /contact/: alignfull negative margins need an auto width to stay centered. */
+.portfolio-direct-surface .contact-prototype.alignfull {
+	width: auto;
+}
+
+/*
+ * Contact sound field. Without the field script the page stays a calm, static
+ * layout (nodes in a row, form below); contact-field-01.js adds .is-enhanced.
+ */
+.contact-prototype > .contact-field.alignwide {
 	width: 100%;
 	max-width: none;
-	margin: 0 auto;
+	margin-inline: auto;
 }
 
-.contact-heading {
+.contact-field__stage {
+	position: relative;
+}
+
+.contact-field__canvas,
+.contact-back {
+	display: none;
+}
+
+.contact-field__nodes {
 	display: flex;
-	gap: 1rem;
-	align-items: center;
-	margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
-}
-
-.contact-heading h1 {
-	margin: 0;
-	font-size: 0.78rem;
-	font-weight: 650;
-	letter-spacing: 0.16em;
-	line-height: 1;
-}
-
-.contact-heading > span {
-	width: min(9rem, 22vw);
-	height: 1px;
-	background: currentcolor;
-	opacity: 0.62;
-}
-
-.contact-panels {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-	gap: clamp(1rem, 2vw, 1.75rem);
-}
-
-.contact-panel {
-	display: grid;
-	grid-template-columns: 4rem minmax(0, 1fr);
-	gap: 1.35rem;
-	align-items: start;
-	min-height: 12rem;
-	padding: clamp(1.5rem, 3vw, 2.25rem);
-	background: color-mix(in srgb, var(--wp--preset--color--portal-surface, #151518) 94%, white 6%);
-}
-
-.contact-panel__badge {
-	display: grid;
-	place-items: center;
-	width: 4rem;
-	height: 4rem;
-	border-radius: 50%;
-	background: color-mix(in srgb, currentcolor 12%, transparent);
-}
-
-.contact-panel__badge svg {
-	width: 1.65rem;
-	height: 1.65rem;
-}
-
-.contact-panel__content {
-	min-width: 0;
-}
-
-.contact-panel__content h2 {
-	margin: 0.75rem 0 1.5rem;
-	color: var(--wp--preset--color--portal-muted, #aaa7a3);
-	font-size: clamp(1rem, 1.5vw, 1.2rem);
-	font-weight: 450;
-}
-
-.contact-panel--email .contact-panel__content > a {
-	display: inline-flex;
-	min-height: 2.75rem;
-	align-items: center;
-	color: inherit;
-	font-size: clamp(0.9rem, 1.3vw, 1.05rem);
-	overflow-wrap: anywhere;
-	text-decoration-thickness: 1px;
-	text-underline-offset: 0.28em;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.75rem;
 }
 
 .contact-socials {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.4rem;
-	align-items: center;
+	display: contents;
 }
 
-.contact-socials a {
+.contact-node {
+	position: relative;
 	display: grid;
 	place-items: center;
-	width: 2.75rem;
-	height: 2.75rem;
+	width: var(--contact-node);
+	height: var(--contact-node);
+	border: 1px solid var(--contact-rule);
 	border-radius: 50%;
-	color: inherit;
+	color: var(--contact-fg);
+	background: color-mix(in srgb, var(--contact-canvas) 72%, transparent);
 	text-decoration: none;
-	transition: color 150ms ease, background-color 150ms ease, transform 150ms ease;
+	transition: border-color 220ms ease, background-color 300ms ease;
 }
 
-.contact-socials :is(svg, img) {
+.contact-node > :is(svg, img) {
 	display: block;
 	width: 1.35rem;
 	height: 1.35rem;
 	object-fit: contain;
+	opacity: 0.8;
+	transition: opacity 200ms ease, transform 400ms var(--contact-ease);
 }
 
-.contact-socials a:is(:hover, :focus-visible) {
-	color: var(--wp--preset--color--portal-canvas, #0b0c0f);
-	background: var(--wp--preset--color--portal-foreground, #f1f0ec);
-	transform: translateY(-2px);
+/* Platform name, shown only on hover/focus. */
+.contact-node::after {
+	position: absolute;
+	top: calc(100% + 0.45rem);
+	left: 50%;
+	color: var(--contact-muted);
+	font-size: 0.56rem;
+	font-weight: 500;
+	letter-spacing: 0.18em;
+	white-space: nowrap;
+	content: attr(data-label);
+	opacity: 0;
+	pointer-events: none;
+	transform: translate(-50%, -0.25rem);
+	transition: opacity 200ms ease, transform 300ms var(--contact-ease);
 }
 
-.contact-socials a:focus-visible,
-.contact-panel--email a:focus-visible {
-	outline: 2px solid var(--wp--preset--color--portal-focus, currentcolor);
-	outline-offset: 3px;
+.contact-node:is(:hover, :focus-visible) {
+	color: var(--contact-fg);
+	border-color: var(--contact-fg);
+}
+
+.contact-node:is(:hover, :focus-visible) > :is(svg, img) {
+	opacity: 1;
+	transform: scale(1.08);
+}
+
+.contact-node:is(:hover, :focus-visible)::after,
+.contact-node.is-copied::after {
+	opacity: 1;
+	transform: translate(-50%, 0);
+}
+
+.contact-node.is-copied {
+	border-color: var(--contact-accent);
+}
+
+.contact-node.is-copied::after {
+	color: var(--contact-accent);
+}
+
+.contact-node:focus-visible,
+.contact-pill:focus-visible,
+.contact-back:focus-visible {
+	outline: 2px solid var(--contact-accent);
+	outline-offset: 4px;
+}
+
+.contact-pill {
+	display: block;
+	margin: 2rem auto 0;
+	padding: 0.85rem 1.7rem;
+	border: 1px solid var(--contact-rule);
+	border-radius: 999px;
+	color: var(--contact-fg);
+	background: color-mix(in srgb, var(--contact-canvas) 80%, transparent);
+	font: inherit;
+	font-size: 0.72rem;
+	font-weight: 600;
+	letter-spacing: 0.18em;
+	white-space: nowrap;
+	cursor: pointer;
+	transition: border-color 220ms ease, background-color 220ms ease;
+}
+
+.contact-pill:hover {
+	border-color: var(--contact-fg);
+	background: color-mix(in srgb, var(--contact-fg) 8%, var(--contact-canvas));
+}
+
+/* Without the field script the form is already on the page; the pill has nothing to open. */
+.contact-field:not(.is-enhanced) .contact-pill {
+	display: none;
 }
 
 .contact-form-section {
-	margin-top: clamp(2.75rem, 6vw, 5rem);
-	padding-top: clamp(1.5rem, 3vw, 2.5rem);
-	border-top: 1px solid color-mix(in srgb, currentcolor 20%, transparent);
+	margin-top: clamp(2.5rem, 6vw, 4rem);
 }
 
-.contact-form-section__heading {
-	display: flex;
-	gap: 1rem;
-	align-items: center;
-	margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+/* Enhanced: noise field with absolutely placed nodes and a separate form view. */
+.contact-field.is-enhanced .contact-field__stage {
+	display: grid;
+	min-height: clamp(34rem, 74vh, 42rem);
+	overflow: hidden;
 }
 
-.contact-form-section__heading h2 {
+.contact-field.is-enhanced .contact-field__canvas {
+	position: absolute;
+	inset: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	transition: opacity 700ms ease;
+}
+
+.contact-field.is-writing .contact-field__canvas {
+	opacity: 0.25;
+}
+
+.contact-field.is-enhanced .contact-field__view {
+	position: relative;
+	z-index: 1;
+	grid-area: 1 / 1;
 	margin: 0;
-	font-size: 0.78rem;
-	font-weight: 650;
-	letter-spacing: 0.16em;
-	line-height: 1;
 }
 
-.contact-form-section__heading > span {
-	width: min(9rem, 22vw);
-	height: 1px;
-	background: currentcolor;
-	opacity: 0.62;
+.contact-field.is-enhanced .contact-field__view--nodes {
+	transition: opacity 450ms ease, transform 900ms var(--contact-ease), visibility 0s linear 0s;
 }
 
+.contact-field.is-writing .contact-field__view--nodes {
+	opacity: 0;
+	visibility: hidden;
+	transform: scale(0.96);
+	transition: opacity 350ms ease, transform 800ms var(--contact-ease), visibility 0s linear 800ms;
+}
+
+.contact-field.is-enhanced .contact-field__nodes {
+	position: absolute;
+	inset: 0;
+	display: block;
+}
+
+.contact-field.is-enhanced .contact-node {
+	position: absolute;
+	top: 0;
+	left: 0;
+	opacity: 0;
+	will-change: transform;
+	transition: border-color 220ms ease, background-color 300ms ease, opacity 600ms ease;
+}
+
+.contact-field.is-placed .contact-node {
+	opacity: 1;
+	transition-delay: 0ms, 0ms, calc(var(--contact-i, 0) * 70ms + 150ms);
+}
+
+.contact-field.is-live .contact-node {
+	transition-delay: 0ms;
+}
+
+.contact-field.is-enhanced .contact-pill {
+	position: absolute;
+	bottom: clamp(1.5rem, 4vh, 2.5rem);
+	left: 50%;
+	z-index: 2;
+	margin: 0;
+	opacity: 0;
+	transform: translate(-50%, 0.6rem);
+	transition: border-color 220ms ease, background-color 220ms ease, opacity 700ms ease 650ms, transform 900ms var(--contact-ease) 650ms;
+}
+
+.contact-field.is-placed .contact-pill {
+	opacity: 1;
+	transform: translate(-50%, 0);
+}
+
+.contact-field.is-live .contact-pill {
+	transition: border-color 220ms ease, background-color 220ms ease, opacity 300ms ease, transform 300ms var(--contact-ease);
+}
+
+/* The form opens as a circle growing from the message pill. */
+.contact-field.is-enhanced .contact-field__view--form {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	place-content: center stretch;
+	gap: 1.25rem;
+	padding: 2rem max(0px, calc((100% - 37.5rem) / 2));
+	background: var(--contact-canvas);
+	visibility: hidden;
+	clip-path: circle(0 at var(--contact-ox, 50%) var(--contact-oy, 100%));
+	transition: clip-path 800ms var(--contact-ease), visibility 0s linear 800ms;
+}
+
+.contact-field.is-writing .contact-field__view--form {
+	visibility: visible;
+	clip-path: circle(150% at var(--contact-ox, 50%) var(--contact-oy, 100%));
+	transition: clip-path 1000ms var(--contact-ease), visibility 0s;
+}
+
+.contact-field.is-enhanced .contact-back {
+	display: grid;
+	justify-self: start;
+	place-items: center;
+	width: 2.75rem;
+	height: 2.75rem;
+	margin-left: -0.8rem;
+	padding: 0;
+	border: 0;
+	color: var(--contact-muted);
+	background: none;
+	cursor: pointer;
+}
+
+.contact-back svg {
+	width: 1.2rem;
+	height: 1.2rem;
+}
+
+.contact-back:hover {
+	color: var(--contact-fg);
+}
+
+/* Form: underline fields; markup and behaviour come from contact-form-01.js. */
 .contact-form {
 	display: grid;
 	width: min(100%, 37.5rem);
-	gap: clamp(1rem, 1.5vw, 1.25rem);
+	gap: clamp(1.25rem, 2vw, 1.5rem);
 	margin-inline: auto;
 }
 
 .contact-form__identity {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: clamp(0.875rem, 1.5vw, 1.25rem);
+	gap: clamp(1.25rem, 2.5vw, 1.75rem);
 }
 
 .contact-form__field {
 	display: grid;
-	gap: 0.55rem;
+	gap: 0.3rem;
 	min-width: 0;
 }
 
 .contact-form__field label {
-	color: var(--wp--preset--color--portal-muted, #aaa7a3);
-	font-size: 0.72rem;
+	color: var(--contact-muted);
+	font-size: 0.66rem;
 	font-weight: 400;
-	letter-spacing: 0.12em;
+	letter-spacing: 0.14em;
 	line-height: 1.4;
+	transition: color 200ms ease;
+}
+
+.contact-form__field:focus-within label {
+	color: var(--contact-fg);
 }
 
 .contact-form :is(input, textarea) {
 	box-sizing: border-box;
 	width: 100%;
-	border: 1px solid color-mix(in srgb, currentcolor 18%, transparent);
+	padding: 0.7rem 0;
+	border: 0;
+	border-bottom: 1px solid var(--contact-rule);
 	border-radius: 0;
-	background: color-mix(in srgb, var(--wp--preset--color--portal-surface, #151518) 96%, white 4%);
 	color: inherit;
+	background: linear-gradient(var(--contact-fg), var(--contact-fg)) 0 100% / 0% 1px no-repeat transparent;
 	font: inherit;
 	font-size: 1rem;
 	font-weight: 300;
+	transition: background-size 500ms var(--contact-ease), border-color 200ms ease;
 }
 
 .contact-form input {
 	min-height: 3.125rem;
-	padding: 0.7rem 1rem;
 }
 
 .contact-form textarea {
 	height: 8.75rem;
 	min-height: 8.75rem;
-	padding: 1rem;
 	line-height: 1.6;
 	resize: vertical;
 }
 
 .contact-form :is(input, textarea):focus-visible {
-	border-color: var(--wp--preset--color--portal-foreground, #f1f0ec);
-	outline: 1px solid var(--wp--preset--color--portal-foreground, #f1f0ec);
-	outline-offset: 2px;
+	outline: 0;
+	background-size: 100% 1px;
+}
+
+.contact-form :is(input, textarea):autofill {
+	box-shadow: inset 0 0 0 100vmax var(--contact-canvas);
+	-webkit-text-fill-color: var(--contact-fg);
 }
 
 .contact-form :is(input, textarea)[aria-invalid="true"] {
-	border-color: #dba6a6;
+	border-bottom-color: #dba6a6;
 }
 
 .contact-form__field-error {
@@ -948,30 +1211,32 @@ button:focus-visible,
 	flex-wrap: wrap;
 	gap: 1rem 1.25rem;
 	align-items: center;
+	margin-top: 0.25rem;
 }
 
 .contact-form__actions button {
 	min-width: 8.5rem;
 	min-height: 2.75rem;
-	padding: 0.55rem 1rem;
-	border: 1px solid var(--wp--preset--color--portal-foreground, #f1f0ec);
+	padding: 0.55rem 1.1rem;
+	border: 1px solid currentcolor;
 	border-radius: 0;
-	background: var(--wp--preset--color--portal-foreground, #f1f0ec);
-	color: var(--wp--preset--color--portal-canvas, #0b0c0f);
+	color: inherit;
+	background: transparent;
 	font: inherit;
-	font-size: 0.78rem;
+	font-size: 0.72rem;
 	font-weight: 500;
 	letter-spacing: 0.16em;
 	cursor: pointer;
-	transition: opacity 150ms ease;
+	transition: color 200ms ease, background-color 200ms ease;
 }
 
 .contact-form__actions button:is(:hover, :focus-visible) {
-	opacity: 0.8;
+	color: var(--contact-canvas);
+	background: var(--contact-fg);
 }
 
 .contact-form__actions button:focus-visible {
-	outline: 2px solid var(--wp--preset--color--portal-focus, currentcolor);
+	outline: 2px solid var(--contact-accent);
 	outline-offset: 3px;
 }
 
@@ -982,7 +1247,7 @@ button:focus-visible,
 
 .contact-form__status {
 	margin: 0;
-	color: var(--wp--preset--color--portal-muted, #aaa7a3);
+	color: var(--contact-muted);
 	font-size: 0.82rem;
 	line-height: 1.5;
 }
@@ -997,6 +1262,28 @@ button:focus-visible,
 
 .contact-form__status[data-state="error"] {
 	color: #dba6a6;
+}
+
+@media (max-width: 760px) {
+	.contact-prototype {
+		--contact-node: 3.1rem;
+	}
+
+	.contact-field.is-enhanced .contact-field__stage {
+		min-height: 38rem;
+	}
+
+	.contact-field.is-enhanced .contact-field__view--form {
+		padding-inline: 0;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.contact-field *,
+	.contact-field *::after {
+		transition-duration: 0ms !important;
+		transition-delay: 0ms !important;
+	}
 }
 
 .site-footer {
@@ -1071,12 +1358,7 @@ button:focus-visible,
 @media (max-width: 900px) {
 	.about-prototype {
 		--cv-profile-columns: minmax(0, 16rem) minmax(0, 1fr);
-		--cv-profile-gap: clamp(1.25rem, 3.5vw, 2.25rem);
-	}
-
-	.cv-experience__description {
-		grid-template-columns: minmax(0, 1fr);
-		row-gap: 0.15rem;
+		--cv-profile-gap: clamp(1.5rem, 4vw, 2.5rem);
 	}
 
 	.site-header__inner,
@@ -1145,27 +1427,6 @@ button:focus-visible,
 		padding-inline: 1rem;
 	}
 
-	.contact-panels {
-		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.contact-panel {
-		grid-template-columns: 3.25rem minmax(0, 1fr);
-		gap: 1rem;
-		min-height: 0;
-		padding: 1.25rem;
-	}
-
-	.contact-panel__badge {
-		width: 3.25rem;
-		height: 3.25rem;
-	}
-
-	.contact-panel__content h2 {
-		margin-top: 0.5rem;
-		margin-bottom: 1rem;
-	}
-
 	.contact-form__identity {
 		grid-template-columns: minmax(0, 1fr);
 	}
@@ -1196,7 +1457,6 @@ button:focus-visible,
 		--cv-profile-gap: 1.5rem;
 		--cv-section-gap: clamp(2.25rem, 10vw, 3.5rem);
 		--cv-section-inline: 0.5rem;
-		--cv-year-column: 3.25rem;
 	}
 
 
