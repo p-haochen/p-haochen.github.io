@@ -355,7 +355,6 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 				cacheKey: key,
 				postId,
 				title: title.trim(),
-				railLabel: 'PORTFOLIO',
 				canonicalUrl: targetUrl.href,
 				canonicalPath: `${targetUrl.pathname}${targetUrl.search}${targetUrl.hash}`,
 				requestUrl: `${workEndpointBase}${postId}`,

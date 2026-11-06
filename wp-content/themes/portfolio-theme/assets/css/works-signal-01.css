@@ -389,6 +389,8 @@
 		color: var(--ws-muted);
 		background: rgb(19 20 24 / 97%);
 		box-shadow: 0 30px 80px rgb(0 0 0 / 55%);
+		/* solid fill for the sticky title row (works-system-01.css) */
+		--works-filter-panel-solid: rgb(19 20 24);
 	}
 
 	& .works-filter-panel__title,

@@ -485,7 +485,15 @@
 }
 
 .works-filter-panel__header {
+	/* The panel scrolls; its title row and x stay reachable at the top. The solid fill and the
+	   upward shadow cover options scrolling past the panel's top padding. */
+	--works-filter-panel-header-fill: var(--works-filter-panel-solid, var(--wp--preset--color--portal-canvas, #080a0d));
+	position: sticky;
+	top: 0;
+	z-index: 1;
 	margin-bottom: 0.65rem;
+	background: var(--works-filter-panel-header-fill);
+	box-shadow: 0 -1.25rem 0 var(--works-filter-panel-header-fill);
 }
 
 .works-filter-panel__title,
