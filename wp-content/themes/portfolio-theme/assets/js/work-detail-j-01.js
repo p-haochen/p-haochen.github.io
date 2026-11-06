@@ -122,6 +122,12 @@ function init(root) {
 		scan.setAttribute('aria-hidden', 'true');
 		heroImage.replaceWith(inner);
 		inner.append(heroImage, scan);
+		// Clicking (or Enter / Space on) the cover opens it full size in the gallery viewer.
+		inner.dataset.workCoverZoom = '';
+		inner.tabIndex = 0;
+		inner.setAttribute('role', 'button');
+		inner.setAttribute('aria-haspopup', 'dialog');
+		inner.setAttribute('aria-label', heroImage.alt.trim() ? `Open cover image: ${heroImage.alt.trim()}` : 'Open cover image');
 		listen(hero, 'pointermove', (event) => {
 			if (event.pointerType !== 'mouse' || reduceMotion.matches || phone.matches) return;
 			const rect = hero.getBoundingClientRect();

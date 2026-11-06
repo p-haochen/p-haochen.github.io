@@ -40,7 +40,19 @@ uniform float uAmp;
 uniform float uEdge;
 varying vec2 vUv;
 
+#ifdef EXACT_HASH
+// Android GPUs can evaluate the same lattice corner with last-bit differences from one noise cell to
+// the next; the sine hash magnifies them into visible blocks. Exact integer arithmetic (mod 289) gives
+// every corner one value however it is computed.
+vec2 permute(vec2 x) { return mod((x * 34. + 1.) * x, 289.); }
+float hash(vec2 p) {
+	p = mod(p, 289.);
+	vec2 h = permute(vec2(permute(vec2(p.x, 0.)).x + p.y, 0.));
+	return h.x / 289.;
+}
+#else
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+#endif
 float noise(vec2 p) {
 	vec2 i = floor(p), f = fract(p);
 	vec2 u = f * f * (3. - 2. * f);
@@ -119,7 +131,9 @@ function createRenderer(target) {
 
 	const program = gl.createProgram();
 	gl.attachShader(program, compile(gl.VERTEX_SHADER, VERTEX_SHADER));
-	gl.attachShader(program, compile(gl.FRAGMENT_SHADER, FRAGMENT_SHADER));
+	// Android only: the exact lattice hash (see EXACT_HASH). Desktop and iOS compile the shader unchanged.
+	const android = navigator.userAgentData?.platform === 'Android' || /Android/i.test(navigator.userAgent);
+	gl.attachShader(program, compile(gl.FRAGMENT_SHADER, android ? `#define EXACT_HASH\n${FRAGMENT_SHADER}` : FRAGMENT_SHADER));
 	gl.linkProgram(program);
 	if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(program) ?? 'Shader link failed.');
 	gl.useProgram(program);

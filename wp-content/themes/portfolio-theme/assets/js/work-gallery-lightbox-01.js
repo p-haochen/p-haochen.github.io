@@ -1,4 +1,6 @@
 const GALLERY_ITEM_SELECTOR = '[data-work-gallery-item]';
+// The Work cover (marked by work-detail-j-01.js) opens on its own, at its full-size source.
+const COVER_SELECTOR = '[data-work-cover-zoom]';
 const FOCUSABLE_SELECTOR = 'button:not([hidden]):not([disabled]), a[href]:not([hidden]), [tabindex]:not([tabindex="-1"]):not([hidden])';
 const SWIPE_MIN_DISTANCE = 48;
 const SWIPE_MAX_SLOPE = 0.6;
@@ -8,6 +10,25 @@ function galleryItemsFor(link) {
 	const gallery = link.closest('.work-media-gallery');
 	if (!(gallery instanceof HTMLElement)) return [];
 	return [...gallery.querySelectorAll(GALLERY_ITEM_SELECTOR)].filter((item) => item instanceof HTMLAnchorElement);
+}
+
+function largestSource(image) {
+	let best = { width: 0, url: image.src };
+	for (const candidate of (image.getAttribute('srcset') ?? '').split(',')) {
+		const [url, descriptor] = candidate.trim().split(/\s+/);
+		const width = Number.parseInt(descriptor ?? '', 10);
+		if (url && Number.isFinite(width) && width > best.width) best = { width, url };
+	}
+	return new URL(best.url, document.baseURI).href;
+}
+
+function coverItemFor(cover) {
+	const image = cover.querySelector('img');
+	if (!(image instanceof HTMLImageElement)) return null;
+	const item = document.createElement('a');
+	item.href = largestSource(image);
+	item.setAttribute('aria-label', image.alt.trim() || 'Cover image');
+	return item;
 }
 
 function itemDescription(link) {
@@ -144,12 +165,12 @@ export function initializeWorkGalleryLightbox(root = document) {
 		}
 	}
 
-	function open(link) {
-		const nextItems = galleryItemsFor(link);
+	function open(link, single = null) {
+		const nextItems = single ? [single.item] : galleryItemsFor(link);
 		if (nextItems.length === 0) return;
 		close({ restoreFocus: false });
 		items = nextItems;
-		activeIndex = Math.max(0, items.indexOf(link));
+		activeIndex = Math.max(0, items.indexOf(single ? single.item : link));
 		origin = link;
 		dialog = createDialog();
 		image = dialog.querySelector('.work-gallery-lightbox__image');
@@ -189,9 +210,20 @@ export function initializeWorkGalleryLightbox(root = document) {
 		originObserver.observe(document.body, { childList: true, subtree: true });
 	}
 
+	function openCover(cover) {
+		const item = coverItemFor(cover);
+		if (item) open(cover, { item });
+	}
+
 	function handleClick(event) {
 		const target = event.target;
 		if (!(target instanceof Element)) return;
+		const cover = target.closest(COVER_SELECTOR);
+		if (cover instanceof HTMLElement && !(dialog instanceof HTMLDialogElement)) {
+			event.preventDefault();
+			openCover(cover);
+			return;
+		}
 		const galleryItem = target.closest(GALLERY_ITEM_SELECTOR);
 		if (galleryItem instanceof HTMLAnchorElement) {
 			event.preventDefault();
@@ -217,7 +249,14 @@ export function initializeWorkGalleryLightbox(root = document) {
 	}
 
 	function handleKeydown(event) {
-		if (!(dialog instanceof HTMLDialogElement)) return;
+		if (!(dialog instanceof HTMLDialogElement)) {
+			// The cover acts as a button: Enter or Space opens it.
+			if ((event.key === 'Enter' || event.key === ' ') && event.target instanceof Element && event.target.matches(COVER_SELECTOR)) {
+				event.preventDefault();
+				openCover(event.target);
+			}
+			return;
+		}
 		if (event.key === 'Escape') {
 			event.preventDefault();
 			close();

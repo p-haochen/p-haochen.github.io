@@ -1006,6 +1006,8 @@
 	}
 
 	.works-row__link:is(:hover, :focus-visible) .works-row__title {
+		color: var(--ws-ember, #ed661c);
+		text-shadow: 0 0 18px rgb(237 102 28 / 45%);
 		transform: translateX(10px);
 	}
 }

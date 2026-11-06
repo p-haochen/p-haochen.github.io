@@ -987,6 +987,9 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 				update();
 				await waitForSignalCovers(directory, 320);
 			});
+			// A newer transition or a quick press can skip this one before it starts; `ready` then
+			// rejects ("Transition was skipped"). The update still runs, so that is not an error.
+			transition.ready.catch(() => {});
 			await transition.finished.catch(() => {});
 		}
 

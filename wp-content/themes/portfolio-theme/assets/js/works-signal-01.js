@@ -835,12 +835,21 @@ export function createSignalView({ works, view, display, grouped = false, helper
 		root.append(list, peek);
 	}
 
-	const peekState = { px: 0, py: 0, tx: 0, ty: 0, raf: 0, on: false };
+	// px/py are viewport coordinates. A transformed ancestor (the Portal panel) turns position: fixed
+	// into "relative to that ancestor", so the applied translate is offset by the measured origin.
+	const peekState = { px: 0, py: 0, tx: 0, ty: 0, raf: 0, on: false, ox: 0, oy: 0, ax: -999, ay: 0 };
+	function measurePeekOrigin() {
+		const rect = peek.getBoundingClientRect();
+		peekState.ox = rect.left - peekState.ax;
+		peekState.oy = rect.top - peekState.ay;
+	}
 	function peekLoop() {
 		const k = reduceMotion.matches ? 1 : 0.16;
 		peekState.px += (peekState.tx - peekState.px) * k;
 		peekState.py += (peekState.ty - peekState.py) * k;
-		peek.style.transform = `translate3d(${peekState.px}px, ${peekState.py}px, 0)`;
+		peekState.ax = peekState.px - peekState.ox;
+		peekState.ay = peekState.py - peekState.oy;
+		peek.style.transform = `translate3d(${peekState.ax}px, ${peekState.ay}px, 0)`;
 		peekState.raf = !destroyed && (peekState.on || Math.abs(peekState.tx - peekState.px) + Math.abs(peekState.ty - peekState.py) > 0.5)
 			? window.requestAnimationFrame(peekLoop) : 0;
 	}
@@ -851,6 +860,7 @@ export function createSignalView({ works, view, display, grouped = false, helper
 		const source = image.currentSrc || image.src;
 		if (!source) { hidePeek(); return; }
 		if (peekImage.src !== source) peekImage.src = source;
+		measurePeekOrigin();
 		const width = peek.offsetWidth, height = peek.offsetHeight || width;
 		if (!peekState.on) { peekState.px = x + 40; peekState.py = y - 80; }
 		peekState.on = true;

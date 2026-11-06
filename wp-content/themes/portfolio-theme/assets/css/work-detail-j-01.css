@@ -816,8 +816,19 @@ body.single-portfolio_work .work-detail--j .work-detail__aside {
 .work-detail--j .work-detail__cover-in {
 	position: relative;
 	transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
-	transform-style: preserve-3d;
+	/* flat: none of the children has its own 3D transform, and a preserve-3d layer is
+	   re-rasterised at low resolution while tilted (blurry cover under the cursor) */
+	transform-style: flat;
 	transition: transform .5s var(--wd-ease);
+}
+
+.work-detail--j .work-detail__cover-in[data-work-cover-zoom] {
+	cursor: zoom-in;
+}
+
+.work-detail--j .work-detail__cover-in[data-work-cover-zoom]:focus-visible {
+	outline: 1px solid var(--wd-ember);
+	outline-offset: 4px;
 }
 
 .work-detail--j .work-detail__hero.is-tilt .work-detail__cover-in {
@@ -1421,42 +1432,52 @@ body.single-portfolio_work .work-detail--j .work-detail__aside {
 	pointer-events: none;
 }
 
-/* gallery: square tiles, two per row, never cropped; the others dim on hover */
+/* gallery: equal-height justified rows in source order (works-system-01.css), each image at its
+   own ratio: no crop, no letterbox, no holes; the last row keeps its natural size. The others dim on hover */
+.work-detail.work-detail--j .work-media-gallery {
+	container-type: inline-size;
+}
+
 .work-detail.work-detail--j .work-media-gallery__grid {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
+	/* Row height follows the gallery's own width: two 3:2 images share a row. */
+	--work-gallery-row-height: 30cqi;
+	display: flex;
+	flex-wrap: wrap;
 	gap: 0.75rem;
 	margin: 0;
 }
 
 .work-detail.work-detail--j .work-media-gallery__grid::after {
-	content: none;
+	content: "";
+	flex-grow: 999;
 }
 
 @media (max-width: 560px) {
 	.work-detail.work-detail--j .work-media-gallery__grid {
-		grid-template-columns: minmax(0, 1fr);
+		/* phones: a landscape image takes the row, portraits pair up */
+		--work-gallery-row-height: 45cqi;
+		gap: 0.5rem;
 	}
 }
 
 .work-detail.work-detail--j .work-media-gallery__item {
-	aspect-ratio: 1;
+	aspect-ratio: auto;
 	width: auto;
 	height: auto;
 	margin: 0;
 	overflow: hidden;
-	background: #000;
+	background: transparent;
 }
 
 .work-detail.work-detail--j .work-media-gallery__link {
 	display: block;
 	width: 100%;
-	height: 100%;
 }
 
 .work-detail.work-detail--j .work-media-gallery__image {
+	display: block;
 	width: 100% !important;
-	height: 100% !important;
+	height: auto !important;
 	max-height: none;
 	object-fit: contain !important;
 	transition: transform .6s var(--wd-ease), opacity .35s, filter .35s;
