@@ -1,0 +1,96 @@
+{
+  "id": 316,
+  "title": "HAO Jazz Composing",
+  "html": "\n\n<div class=\"wp-block-group alignfull work-detail work-detail--j has-global-padding is-layout-constrained wp-block-group-is-layout-constrained\">\n\t\n\t<p class=\"work-detail__crumb\"><a class=\"work-detail__back\" href=\"/work/\"><span aria-hidden=\"true\">←</span>WORKS</a></p>\n\t\n\n\t\n\t<div class=\"wp-block-group alignwide work-detail__layout is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\n\t\t<aside class=\"wp-block-group work-detail__aside is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t<figure data-cover-orientation=\"square\" class=\"work-detail__hero wp-block-post-featured-image\"><img width=\"1254\" height=\"1254\" src=\"/wp-content/uploads/2026/11/hao-jazz-composing-cover.webp\" class=\"attachment-full size-full wp-post-image\" alt=\"HAO Jazz Composing\" style=\"object-fit:cover;\" decoding=\"async\" srcset=\"/wp-content/uploads/2026/11/hao-jazz-composing-cover.webp 1254w, /wp-content/uploads/2026/11/hao-jazz-composing-cover-300x300.webp 300w, /wp-content/uploads/2026/11/hao-jazz-composing-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/11/hao-jazz-composing-cover-150x150.webp 150w, /wp-content/uploads/2026/11/hao-jazz-composing-cover-768x768.webp 768w\" sizes=\"(max-width: 1254px) 100vw, 1254px\" loading=\"eager\" fetchpriority=\"high\" /></figure>\n\n\t\t\t\n\t\t\t<p class=\"work-detail__now\" data-work-detail-now aria-hidden=\"true\"><b class=\"work-detail__meter\"><i></i><i></i><i></i></b><span class=\"work-detail__now-title\" data-work-detail-now-title></span><span class=\"work-detail__now-time\" data-work-detail-now-time></span></p>\n\t\t\t\n\n\t\t\t\n\t\t\t<div class=\"wp-block-group work-detail__metadata is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\n\t\t\t\t<div class=\"wp-block-group work-detail__metadata-row work-detail__metadata-row--year is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t\t\n\t\t\t\t\t<p class=\"work-detail__metadata-label wp-block-paragraph\">YEAR</p>\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t<p class=\"work-detail__year work-year work-detail__metadata-value wp-block-paragraph\">2020</p>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t\n\n\t\t\t\t<div class=\"wp-block-group work-detail__metadata-row work-detail__metadata-row--type\"><p class=\"work-detail__metadata-label\">TYPE</p><p class=\"work-detail__metadata-value work-detail__terms work-detail__type\" data-work-categories=\"music\"><span>SINGLE</span></p></div>\n\t\t\t\t<div class=\"wp-block-group work-detail__metadata-row work-detail__metadata-row--role\"><p class=\"work-detail__metadata-label\">ROLE</p><p class=\"work-detail__metadata-value work-detail__terms\"><span>COMPOSITION</span> <span>MIXING</span></p></div><div class=\"wp-block-group work-detail__metadata-row work-detail__metadata-row--style\"><p class=\"work-detail__metadata-label\">STYLE</p><p class=\"work-detail__metadata-value work-detail__terms\"><span>JAZZ</span></p></div>\n\t\t\t\t\n\t\t\t</div>\n\t\t\t\n\n\t\t\t\n\t\t\t<div class=\"work-detail__actions\" data-work-detail-actions hidden></div>\n\t\t\t\n\t\t</aside>\n\t\t\n\n\t\t\n\t\t<div class=\"wp-block-group work-detail__main is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\n\t\t\t<div class=\"wp-block-group work-detail__header is-layout-flow wp-block-group-is-layout-flow\">\n\t\t\t\t<p class=\"work-detail__eyebrow\" aria-hidden=\"true\"><svg viewBox=\"0 0 18 12\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M0 6c1.5-6 3-6 4.5 0s3 6 4.5 0 3-6 4.5 0 3 6 4.5 0\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.4\"/></svg><span>MUSIC</span><i></i><span>2020</span></p>\n\t\t\t\t<h1 class=\"work-detail__title wp-block-post-title\">HAO Jazz Composing</h1><script type=\"application/json\" data-work-share-source>{\"url\":\"/works/hao-jazz-composing/\",\"title\":\"HAO Jazz Composing\",\"category\":\"MUSIC\",\"year\":\"2020\",\"cover\":\"/wp-content/uploads/2026/11/hao-jazz-composing-cover.webp\",\"roles\":[\"Composing\",\"Mixing\"]}</script>\n\t\t\t</div>\n\t\t\t\n\n\t\t\t\n\t\t\t<section class=\"work-detail__section work-detail__section--listen\" data-work-detail-section=\"LISTEN\" aria-labelledby=\"work-detail-section-listen-316\"><h2 class=\"work-detail__label\" id=\"work-detail-section-listen-316\"><span class=\"work-detail__label-text\">LISTEN</span></h2><div class=\"work-detail__section-body\"><div class=\"work-media work-media--listen\"><div class=\"work-media__block work-media__block--tracks\"><p class=\"work-media__heading\" aria-hidden=\"true\">Tracks</p><section class=\"work-media__section work-detail-audio\" data-work-detail-audio data-playlist-work-id=\"316\" data-playlist-title=\"HAO Jazz Composing\" aria-labelledby=\"work-detail-audio-316\"><h2 id=\"work-detail-audio-316\" class=\"work-detail-audio__title screen-reader-text\">HAO Jazz Composing</h2><ol class=\"work-detail-audio__tracks\"><li class=\"work-detail-audio__track-item\">HAO Jazz Composing</li></ol><script type=\"application/json\" data-work-detail-audio-tracks>[{\"id\":319,\"attachment_id\":319,\"work_id\":316,\"title\":\"HAO Jazz Composing\",\"artist\":\"\",\"release\":\"HAO Jazz Composing\",\"length\":\"1:54\",\"src\":\"\\/wp-content\\/uploads\\/2026\\/11\\/hao-jazz-composing-track-01.mp3\",\"mime_type\":\"audio\\/mpeg\",\"workId\":316,\"artwork\":\"\\/wp-content\\/uploads\\/2026\\/11\\/hao-jazz-composing-cover-1024x1024.webp\",\"artworkAlt\":\"HAO Jazz Composing\",\"providerLinks\":[],\"workUrl\":\"\\/works\\/hao-jazz-composing\\/\"}]</script></section></div></div></div></section>\n\t\t\t\n\t\t\t<section class=\"work-detail__section work-detail__section--credits\" data-work-detail-section=\"CREDITS\" aria-labelledby=\"work-detail-section-credits-316\"><h2 class=\"work-detail__label\" id=\"work-detail-section-credits-316\"><span class=\"work-detail__label-text\">CREDITS</span></h2><div class=\"work-detail__section-body\"><section class=\"work-detail__credits\" aria-labelledby=\"work-detail-credits-316\"><h2 id=\"work-detail-credits-316\" class=\"work-media__heading\">Credits</h2><dl id=\"work-credits-list-316\" class=\"work-credits\"><div class=\"work-credits__row\"><dt>Composing</dt><dd>陳柏豪</dd></div>\n<div class=\"work-credits__row\"><dt>Violin</dt><dd>陳以路</dd></div>\n<div class=\"work-credits__row\"><dt>Piano</dt><dd>吳彥妮</dd></div>\n<div class=\"work-credits__row\"><dt>Drums</dt><dd>王劭威</dd></div>\n<div class=\"work-credits__row\"><dt>Bass</dt><dd>張庭溪</dd></div>\n<div class=\"work-credits__row\"><dt>Recording</dt><dd>廖佳欣、陳旻伶、林理齊</dd></div>\n<div class=\"work-credits__row\"><dt>Mixing</dt><dd>陳柏豪</dd></div>\n</dl></section></div></section>\n\t\t\t<section class=\"work-detail__section work-detail__section--gallery\" data-work-detail-section=\"GALLERY\" aria-labelledby=\"work-detail-section-gallery-316\"><h2 class=\"work-detail__label\" id=\"work-detail-section-gallery-316\"><span class=\"work-detail__label-text\">GALLERY</span></h2><div class=\"work-detail__section-body\"><div class=\"work-media work-media--gallery\"><section class=\"work-media__section work-media-gallery\" aria-labelledby=\"work-media-gallery-316\"><h2 id=\"work-media-gallery-316\" class=\"work-media__heading\">Gallery</h2><div class=\"work-media-gallery__grid\"><figure class=\"work-media-gallery__item\" style=\"--work-gallery-ratio: 0.7076\"><a class=\"work-media-gallery__link\" href=\"/wp-content/uploads/2026/11/hao-jazz-composing-lead-sheet.webp\" data-work-gallery-item data-work-gallery-index=\"0\" data-work-gallery-count=\"1\" aria-haspopup=\"dialog\" aria-label=\"Open image 1 of 1: HAO Jazz Composing\"><img width=\"725\" height=\"1024\" src=\"/wp-content/uploads/2026/11/hao-jazz-composing-lead-sheet-725x1024.webp\" class=\"work-media-gallery__image\" alt=\"HAO Jazz Composing\" loading=\"lazy\" decoding=\"async\" sizes=\"auto, (max-width: 760px) calc(100vw - 2rem), (max-width: 1599px) 45vw, 720px\" srcset=\"/wp-content/uploads/2026/11/hao-jazz-composing-lead-sheet-725x1024.webp 725w, /wp-content/uploads/2026/11/hao-jazz-composing-lead-sheet-212x300.webp 212w, /wp-content/uploads/2026/11/hao-jazz-composing-lead-sheet-768x1085.webp 768w, /wp-content/uploads/2026/11/hao-jazz-composing-lead-sheet.webp 1055w\" /></a></figure></div></section></div></div></section>\n\t\t</div>\n\t\t\n\t</div>\n\t\n\n\t\n\t<div class=\"wp-block-group alignwide work-detail__footer is-layout-flow wp-block-group-is-layout-flow\">\n\t\t<nav class=\"work-pager\" aria-label=\"More works\"><a class=\"work-pager__link work-pager__link--previous\" href=\"/works/black-bear-right-field-ep/\" data-work-pager-id=\"42\" data-work-pager-title=\"黑熊合唱團EP 《我在右外野看台等你》\" data-work-pager-cover=\"/wp-content/uploads/2026/08/black-bear-right-field-ep-cover-768x768.webp\"><small><span aria-hidden=\"true\">←</span> PREVIOUS</small><b>黑熊合唱團EP 《我在右外野看台等你》</b></a><a class=\"work-pager__link work-pager__link--next\" href=\"/works/baby-hug/\" data-work-pager-id=\"108\" data-work-pager-title=\"楊臨慧《寶寶抱抱》\" data-work-pager-cover=\"/wp-content/uploads/2026/08/baby-hug-cover-768x768.webp\"><small>NEXT <span aria-hidden=\"true\">→</span></small><b>楊臨慧《寶寶抱抱》</b></a></nav>\n\t\t\n\t\t<p class=\"portfolio-copyright work-detail__copyright wp-block-paragraph\">Media © respective rights holders. All rights reserved.</p>\n\t\t\n\t</div>\n\t\n</div>\n\n",
+  "canonical_url": "/works/hao-jazz-composing/",
+  "seo": {
+    "title": "HAO Jazz Composing | PO HAO CHEN",
+    "description": "PO HAO CHEN portfolio: HAO Jazz Composing. 2020 · MUSIC · COMPOSITION, MIXING.",
+    "canonical_url": "/works/hao-jazz-composing/",
+    "image_url": "/wp-content/uploads/2026/11/hao-jazz-composing-cover-1024x1024.webp",
+    "og_type": "article",
+    "robots": "max-image-preview:large"
+  },
+  "structured_data": {
+    "@context": "https://schema.org",
+    "@type": "MusicRecording",
+    "@id": "https://pohaochen.com/works/hao-jazz-composing/#creative-work",
+    "url": "https://pohaochen.com/works/hao-jazz-composing/",
+    "name": "HAO Jazz Composing",
+    "image": "https://pohaochen.com/wp-content/uploads/2026/11/hao-jazz-composing-cover-1024x1024.webp",
+    "dateCreated": "2020"
+  },
+  "work": {
+    "id": 316,
+    "title": "HAO Jazz Composing",
+    "canonical_url": "/works/hao-jazz-composing/",
+    "year": "2020",
+    "menu_order": 240,
+    "categories": [
+      {
+        "slug": "music",
+        "name": "MUSIC"
+      }
+    ],
+    "roles": [
+      {
+        "slug": "composition",
+        "label": "COMPOSITION"
+      },
+      {
+        "slug": "mixing",
+        "label": "MIXING"
+      }
+    ],
+    "styles": [
+      {
+        "slug": "jazz",
+        "label": "JAZZ"
+      }
+    ],
+    "types": [
+      {
+        "slug": "single",
+        "label": "SINGLE"
+      }
+    ],
+    "ctas": [],
+    "cover": {
+      "id": 317,
+      "src": "/wp-content/uploads/2026/11/hao-jazz-composing-cover-1024x1024.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "HAO Jazz Composing",
+      "srcset": "/wp-content/uploads/2026/11/hao-jazz-composing-cover-1024x1024.webp 1024w, /wp-content/uploads/2026/11/hao-jazz-composing-cover-300x300.webp 300w, /wp-content/uploads/2026/11/hao-jazz-composing-cover-150x150.webp 150w, /wp-content/uploads/2026/11/hao-jazz-composing-cover-768x768.webp 768w, /wp-content/uploads/2026/11/hao-jazz-composing-cover.webp 1254w",
+      "sizes": "(max-width: 1024px) 100vw, 1024px",
+      "card_sizes": "(max-width: 700px) calc(100vw - 2rem), (max-width: 1199px) calc((100vw - 5rem) / 2), calc((100vw - 10rem) / 4)"
+    },
+    "tracks": [
+      {
+        "id": 319,
+        "attachment_id": 319,
+        "work_id": 316,
+        "title": "HAO Jazz Composing",
+        "artist": "",
+        "release": "HAO Jazz Composing",
+        "length": "1:54",
+        "src": "/wp-content/uploads/2026/11/hao-jazz-composing-track-01.mp3",
+        "mime_type": "audio/mpeg",
+        "workId": 316,
+        "artwork": "/wp-content/uploads/2026/11/hao-jazz-composing-cover-1024x1024.webp",
+        "artworkAlt": "HAO Jazz Composing",
+        "providerLinks": [],
+        "workUrl": "/works/hao-jazz-composing/"
+      }
+    ],
+    "seo": {
+      "title": "HAO Jazz Composing | PO HAO CHEN",
+      "description": "PO HAO CHEN portfolio: HAO Jazz Composing. 2020 · MUSIC · COMPOSITION, MIXING.",
+      "canonical_url": "/works/hao-jazz-composing/",
+      "image_url": "/wp-content/uploads/2026/11/hao-jazz-composing-cover-1024x1024.webp",
+      "og_type": "article",
+      "robots": "max-image-preview:large"
+    },
+    "search": "HAO Jazz Composing 2020 MUSIC SINGLE COMPOSITION MIXING JAZZ Composing 陳柏豪 Violin 陳以路 Piano 吳彥妮 Drums 王劭威 Bass 張庭溪 Recording 廖佳欣、陳旻伶、林理齊 Mixing 陳柏豪 HAO Jazz Composing"
+  }
+}

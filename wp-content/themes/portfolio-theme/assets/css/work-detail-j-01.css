@@ -685,6 +685,208 @@
 	height: 0.875rem;
 }
 
+/* QUEUE heading row with the ALL MUSIC button */
+.music-capsule__panel-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding-right: 0.625rem;
+}
+
+.music-capsule__library-toggle {
+	height: 1.75rem;
+	margin-top: 0.5rem;
+	padding: 0 0.75rem;
+	border: 1px solid var(--wd-faint);
+	border-radius: 0.875rem;
+	color: var(--wd-muted);
+	background: transparent;
+	font: 600 0.625rem/1 var(--wd-text);
+	letter-spacing: .14em;
+	cursor: pointer;
+	transition: color .2s, border-color .2s, background-color .2s;
+}
+
+.music-capsule__library-toggle:hover,
+.music-capsule__library-toggle[aria-expanded="true"] {
+	border-color: var(--wd-ember);
+	color: var(--wd-ink);
+}
+
+/* ALL MUSIC: desktop — a second card to the left of the open player. */
+.music-capsule__library {
+	position: absolute;
+	right: calc(100% + 0.75rem);
+	bottom: 0;
+	display: flex;
+	flex-direction: column;
+	width: min(21rem, calc(50vw - 15rem));
+	min-width: 17rem;
+	max-height: min(36rem, calc(100vh - 6rem));
+	border: 1px solid rgb(240 238 232 / 12%);
+	border-radius: 1.25rem;
+	background: #16171b;
+	box-shadow: 0 24px 50px -18px #000, 0 0 0 1px rgb(0 0 0 / 40%);
+	overflow: hidden;
+	animation: music-library-in .32s var(--wd-ease) both;
+}
+
+.music-capsule__library[hidden],
+.music-capsule:not([data-open="true"]) .music-capsule__library {
+	display: none;
+}
+
+@keyframes music-library-in {
+	from { opacity: 0; transform: translateX(12px); }
+	to { opacity: 1; transform: none; }
+}
+
+.music-capsule__library-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding-right: 0.5rem;
+}
+
+.music-capsule__library-count {
+	margin-left: 0.35em;
+	color: var(--wd-ember);
+	font-family: var(--wd-mono);
+	letter-spacing: .04em;
+}
+
+.music-capsule__library-close {
+	display: inline-grid;
+	width: 2rem;
+	height: 2rem;
+	margin-top: 0.375rem;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	color: var(--wd-muted);
+	background: transparent;
+	place-items: center;
+	cursor: pointer;
+}
+
+.music-capsule__library-close:hover {
+	color: var(--wd-ink);
+	background: rgb(240 238 232 / 6%);
+}
+
+.music-capsule__library-close svg {
+	width: 0.75rem;
+	height: 0.75rem;
+}
+
+.music-capsule__library-search {
+	flex: none;
+	height: 2.125rem;
+	margin: 0.25rem 0.875rem 0.5rem;
+	padding: 0 0.875rem;
+	border: 1px solid var(--wd-faint);
+	border-radius: 1.0625rem;
+	color: var(--wd-ink);
+	background: #0f1013;
+	font: 500 0.75rem/1 var(--wd-text);
+	letter-spacing: .03em;
+	appearance: none;
+}
+
+.music-capsule__library-search::placeholder {
+	color: var(--wd-dim);
+}
+
+.music-capsule__library-search:focus,
+.music-capsule .music-capsule__library-search:focus-visible {
+	border-color: var(--wd-ember);
+	outline: none;
+	box-shadow: none;
+}
+
+.music-capsule__library-list {
+	flex: 1 1 auto;
+	min-height: 0;
+	padding: 0 0.375rem 0.5rem;
+	overflow: auto;
+	overscroll-behavior: contain;
+}
+
+.music-capsule__library-group[hidden],
+.music-capsule__library-list li[hidden],
+.music-capsule__library-message[hidden] {
+	display: none;
+}
+
+.music-capsule__library-work {
+	position: sticky;
+	top: 0;
+	z-index: 1;
+	display: flex;
+	align-items: center;
+	gap: 0.625rem;
+	padding: 0.625rem 0.625rem 0.375rem;
+	background: #16171b;
+}
+
+.music-capsule__library-work img {
+	flex: none;
+	width: 2rem;
+	height: 2rem;
+	border-radius: 0.3rem;
+	object-fit: cover;
+}
+
+.music-capsule__library-work p {
+	display: flex;
+	flex: 1 1 auto;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.5rem;
+	min-width: 0;
+	margin: 0;
+	color: var(--wd-ink);
+	font: 600 0.78rem/1.35 var(--wd-text);
+}
+
+.music-capsule__library-work small {
+	flex: none;
+	color: var(--wd-dim);
+	font: 500 0.625rem/1 var(--wd-mono);
+}
+
+.music-capsule__library-list ol {
+	margin: 0;
+	padding: 0 0 0.25rem;
+	list-style: none;
+}
+
+.music-capsule__library-message {
+	margin: 0;
+	padding: 1rem 0.875rem;
+	color: var(--wd-dim);
+	font-size: 0.8rem;
+}
+
+/* Phones (and windows too narrow for a side card): ALL MUSIC takes the queue's place. */
+@media (max-width: 1100px) {
+	.music-capsule__library {
+		position: static;
+		width: auto;
+		min-width: 0;
+		max-height: 55vh;
+		border: 0;
+		border-bottom: 1px solid var(--wd-line);
+		border-radius: 0;
+		box-shadow: none;
+		animation: none;
+	}
+
+	.music-capsule.is-library-open[data-open="true"] .music-capsule__panel {
+		display: none;
+	}
+}
+
 .music-capsule-spark {
 	position: fixed;
 	z-index: 100301;
@@ -1022,6 +1224,20 @@ body.single-portfolio_work .work-detail--j .work-detail__aside {
 	content: "·";
 }
 
+/* EVENT / VENUE: one entry per line, no separator dot. */
+.work-detail--j .work-detail__terms .work-detail__line {
+	display: block;
+}
+
+.work-detail--j .work-detail__terms .work-detail__line::after {
+	content: none;
+}
+
+/* A Work without a TYPE keeps the row (it carries the Work's pages) but shows nothing. */
+.work-detail--j .work-detail__metadata-row--type:has(.work-detail__type:empty) {
+	display: none;
+}
+
 .work-detail--j.is-enter .work-detail__metadata-row::before {
 	animation: wd-rule .7s var(--wd-ease) both;
 	animation-delay: calc(300ms + var(--i, 0) * 70ms);
@@ -1184,6 +1400,24 @@ body.single-portfolio_work .work-detail--j .work-detail__aside {
 
 .work-detail--j .work-detail__header {
 	gap: 1.25rem;
+	/* A nowrap title segment must not widen its column; fitTitle loosens it instead. */
+	min-width: 0;
+}
+
+.work-detail.work-detail--j .work-detail__title {
+	min-width: 0;
+}
+
+/* Title "A｜B" (full-width bar): A is the event, set small on its own line; B is the Work. */
+.work-detail.work-detail--j .work-detail__title-lead {
+	display: block;
+	margin-bottom: .45em;
+	color: var(--wd-muted);
+	font-size: clamp(1rem, 1.55vw, 1.5rem);
+	font-weight: 560;
+	letter-spacing: 0;
+	line-height: 1.4;
+	text-wrap: balance;
 }
 
 .work-detail--j .work-detail__eyebrow {
@@ -1353,10 +1587,18 @@ body.single-portfolio_work .work-detail--j .work-detail__aside {
 	line-height: 1.95;
 }
 
-.work-detail--j .work-detail__description > p:first-of-type {
+.work-detail--j .work-detail__description > p:first-of-type,
+.work-detail--j .work-detail__description > p.is-lead {
 	color: var(--wd-ink);
 	font-size: clamp(1.0625rem, 1.45vw, 1.25rem);
 	line-height: 1.8;
+}
+
+/* A paragraph marked "is-lead" in the editor takes the large style instead of the first one. */
+.work-detail--j .work-detail__description:has(> p.is-lead) > p:first-of-type:not(.is-lead) {
+	color: rgb(240 238 232 / 80%);
+	font-size: 0.97rem;
+	line-height: 1.95;
 }
 
 /* listen: track list, then Spotify / SoundCloud / StreetVoice */
@@ -1450,6 +1692,20 @@ body.single-portfolio_work .work-detail--j .work-detail__aside {
 .work-detail.work-detail--j .work-credits dd {
 	color: inherit;
 	font-size: inherit;
+}
+
+/* A caption over the credits that follow it ("黑熊合唱團 Formosa Black Bear："). */
+.work-detail--j .work-credits__group {
+	margin: 0 0 .35rem;
+	color: var(--wd-ink);
+	font-size: 0.94rem;
+	font-weight: 600;
+	letter-spacing: .02em;
+	line-height: 1.7;
+}
+
+.work-detail--j .work-credits + .work-credits__group {
+	margin-top: 1.25rem;
 }
 
 .work-detail--j .work-credits__toggle {

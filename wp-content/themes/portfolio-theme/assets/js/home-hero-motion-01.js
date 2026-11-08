@@ -15,8 +15,10 @@ const SPEED = 0.3 + 0.6 * 4;
 const EDGE = 0.04;
 const FRAME_MS = 33;
 const VARIANTS = {
-	desktop: { suffix: 'desktop', width: 1448, height: 1086, anchorY: 0.48 },
-	mobile: { suffix: 'mobile', width: 610, height: 1086, anchorY: 0.5 },
+	// The mobile textures are a 610 px wide crop (x = 419) of the 1448 px desktop photo. cropX/fullWidth let the
+	// shader compute travel, noise and gains in full-photo units so the mobile crop moves exactly like desktop.
+	desktop: { suffix: 'desktop', width: 1448, height: 1086, anchorY: 0.48, cropX: 0, fullWidth: 1448 },
+	mobile: { suffix: 'mobile', width: 610, height: 1086, anchorY: 0.5, cropX: 419, fullWidth: 1448 },
 };
 
 const VERTEX_SHADER = `
@@ -34,6 +36,9 @@ uniform sampler2D uPlate;
 uniform sampler2D uSpeed;
 uniform vec2 uRes;
 uniform vec2 uImgSize;
+uniform vec2 uFullSize;   // the full photo the textures were cut from (desktop: same as uImgSize)
+uniform vec2 uCropScale;  // full-photo uv = texture uv * uCropScale + uCropOff (desktop: 1 and 0)
+uniform vec2 uCropOff;
 uniform float uAnchorY;
 uniform float uTime;
 uniform float uAmp;
@@ -79,26 +84,28 @@ vec3 bgOff(vec2 uv, vec2 off) {
 }
 void main() {
 	vec2 uv = cover(vUv);
+	vec2 gv = uv * uCropScale + uCropOff;   // full-photo uv: every procedural term below uses it
 	vec3 base = texture2D(uImg, uv).rgb;
 	float fgA = texture2D(uMask, uv).g;
 	float t = uTime;
 	vec4 f = texture2D(uFlow, uv);
 	vec2 dir = (f.rg * 2. - 1.) * f.b;
 	// Right side and the area above the head get extra travel (slower near the burst centre).
-	float rightGain = smoothstep(.42, .88, uv.x);
-	vec2 hp = (uv - vec2(.52, .15)) * vec2(1., uImgSize.y / uImgSize.x);
+	float rightGain = smoothstep(.42, .88, gv.x);
+	vec2 hp = (gv - vec2(.52, .15)) * vec2(1., uFullSize.y / uFullSize.x);
 	float headGain = exp(-dot(hp, hp) / .012);
 	float gain = 1. + .5 * rightGain + .8 * headGain;
 	vec3 sp = texture2D(uSpeed, uv).rgb;   // r: slow-down distance, g: edge-fix weight, b: real plate hole
 	float mb = mix(.45, 1., smoothstep(0., uEdge * .5, sp.r));
-	vec2 d = vec2(dir.x, dir.y * uImgSize.x / uImgSize.y) * .017 * uAmp * mb * mb * gain;
+	vec2 d = vec2(dir.x, dir.y * uFullSize.x / uFullSize.y) * .017 * uAmp * mb * mb * gain;
 	// Two phase-shifted layers cross-faded into a seamless loop.
-	float cyc = t * .135 + noise(uv * 2.6) * 1.7;
+	float cyc = t * .135 + noise(gv * 2.6) * 1.7;
 	float p0 = fract(cyc), p1 = fract(cyc + .5);
 	float w = abs(1. - 2. * p0);
-	vec2 o0 = -d * (p0 - .5), o1 = -d * (p1 - .5);
+	vec2 g0 = -d * (p0 - .5), g1 = -d * (p1 - .5);   // offsets in full-photo uv
+	vec2 o0 = g0 / uCropScale, o1 = g1 / uCropScale;   // the same offsets in texture uv
 	vec2 u0 = uv + o0, u1 = uv + o1;
-	float e0 = fbm(u0 * vec2(26., 19.5) + floor(cyc) * 7.13), e1 = fbm(u1 * vec2(26., 19.5) + floor(cyc + .5) * 7.13 + 3.7);
+	float e0 = fbm((gv + g0) * vec2(26., 19.5) + floor(cyc) * 7.13), e1 = fbm((gv + g1) * vec2(26., 19.5) + floor(cyc + .5) * 7.13 + 3.7);
 	vec3 col = mix(bgOff(uv, o0), bgOff(uv, o1), w);
 	float we = w;
 	if (sp.g > 0.) {
@@ -145,7 +152,7 @@ function createRenderer(target) {
 	gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
 
 	const uniforms = {};
-	for (const name of ['uImg', 'uMask', 'uFlow', 'uPlate', 'uSpeed', 'uRes', 'uImgSize', 'uAnchorY', 'uTime', 'uAmp', 'uEdge']) {
+	for (const name of ['uImg', 'uMask', 'uFlow', 'uPlate', 'uSpeed', 'uRes', 'uImgSize', 'uFullSize', 'uCropScale', 'uCropOff', 'uAnchorY', 'uTime', 'uAmp', 'uEdge']) {
 		uniforms[name] = gl.getUniformLocation(program, name);
 	}
 	['uImg', 'uMask', 'uFlow', 'uPlate', 'uSpeed'].forEach((name, unit) => gl.uniform1i(uniforms[name], unit));
@@ -184,6 +191,9 @@ function createRenderer(target) {
 				loadTexture(4, asset('speed-burst')),
 			]);
 			gl.uniform2f(uniforms.uImgSize, variant.width, variant.height);
+			gl.uniform2f(uniforms.uFullSize, variant.fullWidth, variant.height);
+			gl.uniform2f(uniforms.uCropScale, variant.width / variant.fullWidth, 1);
+			gl.uniform2f(uniforms.uCropOff, variant.cropX / variant.fullWidth, 0);
 			gl.uniform1f(uniforms.uAnchorY, variant.anchorY);
 		},
 		draw(time) {

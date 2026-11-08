@@ -497,8 +497,9 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 
 		function settlePrerenderedRouteWithoutHydration(key, definition) {
 			mountWorkDetailAudio(key);
-			const categories = [...content.querySelectorAll('.work-detail__categories a')]
-				.map((category) => category.textContent?.trim().toLowerCase() ?? '');
+			const categories = (content.querySelector('[data-work-categories]')?.getAttribute('data-work-categories') ?? '')
+				.split(/\s+/)
+				.filter(Boolean);
 			musicPlayer?.setRouteIsMusic(definition.kind === 'work-detail' && categories.includes('music'));
 			status.textContent = '';
 			errorMessage.textContent = '';
@@ -999,7 +1000,16 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			const sort = typeof request?.sort === 'string' ? request.sort : null;
 			const role = typeof request?.role === 'string' ? request.role : null;
 			const style = typeof request?.style === 'string' ? request.style : null;
-			if (!(directory instanceof HTMLElement) || (view === null && sort === null && role === null && style === null)) return;
+			const type = typeof request?.type === 'string' ? request.type : null;
+			const query = typeof request?.query === 'string' ? request.query : null;
+			if (!(directory instanceof HTMLElement) || (view === null && sort === null && role === null && style === null && type === null && query === null)) return;
+			// A TYPE or SEARCH request (alone, or with ROLE / STYLE from CLEAR ALL) is applied as one filter change.
+			const typeFilters = type === null && query === null ? null : {
+				...(type !== null ? { type } : {}),
+				...(query !== null ? { query } : {}),
+				...(role !== null ? { role } : {}),
+				...(style !== null ? { style } : {}),
+			};
 			// Filtering or sorting from inside MUSIC COLLECTIONS keeps the reader there: the section stays where
 			// it was on screen while the works above it change. Anything else starts again from the top.
 			const collectionsOffset = () => {
@@ -1010,7 +1020,9 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			const before = view === null ? collectionsOffset() : null;
 			const keepCollections = before !== null && before < scroller.clientHeight * 0.5;
 			const applyRequestedState = () => {
-				const detail = role !== null && style !== null
+				const detail = typeFilters !== null
+					? applyWorksFilters(directory, typeFilters)
+					: role !== null && style !== null
 					? applyWorksFilters(directory, { role, style })
 					: role !== null
 						? applyWorksRole(directory, role)
@@ -1028,7 +1040,9 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 				applyRequestedState();
 				return;
 			}
-			const alreadyActive = role !== null && style !== null
+			const alreadyActive = typeFilters !== null
+				? Object.entries(typeFilters).every(([key, value]) => directory.dataset[`activeWork${key[0].toUpperCase()}${key.slice(1)}`] === value)
+				: role !== null && style !== null
 				? directory.dataset.activeWorkRole === role && directory.dataset.activeWorkStyle === style
 				: role !== null
 					? directory.dataset.activeWorkRole === role
@@ -1102,6 +1116,14 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 				: window.history.state?.portfolioWorksStyles && typeof window.history.state.portfolioWorksStyles === 'object'
 					? window.history.state.portfolioWorksStyles
 					: {};
+			const initialQuery = typeof restoration?.query === 'string'
+				? restoration.query
+				: typeof window.history.state?.portfolioWorksQuery === 'string' ? window.history.state.portfolioWorksQuery : '';
+			const initialTypes = restoration?.types && typeof restoration.types === 'object'
+				? restoration.types
+				: window.history.state?.portfolioWorksTypes && typeof window.history.state.portfolioWorksTypes === 'object'
+					? window.history.state.portfolioWorksTypes
+					: {};
 			const mountedContextually = isB3Motion && key === 'work'
 				? mountWorksContextualControls(directory)
 				: false;
@@ -1123,6 +1145,9 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 						portfolioWorksRoles: detail.roles ?? {},
 						portfolioWorksStyle: detail.style ?? 'all',
 						portfolioWorksStyles: detail.styles ?? {},
+						portfolioWorksType: detail.type ?? 'all',
+						portfolioWorksTypes: detail.types ?? {},
+						portfolioWorksQuery: detail.query ?? '',
 					},
 					'',
 					window.location.href,
@@ -1135,6 +1160,8 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 					initialSorts,
 					initialRoles,
 					initialStyles,
+					initialTypes,
+					initialQuery,
 					controlsRoot,
 					preserveInitialMarkup: options.preserveInitialMarkup === true,
 					signal: isB3Motion && key === 'work',
@@ -1784,6 +1811,8 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 				sorts: { all: 'curated', music: 'curated', live: 'curated', tech: 'curated' },
 				roles: { all: 'all', music: 'all', live: 'all', tech: 'all' },
 				styles: { all: 'all', music: 'all', live: 'all', tech: 'all' },
+				types: { all: 'all', music: 'all', live: 'all', tech: 'all' },
+				query: '',
 				postId: 0,
 			};
 			const matchingTrigger = triggers.find((trigger) => trigger.key === 'work')?.anchor ?? null;
@@ -1797,6 +1826,9 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 					portfolioWorksRoles: { all: 'all', music: 'all', live: 'all', tech: 'all' },
 					portfolioWorksStyle: 'all',
 					portfolioWorksStyles: { all: 'all', music: 'all', live: 'all', tech: 'all' },
+					portfolioWorksType: 'all',
+					portfolioWorksTypes: { all: 'all', music: 'all', live: 'all', tech: 'all' },
+					portfolioWorksQuery: '',
 					portfolioWorksOriginPostId: 0,
 				}),
 				url: currentPortalDepth() > 0
@@ -2034,6 +2066,10 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 						styles: historyState.portfolioWorksStyles && typeof historyState.portfolioWorksStyles === 'object'
 							? historyState.portfolioWorksStyles
 							: {},
+						types: historyState.portfolioWorksTypes && typeof historyState.portfolioWorksTypes === 'object'
+							? historyState.portfolioWorksTypes
+							: {},
+						query: typeof historyState.portfolioWorksQuery === 'string' ? historyState.portfolioWorksQuery : '',
 						postId: Number.parseInt(String(historyState.portfolioWorksOriginPostId ?? 0), 10),
 					};
 					const matchingTrigger = triggers.find((trigger) => trigger.key === 'work')?.anchor ?? null;

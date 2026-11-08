@@ -334,7 +334,104 @@
 		background: var(--ws-ink);
 	}
 
-	& :is(.works-directory__filter-trigger, .works-directory__sort-select, .works-bar__dsp, .works-bar__display button, .works-directory__filter):focus-visible {
+	/* DSP: out of the toolbar, in the empty lower-left corner (under the MUSIC / LIVE / LAB nodes). */
+	& .works-bar__dsp {
+		position: fixed;
+		left: var(--ws-left);
+		bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+		z-index: 4;
+		border: 1px solid var(--ws-faint);
+		background: rgb(11 12 15 / 82%);
+		backdrop-filter: blur(6px);
+	}
+
+	& .works-bar__dsp:hover {
+		background: rgb(30 31 35 / 92%);
+	}
+
+	/* SEARCH: magnifier left of FILTER; the field grows out to the left over the bar. */
+	& .works-bar__search {
+		position: relative;
+		display: flex;
+		flex: none;
+		align-items: center;
+	}
+
+	& .works-bar__search-toggle {
+		display: inline-grid;
+		width: 2.125rem;
+		height: 2.125rem;
+		padding: 0;
+		border: 0;
+		border-radius: 1.0625rem;
+		color: var(--ws-ink);
+		background: transparent;
+		place-items: center;
+		cursor: pointer;
+		transition: background-color .25s, color .25s;
+	}
+
+	& .works-bar__search-toggle:hover,
+	& .works-bar__search.is-open .works-bar__search-toggle {
+		background: rgb(240 238 232 / 8%);
+	}
+
+	& .works-bar__search.has-query .works-bar__search-toggle {
+		color: var(--ws-ember);
+	}
+
+	& .works-bar__search-toggle svg {
+		width: 1rem;
+		height: 1rem;
+	}
+
+	& .works-bar__search-input {
+		position: absolute;
+		top: 50%;
+		right: calc(100% + 4px);
+		z-index: 2;
+		width: 0;
+		height: 2.125rem;
+		margin: 0;
+		padding: 0;
+		border: 1px solid transparent;
+		border-radius: 1.0625rem;
+		color: var(--ws-ink);
+		font: 500 .75rem/1 var(--ws-text);
+		letter-spacing: .04em;
+		background: var(--ws-raise);
+		opacity: 0;
+		transform: translateY(-50%);
+		transition: width .38s var(--ws-ease), padding .38s var(--ws-ease), opacity .2s, border-color .25s;
+		pointer-events: none;
+		appearance: none;
+	}
+
+	& .works-bar__search-input::placeholder {
+		color: var(--ws-dim);
+		letter-spacing: .08em;
+	}
+
+	& .works-bar__search-input::-webkit-search-cancel-button {
+		filter: invert(1) grayscale(1);
+		opacity: .55;
+		cursor: pointer;
+	}
+
+	& .works-bar__search.is-open .works-bar__search-input {
+		width: var(--works-search-width, 15rem);
+		padding: 0 .875rem;
+		border-color: var(--ws-faint);
+		opacity: 1;
+		pointer-events: auto;
+	}
+
+	& .works-bar__search-input:focus {
+		border-color: var(--ws-ember);
+		outline: none;
+	}
+
+	& :is(.works-directory__filter-trigger, .works-directory__sort-select, .works-bar__dsp, .works-bar__display button, .works-directory__filter, .works-bar__search-toggle):focus-visible {
 		outline: 1px solid var(--ws-ember);
 		outline-offset: 3px;
 		text-decoration: none;
@@ -1134,6 +1231,17 @@
 		& .works-bar__dsp {
 			width: 2rem;
 			justify-content: center;
+		}
+
+		/* Phone: the search field covers the WORKS title; a smaller face keeps "Search Anything" whole. */
+		& .works-bar__search.is-open .works-bar__search-input {
+			padding: 0 .625rem;
+			font-size: .6875rem;
+			letter-spacing: .02em;
+		}
+
+		& .works-bar__search-input::placeholder {
+			letter-spacing: .02em;
 		}
 
 		& .works-bar__count {

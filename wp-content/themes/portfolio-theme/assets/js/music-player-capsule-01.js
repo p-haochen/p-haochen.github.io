@@ -7,8 +7,45 @@
  * and a link to the playing Work, and a spark that flies from the play button
  * you pressed into the player.
  */
+import { playlistTracksForWork } from './playlist-component-01.js';
+
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const capsules = new WeakMap();
+
+/*
+ * ALL MUSIC reads the WORKS payload the Portal already uses (every Work with its tracks):
+ * the static site's /data/panels/work.json, else the Local REST panel endpoint.
+ */
+function musicLibraryUrl() {
+	const shell = document.querySelector('.photo-draft-shell');
+	const staticBase = shell?.dataset.portalStaticBase ?? '';
+	if (staticBase !== '') return `${staticBase.endsWith('/') ? staticBase : `${staticBase}/`}panels/work.json`;
+	const endpoint = shell?.dataset.portalEndpoint ?? '';
+	if (endpoint !== '') return `${endpoint}work`;
+	const api = document.querySelector('link[rel="https://api.w.org/"]')?.getAttribute('href') ?? '';
+	return api !== '' ? `${api.endsWith('/') ? api : `${api}/`}portfolio-theme/v1/panel/work` : '';
+}
+
+let musicLibraryRequest = null;
+function loadMusicLibrary() {
+	if (!musicLibraryRequest) {
+		const url = musicLibraryUrl();
+		musicLibraryRequest = (url === ''
+			? Promise.reject(new Error('No music source'))
+			: fetch(url, { headers: { Accept: 'application/json' }, credentials: 'same-origin' }).then((response) => {
+				if (!response.ok) throw new Error(`HTTP ${response.status}`);
+				return response.json();
+			}))
+			.then((payload) => (Array.isArray(payload?.works) ? payload.works : [])
+				.map((work) => ({ work, tracks: playlistTracksForWork(work) }))
+				.filter((group) => group.tracks.length > 0))
+			.catch((error) => {
+				musicLibraryRequest = null;
+				throw error;
+			});
+	}
+	return musicLibraryRequest;
+}
 
 function formatTime(value) {
 	const seconds = Math.max(0, Math.floor(Number(value) || 0));
@@ -55,6 +92,7 @@ export function attachMusicCapsule(root, player, options = {}) {
 	const isOpen = () => root.dataset.open === 'true';
 	function setOpen(open, { focusToggle = false } = {}) {
 		if (open === isOpen()) return;
+		if (!open) setLibraryOpen(false);
 		root.dataset.open = open ? 'true' : 'false';
 		toggle.setAttribute('aria-expanded', String(open));
 		toggle.setAttribute('aria-label', open ? 'Hide queue and controls' : 'Show queue and controls');
@@ -68,6 +106,153 @@ export function attachMusicCapsule(root, player, options = {}) {
 	}
 
 	const trackKey = (track) => (track ? `${track.workId}:${track.id}:${track.src}` : '');
+
+	/* ---------- ALL MUSIC: every track on the site, grouped by Work, with a search ---------- */
+	const library = root.querySelector('[data-music-capsule-library]');
+	const libraryToggle = root.querySelector('[data-music-library-toggle]');
+	const libraryClose = root.querySelector('[data-music-library-close]');
+	const librarySearch = root.querySelector('[data-music-library-search]');
+	const libraryList = root.querySelector('[data-music-library-list]');
+	const libraryCount = root.querySelector('[data-music-library-count]');
+	const hasLibrary = library instanceof HTMLElement && libraryToggle instanceof HTMLButtonElement
+		&& librarySearch instanceof HTMLInputElement && libraryList instanceof HTMLElement;
+	let libraryGroups = null;
+	const sameTrack = (a, b) => Boolean(a && b) && a.src === b.src
+		&& (Number(a.workId) || 0) === (Number(b.workId) || 0);
+	const isLibraryOpen = () => hasLibrary && !library.hidden;
+
+	function setLibraryOpen(open, { focus = false } = {}) {
+		if (!hasLibrary || open === isLibraryOpen()) return;
+		library.hidden = !open;
+		root.classList.toggle('is-library-open', open);
+		libraryToggle.setAttribute('aria-expanded', String(open));
+		if (open) {
+			renderLibrary();
+			// With a mouse the search is ready to type in; a phone keeps its keyboard down until tapped.
+			const target = window.matchMedia('(pointer: fine)').matches ? librarySearch : libraryClose;
+			if (focus && target instanceof HTMLElement) window.requestAnimationFrame(() => target.focus({ preventScroll: true }));
+		} else if (focus) {
+			libraryToggle.focus({ preventScroll: true });
+		}
+	}
+
+	function libraryMessage(text) {
+		const message = document.createElement('p');
+		message.className = 'music-capsule__library-message';
+		message.textContent = text;
+		libraryList.replaceChildren(message);
+	}
+
+	function renderLibrary() {
+		if (!hasLibrary) return;
+		if (!libraryGroups) {
+			libraryMessage('Loading…');
+			loadMusicLibrary().then((groups) => {
+				libraryGroups = groups;
+				buildLibrary();
+			}, () => libraryMessage('Could not load the music. Please try again later.'));
+			return;
+		}
+		buildLibrary();
+	}
+
+	function buildLibrary() {
+		const total = libraryGroups.reduce((sum, group) => sum + group.tracks.length, 0);
+		if (libraryCount instanceof HTMLElement) libraryCount.textContent = String(total).padStart(2, '0');
+		const fragment = document.createDocumentFragment();
+		for (const { work, tracks } of libraryGroups) {
+			const group = document.createElement('section');
+			group.className = 'music-capsule__library-group';
+			const head = document.createElement('div');
+			head.className = 'music-capsule__library-work';
+			if (work.cover?.src) {
+				const cover = document.createElement('img');
+				cover.src = work.cover.src;
+				if (work.cover.srcset) {
+					cover.srcset = work.cover.srcset;
+					cover.sizes = '40px';
+				}
+				cover.alt = '';
+				cover.loading = 'lazy';
+				cover.decoding = 'async';
+				head.append(cover);
+			}
+			const name = document.createElement('p');
+			name.textContent = work.title ?? '';
+			const year = document.createElement('small');
+			year.textContent = typeof work.year === 'string' ? work.year : '';
+			name.append(year);
+			head.append(name);
+			const list = document.createElement('ol');
+			tracks.forEach((track, index) => {
+				const item = document.createElement('li');
+				const button = document.createElement('button');
+				button.type = 'button';
+				button.className = 'music-capsule__queue-item music-capsule__library-track';
+				button.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg>';
+				const title = document.createElement('span');
+				title.textContent = track.title;
+				const length = document.createElement('small');
+				length.textContent = Number(track.duration) > 0 ? formatTime(track.duration) : '';
+				button.append(title, length);
+				button.dataset.search = `${track.title ?? ''} ${track.artist ?? ''} ${work.title ?? ''} ${work.year ?? ''}`.normalize('NFKC').toLowerCase();
+				button.addEventListener('click', () => {
+					const current = player.getState();
+					// The Work's tracks become the queue, starting at this one.
+					if (sameTrack(current.activeTrack, track)) void player.toggle();
+					else void player.playQueue(tracks, index);
+				});
+				button._track = track;
+				item.append(button);
+				list.append(item);
+			});
+			group.append(head, list);
+			fragment.append(group);
+		}
+		const empty = document.createElement('p');
+		empty.className = 'music-capsule__library-message';
+		empty.dataset.musicLibraryEmpty = '';
+		empty.textContent = 'No music matches.';
+		empty.hidden = true;
+		fragment.append(empty);
+		libraryList.replaceChildren(fragment);
+		filterLibrary();
+		markLibrary();
+	}
+
+	function filterLibrary() {
+		if (!hasLibrary || !libraryGroups) return;
+		const words = librarySearch.value.normalize('NFKC').toLowerCase().trim().split(/\s+/).filter(Boolean);
+		let shown = 0;
+		for (const group of libraryList.querySelectorAll('.music-capsule__library-group')) {
+			let groupShown = 0;
+			for (const button of group.querySelectorAll('.music-capsule__library-track')) {
+				const match = words.every((word) => button.dataset.search.includes(word));
+				button.parentElement.hidden = !match;
+				if (match) groupShown += 1;
+			}
+			group.hidden = groupShown === 0;
+			shown += groupShown;
+		}
+		const empty = libraryList.querySelector('[data-music-library-empty]');
+		if (empty instanceof HTMLElement) empty.hidden = shown > 0;
+	}
+
+	function markLibrary() {
+		if (!isLibraryOpen() || !libraryGroups) return;
+		for (const button of libraryList.querySelectorAll('.music-capsule__library-track')) {
+			const current = sameTrack(state.activeTrack, button._track);
+			button.classList.toggle('is-current', current);
+			button.setAttribute('aria-current', String(current));
+			button.setAttribute('aria-label', `${current && state.playing ? 'Pause' : 'Play'} ${button._track.title} — ${button._track.release ?? ''}`);
+		}
+	}
+
+	if (hasLibrary) {
+		libraryToggle.addEventListener('click', () => setLibraryOpen(!isLibraryOpen(), { focus: true }));
+		libraryClose?.addEventListener('click', () => setLibraryOpen(false, { focus: true }));
+		librarySearch.addEventListener('input', filterLibrary);
+	}
 
 	function renderQueue() {
 		const key = state.queue.map(trackKey).join('|');
@@ -222,6 +407,7 @@ export function attachMusicCapsule(root, player, options = {}) {
 		wasActive = active;
 		renderQueue();
 		renderLinks();
+		markLibrary();
 		scheduleDraw();
 	}
 
@@ -246,6 +432,16 @@ export function attachMusicCapsule(root, player, options = {}) {
 		if (event.key !== 'Escape' || !isOpen()) return;
 		if (document.querySelector('.work-gallery-lightbox:not([hidden]), dialog[open]')) return;
 		event.stopPropagation();
+		// Escape steps back: the search text, then ALL MUSIC, then the open card.
+		if (isLibraryOpen()) {
+			if (document.activeElement === librarySearch && librarySearch.value !== '') {
+				librarySearch.value = '';
+				filterLibrary();
+			} else {
+				setLibraryOpen(false, { focus: root.contains(document.activeElement) });
+			}
+			return;
+		}
 		setOpen(false, { focusToggle: root.contains(document.activeElement) });
 	};
 	document.addEventListener('pointerdown', onPointerDown, true);

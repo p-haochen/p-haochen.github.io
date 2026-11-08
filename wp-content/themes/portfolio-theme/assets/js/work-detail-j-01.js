@@ -112,10 +112,34 @@ function splitTitle(title) {
 		characters.push(span);
 		return span;
 	};
+	// "A｜B" (full-width bar): A, the event, becomes a small line above B, the Work itself.
+	const segments = titleSegments(text);
+	const barIndex = segments.findLastIndex((segment) => segment.text.endsWith('｜'));
+	let target = fragment;
+	let mainSegments = segments;
+	if (barIndex >= 0 && barIndex < segments.length - 1) {
+		const lead = document.createElement('span');
+		lead.className = 'work-detail__title-lead';
+		fragment.append(lead);
+		target = lead;
+		mainSegments = segments.slice(barIndex + 1).map((segment, i) => (i === 0 ? { ...segment, spaceBefore: false } : segment));
+		segments.slice(0, barIndex + 1).forEach((segment, i) => appendSegment(i === barIndex
+			? { ...segment, text: segment.text.slice(0, -1).trimEnd() }
+			: segment));
+		target = fragment;
+		mainSegments.forEach((segment, i) => appendSegment(segment, i === 0));
+		title.replaceChildren(fragment);
+		return characters;
+	}
+	mainSegments.forEach((segment) => appendSegment(segment));
+	title.replaceChildren(fragment);
+	return characters;
+
 	// segment (keeps together) → parts split where Latin meets CJK (the
 	// fallback break points when a segment is wider than the column) → letters.
-	for (const segment of titleSegments(text)) {
-		if (segment.spaceBefore && fragment.childNodes.length > 0) fragment.append(' ');
+	function appendSegment(segment, first = false) {
+		if (segment.text === '') return;
+		if (segment.spaceBefore && !first && target.childNodes.length > 0) target.append(' ');
 		const seg = document.createElement('span');
 		seg.className = 'work-detail__seg';
 		let part = null;
@@ -135,10 +159,8 @@ function splitTitle(title) {
 			}
 			part.append(charSpan(character));
 		}
-		fragment.append(seg);
+		target.append(seg);
 	}
-	title.replaceChildren(fragment);
-	return characters;
 }
 
 /** Let a segment (then a part) break inside only when it is wider than the title. */
@@ -212,10 +234,10 @@ function init(root) {
 		});
 	}
 
-	/* catalogue: rows draw in, YEAR and CATEGORY decode */
+	/* catalogue: rows draw in, YEAR and TYPE decode */
 	root.querySelectorAll('.work-detail__metadata-row').forEach((row, index) => row.style.setProperty('--i', String(index)));
 	decodeText(root.querySelector('.work-detail__year'), 490);
-	root.querySelectorAll('.work-detail__categories a').forEach((link) => decodeText(link, 560));
+	root.querySelectorAll('.work-detail__type > span').forEach((type) => decodeText(type, 560));
 
 	/* title: letters arrive one by one and lean toward the cursor */
 	const title = root.querySelector('.work-detail__title');

@@ -20,8 +20,8 @@ function normalizeSort(value) {
 	return typeof value === 'string' && validSorts.has(value) ? value : 'curated';
 }
 
-// ROLE and STYLE accept several values: kept as one comma-separated string ("guitar,bass"), or 'all'.
-// Works match when they have any of the chosen roles (and any of the chosen styles).
+// ROLE, STYLE and TYPE accept several values: kept as one comma-separated string ("guitar,bass"), or 'all'.
+// Works match when they have any of the chosen roles (and any of the chosen styles and types).
 function parseMulti(value, labels) {
 	if (typeof value !== 'string') return [];
 	return [...new Set(value.split(',').map((item) => item.trim()).filter((item) => labels.has(item)))];
@@ -34,6 +34,11 @@ function normalizeRole(value, roleLabels) {
 
 function normalizeStyle(value, styleLabels) {
 	const list = parseMulti(value, styleLabels);
+	return list.length > 0 ? list.join(',') : 'all';
+}
+
+function normalizeType(value, typeLabels) {
+	const list = parseMulti(value, typeLabels);
 	return list.length > 0 ? list.join(',') : 'all';
 }
 
@@ -94,6 +99,7 @@ function annotateWorkItem(item, work) {
 	item.dataset.workOrder = String(Number.isInteger(work.menu_order) ? work.menu_order : 0);
 	item.dataset.workRoles = roleSlugs(work).join(' ');
 	item.dataset.workStyles = styleSlugs(work).join(' ');
+	item.dataset.workTypes = typeSlugs(work).join(' ');
 }
 
 function categorySlugs(work) {
@@ -120,6 +126,49 @@ function workStyles(work) {
 
 function styleSlugs(work) {
 	return workStyles(work).map((style) => style.slug);
+}
+
+function workTypes(work) {
+	return Array.isArray(work?.types)
+		? work.types.filter((type) => type && typeof type.slug === 'string' && typeof type.label === 'string')
+		: [];
+}
+
+function typeSlugs(work) {
+	return workTypes(work).map((type) => type.slug);
+}
+
+// SEARCH: one free-text query across every view. Each word must appear somewhere in the Work's
+// text (title, About, credits, TYPE / ROLE / STYLE, EVENT, VENUE, tracks ...); case and full-width
+// characters do not matter. Chinese needs no spaces: "嘉義" matches inside a venue line.
+function normalizeQuery(value) {
+	return typeof value === 'string' ? value.normalize('NFKC').replace(/\s+/g, ' ').trim().slice(0, 80) : '';
+}
+
+const workSearchTexts = new WeakMap();
+function workSearchText(work) {
+	let text = workSearchTexts.get(work);
+	if (text === undefined) {
+		text = `${work?.title ?? ''} ${typeof work?.search === 'string' ? work.search : ''}`.normalize('NFKC').toLowerCase();
+		workSearchTexts.set(work, text);
+	}
+	return text;
+}
+
+function matchesQuery(work, query) {
+	if (!query) return true;
+	const text = workSearchText(work);
+	return query.toLowerCase().split(' ').every((word) => text.includes(word));
+}
+
+function matchesFilters(work, role, style, type, query = '') {
+	return matchesAny(role, roleSlugs(work)) && matchesAny(style, styleSlugs(work)) && matchesAny(type, typeSlugs(work)) && matchesQuery(work, query);
+}
+
+// The empty-state message lists every active filter; STYLE and TYPE travel together there.
+function extraFilter(style, type, styleLabel, typeLabel, query = '') {
+	const labels = [style === 'all' ? '' : styleLabel, type === 'all' ? '' : typeLabel, query ? `“${query}”` : ''].filter(Boolean);
+	return labels.length === 0 ? { value: 'all', label: '' } : { value: 'active', label: labels.join(' + ') };
 }
 
 function worksForView(works, view) {
@@ -903,11 +952,15 @@ function dimensionControlModel(controlsRoot, dimension, allLabel) {
 }
 
 function dimensionItems(work, dimension) {
-	return dimension === 'role' ? workRoles(work) : workStyles(work);
+	return dimension === 'role' ? workRoles(work) : dimension === 'type' ? workTypes(work) : workStyles(work);
+}
+
+function dimensionLabels(state, dimension) {
+	return dimension === 'role' ? state.roleLabels : dimension === 'type' ? state.typeLabels : state.styleLabels;
 }
 
 function syncDimensionControl(state, dimension, viewWorks, value) {
-	const labels = dimension === 'role' ? state.roleLabels : state.styleLabels;
+	const labels = dimensionLabels(state, dimension);
 	const available = new Set();
 	for (const work of viewWorks) {
 		for (const item of dimensionItems(work, dimension)) {
@@ -927,7 +980,7 @@ function syncDimensionControl(state, dimension, viewWorks, value) {
 	}
 
 	const section = state.controlsRoot.querySelector(`[data-work-filter-section="${dimension}"]`);
-	if (section instanceof HTMLElement) section.hidden = dimension === 'style' && available.size === 0;
+	if (section instanceof HTMLElement) section.hidden = dimension !== 'role' && available.size === 0;
 	for (const group of state.controlsRoot.querySelectorAll(`[data-work-filter-section="${dimension}"] [data-work-filter-group]`)) {
 		if (!(group instanceof HTMLElement)) continue;
 		group.hidden = ![...group.querySelectorAll(`[data-work-${dimension}-option]`)]
@@ -936,7 +989,7 @@ function syncDimensionControl(state, dimension, viewWorks, value) {
 	return available;
 }
 
-function syncFilterSummary(state, role, style) {
+function syncFilterSummary(state, role, style, type) {
 	const host = state.controlsRoot.querySelector('.works-directory__filter-tool');
 	if (!(host instanceof HTMLElement)) return;
 	const reveal = host.querySelector('.works-directory__filter-reveal');
@@ -944,6 +997,7 @@ function syncFilterSummary(state, role, style) {
 	const collapsedSummary = host.querySelector('[data-work-filter-collapsed-summary]');
 	const chips = host.querySelector('[data-work-filter-chips]');
 	const active = [
+		...multiValues(type).map((slug) => ({ dimension: 'type', slug, label: state.typeLabels.get(slug) ?? slug })),
 		...multiValues(role).map((slug) => ({ dimension: 'role', slug, label: state.roleLabels.get(slug) ?? slug })),
 		...multiValues(style).map((slug) => ({ dimension: 'style', slug, label: state.styleLabels.get(slug) ?? slug })),
 	];
@@ -973,21 +1027,25 @@ function renderView(state, view) {
 	const viewWorks = worksForView(state.works, view);
 	const availableRoles = new Set(viewWorks.flatMap((work) => roleSlugs(work)).filter((slug) => state.roleLabels.has(slug)));
 	const availableStyles = new Set(viewWorks.flatMap((work) => styleSlugs(work)).filter((slug) => state.styleLabels.has(slug)));
+	const availableTypes = new Set(viewWorks.flatMap((work) => typeSlugs(work)).filter((slug) => state.typeLabels.has(slug)));
 	let role = normalizeRole(state.roles[view], state.roleLabels);
 	let style = normalizeStyle(state.styles[view], state.styleLabels);
+	let type = normalizeType(state.types[view], state.typeLabels);
 	role = keepAvailable(role, availableRoles);
 	style = keepAvailable(style, availableStyles);
+	type = keepAvailable(type, availableTypes);
 	state.roles[view] = role;
 	state.styles[view] = style;
-	const matchingWorks = viewWorks.filter((work) => matchesAny(role, roleSlugs(work)) && matchesAny(style, styleSlugs(work)));
+	state.types[view] = type;
+	const matchingWorks = viewWorks.filter((work) => matchesFilters(work, role, style, type, state.query));
 	const orderedWorks = sortWorks(matchingWorks, sort);
 	const roleLabel = multiLabel(role, state.roleLabels, 'ALL ROLES');
-	const styleLabel = multiLabel(style, state.styleLabels, 'ALL STYLES');
+	const extra = extraFilter(style, type, multiLabel(style, state.styleLabels, 'ALL STYLES'), multiLabel(type, state.typeLabels, 'ALL TYPES'), state.query);
 	const rendered = state.signal
-		? renderSignalView(state, orderedWorks, view, sort, role, style, roleLabel, styleLabel)
+		? renderSignalView(state, orderedWorks, view, sort, role, extra.value, roleLabel, extra.label)
 		: view === 'music'
-			? renderMusicView(orderedWorks, state.player, role, style, roleLabel, styleLabel)
-			: { root: renderVisualGrid(orderedWorks, view, role, style, roleLabel, styleLabel), mount() {}, destroy() {} };
+			? renderMusicView(orderedWorks, state.player, role, extra.value, roleLabel, extra.label)
+			: { root: renderVisualGrid(orderedWorks, view, role, extra.value, roleLabel, extra.label), mount() {}, destroy() {} };
 	state.container.replaceChildren(rendered.root);
 	rendered.layout?.();
 	const releaseCoverGroup = prepareWorksCoverGroup(rendered.root);
@@ -1002,6 +1060,8 @@ function renderView(state, view) {
 		activeWorkSort: sort,
 		activeWorkRole: role,
 		activeWorkStyle: style,
+		activeWorkType: type,
+		activeWorkQuery: state.query,
 	});
 	for (const button of state.controlsRoot.querySelectorAll('[data-work-filter]')) {
 		if (button instanceof HTMLButtonElement) button.setAttribute('aria-pressed', String(button.dataset.workFilter === view));
@@ -1010,7 +1070,8 @@ function renderView(state, view) {
 	if (sortControl instanceof HTMLSelectElement) sortControl.value = sort;
 	syncDimensionControl(state, 'role', viewWorks, role);
 	syncDimensionControl(state, 'style', viewWorks, style);
-	syncFilterSummary(state, role, style);
+	syncDimensionControl(state, 'type', viewWorks, type);
+	syncFilterSummary(state, role, style, type);
 	const sortHost = sortControl?.closest('.works-directory__sort');
 	if (sortHost instanceof HTMLElement) {
 		sortHost.classList.toggle('has-active-value', sort !== 'curated');
@@ -1022,7 +1083,7 @@ function renderView(state, view) {
 		if (summary instanceof HTMLElement) summary.textContent = '';
 	}
 	state.player?.setRouteIsMusic(view === 'music');
-	if (state.signal) syncSignalBar(state, view, role, style, matchingWorks.length);
+	if (state.signal) syncSignalBar(state, view, role, style, type, matchingWorks.length);
 	const detail = {
 		view,
 		sort,
@@ -1031,6 +1092,9 @@ function renderView(state, view) {
 		roles: { ...state.roles },
 		style,
 		styles: { ...state.styles },
+		type,
+		types: { ...state.types },
+		query: state.query,
 		display: state.display,
 		visibleCount: matchingWorks.length,
 	};
@@ -1083,6 +1147,7 @@ function renderSignalView(state, orderedWorks, view, sort, role, style, roleLabe
 const signalIcons = {
 	covers: '<svg viewBox="0 0 14 14" aria-hidden="true" focusable="false"><rect x="1" y="1" width="5" height="5" rx="1" fill="none" stroke="currentColor" stroke-width="1.2"/><rect x="8" y="1" width="5" height="5" rx="1" fill="none" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="8" width="5" height="5" rx="1" fill="none" stroke="currentColor" stroke-width="1.2"/><rect x="8" y="8" width="5" height="5" rx="1" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>',
 	list: '<svg viewBox="0 0 14 14" aria-hidden="true" focusable="false"><path d="M1 3h12M1 7h12M1 11h12" stroke="currentColor" stroke-width="1.2"/></svg>',
+	search: '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M10.4 10.4 14 14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
 	dsp: '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M2 6h3l4-3v10l-4-3H2z" fill="currentColor"/><path d="M11.5 5.5a3.5 3.5 0 0 1 0 5M13 3.5a6 6 0 0 1 0 9" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>',
 };
 const enhancedSignalBars = new WeakMap();
@@ -1137,8 +1202,85 @@ function enhanceSignalBar(controlsRoot) {
 		button.innerHTML = signalIcons[value];
 		displayGroup.append(button);
 	}
-	tools.append(dsp, displayGroup);
-	const bar = { controls, count, badge, dsp, displayGroup, meterFrame: 0 };
+	// SEARCH: a magnifier left of FILTER; it opens a field that grows to the left.
+	const search = document.createElement('div');
+	search.className = 'works-bar__search';
+	search.innerHTML = `<input class="works-bar__search-input" type="search" placeholder="Search Anything" aria-label="Search works" autocomplete="off" spellcheck="false" enterkeyhint="search" tabindex="-1"><button type="button" class="works-bar__search-toggle" aria-label="Search works" aria-expanded="false">${signalIcons.search}</button>`;
+	const searchInput = search.querySelector('input');
+	const searchToggle = search.querySelector('button');
+	const filterTool = tools.querySelector('.works-directory__filter-tool');
+	tools.insertBefore(search, filterTool instanceof HTMLElement && filterTool.parentElement === tools ? filterTool : tools.firstChild);
+	tools.append(displayGroup);
+	// DSP sits in the empty lower-left corner of the panel (fixed there by works-signal-01.css).
+	controls.append(dsp);
+	const bar = { controls, count, badge, dsp, displayGroup, searchInput, meterFrame: 0 };
+	const setSearchOpen = (open, focus = false) => {
+		search.classList.toggle('is-open', open);
+		searchToggle.setAttribute('aria-expanded', String(open));
+		searchToggle.setAttribute('aria-label', open ? 'Close search' : 'Search works');
+		searchInput.tabIndex = open ? 0 : -1;
+		if (open) {
+			// As wide as the room to the left allows, 120-300px. Desktop: it stops short of ALL / MUSIC /
+			// LIVE / LAB. Tablet (too little room there): it covers those tabs, up to the WORKS title,
+			// until the search is closed. Phone (tabs on their own row): it covers the WORKS title.
+			const own = search.getBoundingClientRect();
+			const sameRow = (rect) => rect && rect.width > 0 && rect.bottom > own.top && rect.top < own.bottom;
+			const tabs = controls.querySelector('.works-directory__filters')?.getBoundingClientRect();
+			const heading = controls.querySelector('.works-bar__title')?.getBoundingClientRect();
+			let room = own.left - 20;
+			if (sameRow(tabs)) {
+				const beside = own.left - tabs.right - 16;
+				room = beside >= 160 || !sameRow(heading) ? beside : own.left - heading.right - 16;
+			}
+			search.style.setProperty('--works-search-width', `${Math.round(Math.max(120, Math.min(300, room)))}px`);
+			if (focus) window.requestAnimationFrame(() => searchInput.focus({ preventScroll: true }));
+		}
+	};
+	let searchTimer = 0;
+	const requestSearch = (value) => {
+		window.clearTimeout(searchTimer);
+		const directory = controlsState(controlsRoot).directory;
+		const directoryState = directory instanceof HTMLElement && directory.isConnected ? directoryStates.get(directory) : null;
+		if (!directoryState || normalizeQuery(value) === directoryState.query) return;
+		if (typeof directoryState.onFiltersRequest === 'function') directoryState.onFiltersRequest({ directory, query: value, input: searchInput });
+		else setWorksFilters(directory, { query: value });
+	};
+	searchToggle.addEventListener('click', () => {
+		if (!search.classList.contains('is-open')) {
+			setSearchOpen(true, true);
+			return;
+		}
+		// Closing also clears: a hidden query would filter the works without showing why.
+		searchInput.value = '';
+		requestSearch('');
+		setSearchOpen(false);
+	});
+	searchInput.addEventListener('input', () => {
+		window.clearTimeout(searchTimer);
+		searchTimer = window.setTimeout(() => requestSearch(searchInput.value), 260);
+	});
+	searchInput.addEventListener('keydown', (event) => {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			requestSearch(searchInput.value);
+		} else if (event.key === 'Escape') {
+			// Escape clears the text first, then closes the field; it never closes the WORKS panel.
+			event.preventDefault();
+			event.stopPropagation();
+			if (searchInput.value) {
+				searchInput.value = '';
+				requestSearch('');
+			} else {
+				setSearchOpen(false);
+				searchToggle.focus({ preventScroll: true });
+			}
+		}
+	});
+	bar.syncSearch = (query) => {
+		if (document.activeElement !== searchInput && normalizeQuery(searchInput.value) !== query) searchInput.value = query;
+		if (query && !search.classList.contains('is-open')) setSearchOpen(true);
+		search.classList.toggle('has-query', Boolean(query));
+	};
 	const level = dsp.querySelector('.works-bar__dsp-level i');
 	const syncDsp = (on) => {
 		dsp.setAttribute('aria-pressed', String(on));
@@ -1187,20 +1329,21 @@ function stepSignalCount(bar, target) {
 	bar.countFrame = window.requestAnimationFrame(step);
 }
 
-function syncSignalBar(state, view, role, style, visibleCount) {
+function syncSignalBar(state, view, role, style, type, visibleCount) {
 	const bar = enhanceSignalBar(state.controlsRoot);
 	if (!bar) return;
 	stepSignalCount(bar, visibleCount);
-	const matches = (work) => matchesAny(role, roleSlugs(work)) && matchesAny(style, styleSlugs(work));
+	const matches = (work) => matchesFilters(work, role, style, type, state.query);
 	for (const button of bar.controls.querySelectorAll('[data-work-filter]')) {
 		const sup = button.querySelector('.works-bar__n');
 		const count = worksForView(state.works, normalizeView(button.dataset.workFilter)).filter(matches).length;
 		if (sup) sup.textContent = String(count);
 		button.classList.toggle('is-empty', count === 0);
 	}
-	const active = multiValues(role).length + multiValues(style).length;
+	const active = multiValues(role).length + multiValues(style).length + multiValues(type).length;
 	bar.badge.hidden = active === 0;
 	bar.badge.textContent = String(active);
+	bar.syncSearch(state.query);
 	for (const button of bar.displayGroup.querySelectorAll('[data-work-display]')) {
 		button.setAttribute('aria-pressed', String(button.dataset.workDisplay === state.display));
 	}
@@ -1225,19 +1368,25 @@ function hydrateViewStateWithoutRendering(state, view) {
 	const viewWorks = worksForView(state.works, view);
 	const availableRoles = new Set(viewWorks.flatMap((work) => roleSlugs(work)).filter((slug) => state.roleLabels.has(slug)));
 	const availableStyles = new Set(viewWorks.flatMap((work) => styleSlugs(work)).filter((slug) => state.styleLabels.has(slug)));
+	const availableTypes = new Set(viewWorks.flatMap((work) => typeSlugs(work)).filter((slug) => state.typeLabels.has(slug)));
 	let role = normalizeRole(state.roles[view], state.roleLabels);
 	let style = normalizeStyle(state.styles[view], state.styleLabels);
+	let type = normalizeType(state.types[view], state.typeLabels);
 	role = keepAvailable(role, availableRoles);
 	style = keepAvailable(style, availableStyles);
+	type = keepAvailable(type, availableTypes);
 	state.roles[view] = role;
 	state.styles[view] = style;
-	const visibleCount = viewWorks.filter((work) => matchesAny(role, roleSlugs(work)) && matchesAny(style, styleSlugs(work))).length;
+	state.types[view] = type;
+	const visibleCount = viewWorks.filter((work) => matchesFilters(work, role, style, type, state.query)).length;
 	Object.assign(state.directory.dataset, {
 		activeWorkView: view,
 		activeWorkCategory: view,
 		activeWorkSort: sort,
 		activeWorkRole: role,
 		activeWorkStyle: style,
+		activeWorkType: type,
+		activeWorkQuery: state.query,
 	});
 	state.player?.setRouteIsMusic(view === 'music');
 	state.activeCleanup = prepareWorksCoverGroup(state.container.querySelector('.works-grid'));
@@ -1249,6 +1398,9 @@ function hydrateViewStateWithoutRendering(state, view) {
 		roles: { ...state.roles },
 		style,
 		styles: { ...state.styles },
+		type,
+		types: { ...state.types },
+		query: state.query,
 		visibleCount,
 	};
 }
@@ -1269,7 +1421,7 @@ function setFilterPanelOpen(controlsRoot, open, restoreFocus = true) {
 	}
 }
 
-// Every chosen value of one dimension (ROLE or STYLE), apart from ALL.
+// Every chosen value of one dimension (ROLE, STYLE or TYPE), apart from ALL.
 function checkedValues(controlsRoot, dimension) {
 	return [...controlsRoot.querySelectorAll(`[data-work-${dimension}]`)]
 		.filter((input) => input instanceof HTMLInputElement && input.checked && input.value !== 'all')
@@ -1369,6 +1521,10 @@ function controlsState(controlsRoot) {
 				const role = without(directoryState.roles[view]);
 				if (typeof directoryState.onRoleRequest === 'function') directoryState.onRoleRequest({ directory, role, button: chip });
 				else setWorksRole(directory, role);
+			} else if (chip.dataset.workFilterChip === 'type') {
+				const type = without(directoryState.types[view]);
+				if (typeof directoryState.onFiltersRequest === 'function') directoryState.onFiltersRequest({ directory, type, button: chip });
+				else setWorksFilters(directory, { type });
 			} else {
 				const style = without(directoryState.styles[view]);
 				if (typeof directoryState.onStyleRequest === 'function') directoryState.onStyleRequest({ directory, style, button: chip });
@@ -1377,8 +1533,8 @@ function controlsState(controlsRoot) {
 			return;
 		}
 		if (target?.closest('[data-work-filter-clear-all]')) {
-			if (typeof directoryState.onFiltersRequest === 'function') directoryState.onFiltersRequest({ directory, role: 'all', style: 'all', button: target });
-			else setWorksFilters(directory, { role: 'all', style: 'all' });
+			if (typeof directoryState.onFiltersRequest === 'function') directoryState.onFiltersRequest({ directory, role: 'all', style: 'all', type: 'all', button: target });
+			else setWorksFilters(directory, { role: 'all', style: 'all', type: 'all' });
 		}
 	});
 	controlsRoot.addEventListener('change', (event) => {
@@ -1390,6 +1546,7 @@ function controlsState(controlsRoot) {
 		const sortSelect = target?.closest('[data-work-sort]');
 		const roleInput = target?.closest('[data-work-role]');
 		const styleInput = target?.closest('[data-work-style]');
+		const typeInput = target?.closest('[data-work-type]');
 		if (sortSelect instanceof HTMLSelectElement) {
 			const sort = normalizeSort(sortSelect.value);
 			if (typeof directoryState.onSortRequest === 'function') directoryState.onSortRequest({ directory, sort, select: sortSelect });
@@ -1402,6 +1559,10 @@ function controlsState(controlsRoot) {
 			const style = styleInput.value === 'all' ? 'all' : normalizeStyle(checkedValues(controlsRoot, 'style'), directoryState.styleLabels);
 			if (typeof directoryState.onStyleRequest === 'function') directoryState.onStyleRequest({ directory, style, input: styleInput });
 			else setWorksStyle(directory, style);
+		} else if (typeInput instanceof HTMLInputElement) {
+			const type = typeInput.value === 'all' ? 'all' : normalizeType(checkedValues(controlsRoot, 'type'), directoryState.typeLabels);
+			if (typeof directoryState.onFiltersRequest === 'function') directoryState.onFiltersRequest({ directory, type, input: typeInput });
+			else setWorksFilters(directory, { type });
 		}
 	});
 	controlsRoot.addEventListener('keydown', (event) => {
@@ -1431,7 +1592,7 @@ function controlsState(controlsRoot) {
 }
 
 function emptyDetail() {
-	return { view: 'all', sort: 'curated', role: 'all', style: 'all', sorts: {}, roles: {}, styles: {}, visibleCount: 0 };
+	return { view: 'all', sort: 'curated', role: 'all', style: 'all', type: 'all', query: '', sorts: {}, roles: {}, styles: {}, types: {}, visibleCount: 0 };
 }
 
 export function setWorksView(directory, view, options = {}) {
@@ -1464,6 +1625,8 @@ export function setWorksFilters(directory, filters = {}, options = {}) {
 	const view = normalizeView(state.directory.dataset.activeWorkView);
 	if (Object.hasOwn(filters, 'role')) state.roles[view] = normalizeRole(filters.role, state.roleLabels);
 	if (Object.hasOwn(filters, 'style')) state.styles[view] = normalizeStyle(filters.style, state.styleLabels);
+	if (Object.hasOwn(filters, 'type')) state.types[view] = normalizeType(filters.type, state.typeLabels);
+	if (Object.hasOwn(filters, 'query')) state.query = normalizeQuery(filters.query);
 	const detail = renderView(state, view);
 	if (options.emit !== false) {
 		directory.dispatchEvent(new CustomEvent('portfolio:works-filter-change', { bubbles: true, detail }));
@@ -1502,6 +1665,7 @@ export function initializeWorksMultiView(directory, options = {}) {
 	if (!(container instanceof HTMLElement)) return null;
 	const roleModel = dimensionControlModel(controlsRoot, 'role', 'ALL ROLES');
 	const styleModel = dimensionControlModel(controlsRoot, 'style', 'ALL STYLES');
+	const typeModel = dimensionControlModel(controlsRoot, 'type', 'ALL TYPES');
 	const state = {
 		directory,
 		container,
@@ -1511,10 +1675,14 @@ export function initializeWorksMultiView(directory, options = {}) {
 		sorts: Object.fromEntries([...validViews].map((view) => [view, normalizeSort(options.initialSorts?.[view])])),
 		roles: Object.fromEntries([...validViews].map((view) => [view, normalizeRole(options.initialRoles?.[view], roleModel.labels)])),
 		styles: Object.fromEntries([...validViews].map((view) => [view, normalizeStyle(options.initialStyles?.[view], styleModel.labels)])),
+		types: Object.fromEntries([...validViews].map((view) => [view, normalizeType(options.initialTypes?.[view], typeModel.labels)])),
 		roleLabels: roleModel.labels,
 		roleOrder: roleModel.order,
 		styleLabels: styleModel.labels,
 		styleOrder: styleModel.order,
+		typeLabels: typeModel.labels,
+		typeOrder: typeModel.order,
+		query: normalizeQuery(options.initialQuery),
 		onViewRequest: typeof options.onViewRequest === 'function' ? options.onViewRequest : null,
 		onViewChange: typeof options.onViewChange === 'function' ? options.onViewChange : null,
 		onSortRequest: typeof options.onSortRequest === 'function' ? options.onSortRequest : null,
@@ -1536,8 +1704,8 @@ export function initializeWorksMultiView(directory, options = {}) {
 	const onDirectoryClick = (event) => {
 		const button = event.target instanceof Element ? event.target.closest('[data-work-filters-clear]') : null;
 		if (!(button instanceof HTMLButtonElement) || !directory.contains(button)) return;
-		if (typeof state.onFiltersRequest === 'function') state.onFiltersRequest({ directory, role: 'all', style: 'all', button });
-		else setWorksFilters(directory, { role: 'all', style: 'all' });
+		if (typeof state.onFiltersRequest === 'function') state.onFiltersRequest({ directory, role: 'all', style: 'all', type: 'all', query: '', button });
+		else setWorksFilters(directory, { role: 'all', style: 'all', type: 'all', query: '' });
 	};
 	directory.addEventListener('click', onDirectoryClick);
 	directoryStates.set(directory, state);
@@ -1550,9 +1718,12 @@ export function initializeWorksMultiView(directory, options = {}) {
 		sort: 'curated',
 		role: 'all',
 		style: 'all',
+		type: 'all',
+		query: state.query,
 		sorts: { ...state.sorts },
 		roles: { ...state.roles },
 		styles: { ...state.styles },
+		types: { ...state.types },
 		visibleCount: 0,
 		setView: (view, settings) => setWorksView(directory, view, settings),
 		setSort: (sort, settings) => setWorksSort(directory, sort, settings),
