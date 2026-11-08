@@ -1087,6 +1087,33 @@ body.single-portfolio_work .work-detail--j .work-detail__aside {
 	display: block;
 }
 
+/* SHARE: the Story card sheet (work-share-01.js) */
+.work-detail--j .work-detail__share {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.625rem;
+	height: 2.5rem;
+	padding: 0 1rem;
+	border: 1px solid var(--wd-faint);
+	border-radius: 0;
+	color: var(--wd-ink);
+	background: transparent;
+	font: 600 0.72rem/1 var(--wd-text);
+	letter-spacing: .14em;
+	cursor: pointer;
+	transition: border-color .25s, background-color .25s;
+}
+
+.work-detail--j .work-detail__share:hover {
+	border-color: var(--wd-dim);
+	background: rgb(240 238 232 / 6%);
+}
+
+.work-detail--j .work-detail__share svg {
+	width: 0.875rem;
+	height: 0.875rem;
+}
+
 /* section index: an ember marker follows the section you are reading */
 .work-detail--j .work-detail__index {
 	position: relative;

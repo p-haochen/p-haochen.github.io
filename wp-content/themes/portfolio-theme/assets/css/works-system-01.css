@@ -2130,3 +2130,161 @@ html.portfolio-lightbox-open {
 		transition-duration: 0.01ms;
 	}
 }
+
+/* SHARE sheet: Story card preview with share / save / copy (work-share-01.js) */
+html.work-share-open {
+	overflow: hidden;
+}
+
+.work-share {
+	box-sizing: border-box;
+	width: min(26rem, calc(100vw - 2rem));
+	max-width: none;
+	max-height: calc(100svh - 2rem);
+	margin: auto;
+	padding: 0;
+	overflow: auto;
+	border: 1px solid rgb(240 238 232 / 12%);
+	border-radius: 0;
+	color: #f0eee8;
+	background: #111216;
+	font-family: var(--wp--preset--font-family--sans);
+}
+
+.work-share::backdrop {
+	background: rgb(3 4 5 / 86%);
+}
+
+.work-share__surface {
+	display: grid;
+	gap: 1rem;
+	padding: 1.25rem;
+}
+
+.work-share__head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.work-share__title {
+	margin: 0;
+	color: #aaa69f;
+	font: 500 0.69rem/1 var(--wp--preset--font-family--sans);
+	letter-spacing: .32em;
+}
+
+.work-share__close {
+	display: grid;
+	place-items: center;
+	width: 2.25rem;
+	height: 2.25rem;
+	margin: -0.5rem -0.5rem -0.5rem 0;
+	padding: 0;
+	border: 0;
+	color: #f0eee8;
+	background: transparent;
+	font-size: 1.5rem;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.work-share__preview {
+	display: grid;
+	place-items: center;
+	aspect-ratio: 9 / 16;
+	max-height: min(58svh, 34rem);
+	margin: 0 auto;
+	overflow: hidden;
+	background: #0b0c0f;
+	box-shadow: 0 1.25rem 3rem rgb(0 0 0 / 45%);
+}
+
+.work-share__preview[aria-busy="true"] {
+	background:
+		linear-gradient(100deg, transparent 30%, rgb(240 238 232 / 6%) 50%, transparent 70%) 0 0 / 200% 100%,
+		#0b0c0f;
+	animation: work-share-shimmer 1.4s linear infinite;
+}
+
+.work-share__preview img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+
+@keyframes work-share-shimmer {
+	to { background-position: -200% 0, 0 0; }
+}
+
+.work-share__status {
+	min-height: 1.2em;
+	margin: 0;
+	color: #aaa69f;
+	font-size: 0.78rem;
+	text-align: center;
+}
+
+.work-share__actions {
+	display: grid;
+	gap: 0.5rem;
+}
+
+.work-share__button {
+	height: 2.75rem;
+	padding: 0 1rem;
+	border: 1px solid rgb(240 238 232 / 18%);
+	border-radius: 0;
+	color: #f0eee8;
+	background: transparent;
+	font: 600 0.72rem/1 var(--wp--preset--font-family--sans);
+	letter-spacing: .14em;
+	cursor: pointer;
+	transition: border-color .2s, background-color .2s;
+}
+
+.work-share__button:hover:not(:disabled) {
+	border-color: rgb(240 238 232 / 40%);
+	background: rgb(240 238 232 / 6%);
+}
+
+.work-share__button--primary {
+	border-color: #ed661c;
+	color: #0b0c0f;
+	background: #ed661c;
+}
+
+.work-share__button--primary:hover:not(:disabled) {
+	border-color: #f37a37;
+	background: #f37a37;
+}
+
+.work-share__button:disabled {
+	opacity: .45;
+	cursor: default;
+}
+
+.work-share__button[hidden] {
+	display: none;
+}
+
+.work-share__close:focus-visible,
+.work-share__button:focus-visible {
+	outline: 2px solid #ed661c;
+	outline-offset: 2px;
+}
+
+.work-share__hint {
+	margin: 0;
+	color: rgb(240 238 232 / 45%);
+	font-size: 0.72rem;
+	line-height: 1.5;
+	text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.work-share__preview[aria-busy="true"] {
+		animation: none;
+	}
+}

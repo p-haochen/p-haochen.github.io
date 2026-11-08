@@ -66,6 +66,109 @@ function queueKeyForTracks(tracks) {
 	return `queue:${tracks.map((track) => `${track?.id ?? 0}:${track?.src ?? ''}`).join('|')}`;
 }
 
+/**
+ * Lock screen / notification controls (Media Session API) for a player API
+ * (createMusicPlayer or the Work Detail fallback player). Playback itself stays
+ * on the player's <audio> element, so it keeps going with the screen off and the
+ * existing `ended` → next() chain loads the following track in the background.
+ * The most recently attached player owns the session.
+ */
+let mediaSessionOwner = null;
+
+export function attachMediaSession(player) {
+	const session = typeof navigator !== 'undefined' ? navigator.mediaSession : null;
+	if (!session || typeof window.MediaMetadata !== 'function' || !player || typeof player.subscribe !== 'function') return () => {};
+	const owner = {};
+	mediaSessionOwner = owner;
+	let trackKey = '';
+	let multiTrack = null;
+	let lastPosition = { duration: -1, playing: null, position: 0, at: 0 };
+	const owns = () => mediaSessionOwner === owner;
+	const setHandler = (action, handler) => {
+		try {
+			session.setActionHandler(action, handler);
+		} catch {
+			// The browser does not support this action.
+		}
+	};
+	const seekBy = (offset) => {
+		const state = player.getState();
+		const limit = state.duration > 0 ? state.duration : Number.POSITIVE_INFINITY;
+		player.seekTo(Math.min(limit, Math.max(0, state.currentTime + offset)));
+	};
+	setHandler('play', () => {
+		if (!player.getState().playing) void player.toggle();
+	});
+	setHandler('pause', () => { player.pause(); });
+	setHandler('seekto', (details) => {
+		if (Number.isFinite(details?.seekTime)) player.seekTo(details.seekTime);
+	});
+	setHandler('seekbackward', (details) => { seekBy(-(Number(details?.seekOffset) || 10)); });
+	setHandler('seekforward', (details) => { seekBy(Number(details?.seekOffset) || 10); });
+	const render = (state) => {
+		if (!owns()) return;
+		const track = state?.activeTrack;
+		if (!track || state.activated === false) {
+			if (trackKey !== '') {
+				trackKey = '';
+				session.metadata = null;
+				session.playbackState = 'none';
+			}
+			return;
+		}
+		const queueSize = Array.isArray(state.queue) ? state.queue.length : 0;
+		if ((queueSize > 1) !== multiTrack) {
+			multiTrack = queueSize > 1;
+			setHandler('previoustrack', multiTrack ? () => { void player.previous(); } : null);
+			setHandler('nexttrack', multiTrack ? () => { void player.next(); } : null);
+		}
+		const key = `${track.id}:${track.src}`;
+		if (key !== trackKey) {
+			trackKey = key;
+			lastPosition = { duration: -1, playing: null, position: 0, at: 0 };
+			const artwork = typeof track.artwork === 'string' && track.artwork !== ''
+				? [{ src: new URL(track.artwork, window.location.href).href }]
+				: [];
+			session.metadata = new window.MediaMetadata({
+				title: track.title || 'Untitled track',
+				artist: track.artist || 'PO HAO CHEN',
+				album: track.release || '',
+				artwork,
+			});
+		}
+		session.playbackState = state.playing ? 'playing' : 'paused';
+		if (typeof session.setPositionState !== 'function' || !(state.duration > 0)) return;
+		// Position only needs refreshing when it jumps; the OS extrapolates while playing.
+		const now = Date.now();
+		const expected = lastPosition.playing ? lastPosition.position + (now - lastPosition.at) / 1000 : lastPosition.position;
+		if (
+			lastPosition.duration === state.duration
+			&& lastPosition.playing === state.playing
+			&& Math.abs(expected - state.currentTime) < 1.5
+		) return;
+		lastPosition = { duration: state.duration, playing: state.playing, position: state.currentTime, at: now };
+		try {
+			session.setPositionState({
+				duration: state.duration,
+				playbackRate: 1,
+				position: Math.min(Math.max(0, state.currentTime), state.duration),
+			});
+		} catch {
+			// Invalid intermediate values while a track loads.
+		}
+	};
+	const unsubscribe = player.subscribe(render);
+	render(player.getState());
+	return () => {
+		if (typeof unsubscribe === 'function') unsubscribe();
+		if (!owns()) return;
+		mediaSessionOwner = null;
+		session.metadata = null;
+		session.playbackState = 'none';
+		for (const action of ['play', 'pause', 'seekto', 'seekbackward', 'seekforward', 'previoustrack', 'nexttrack']) setHandler(action, null);
+	};
+}
+
 export function createMusicPlayer(root) {
 	if (!(root instanceof HTMLElement)) return null;
 	const audio = root.querySelector('[data-music-player-audio]');
@@ -598,7 +701,7 @@ export function createMusicPlayer(root) {
 	syncPlayState();
 	syncTime();
 	syncVolume();
-	return {
+	const api = {
 		setQueue,
 		prepareQueue,
 		playQueue,
@@ -616,4 +719,6 @@ export function createMusicPlayer(root) {
 		pause,
 		getState: snapshot,
 	};
+	attachMediaSession(api);
+	return api;
 }

@@ -1,5 +1,5 @@
 import { createPlaylistComponent, isPlaylistPlayer } from './playlist-component-01.js';
-import { createMusicPlayer } from './music-player-01.js';
+import { attachMediaSession, createMusicPlayer } from './music-player-01.js';
 import { attachMusicCapsule } from './music-player-capsule-01.js';
 
 const controllersByRoot = new WeakMap();
@@ -168,6 +168,7 @@ function createCanonicalPlaylistPlayer(root) {
 			if (!audio.isConnected) root.append(audio);
 		},
 		destroy() {
+			releaseMediaSession();
 			destroyed = true;
 			mobilePlayback.removeEventListener('change', syncViewportVolume);
 			subscribers.clear();
@@ -180,6 +181,7 @@ function createCanonicalPlaylistPlayer(root) {
 	}
 	mobilePlayback.addEventListener('change', syncViewportVolume);
 	audio.addEventListener('ended', () => { void api.next(); });
+	const releaseMediaSession = attachMediaSession(api);
 	return api;
 }
 
