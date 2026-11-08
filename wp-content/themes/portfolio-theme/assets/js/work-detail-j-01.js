@@ -350,6 +350,38 @@ function init(root) {
 			value.replaceChildren(...nodes);
 		}
 		const allNames = [...credits.querySelectorAll('.work-credits__name')].filter((name) => name instanceof HTMLElement);
+		// A long entry (a programme or grant name, not a person) may wrap inside.
+		allNames.forEach((name) => name.classList.toggle('work-credits__name--long', [...(name.dataset.name ?? '')].length > 18));
+		// Balance the lines: the narrowest width that keeps the same number of
+		// lines, so they come out about equally long (text-wrap: balance stops
+		// at a few lines in Chrome; the Credits often run longer on phones).
+		const balanceCredits = () => {
+			credits.style.maxWidth = '';
+			const natural = credits.getBoundingClientRect();
+			if (!(natural.width > 0) || !(natural.height > 0)) return;
+			let low = natural.width * 0.4;
+			let high = natural.width;
+			for (let step = 0; step < 12; step += 1) {
+				const middle = (low + high) / 2;
+				credits.style.maxWidth = `${middle}px`;
+				if (credits.getBoundingClientRect().height > natural.height + 1) low = middle;
+				else high = middle;
+			}
+			credits.style.maxWidth = `${Math.ceil(high) + 1}px`;
+		};
+		balanceCredits();
+		document.fonts?.ready?.then(() => { if (credits.isConnected) balanceCredits(); });
+		if ('ResizeObserver' in window && credits.parentElement) {
+			let lastWidth = credits.parentElement.clientWidth;
+			const creditsObserver = new ResizeObserver(() => {
+				const width = credits.parentElement?.clientWidth ?? 0;
+				if (width === lastWidth) return;
+				lastWidth = width;
+				balanceCredits();
+			});
+			creditsObserver.observe(credits.parentElement);
+			releases.push(() => creditsObserver.disconnect());
+		}
 		const keyOf = (name) => (name.dataset.name ?? '').toLowerCase();
 		const counts = new Map();
 		allNames.forEach((name) => counts.set(keyOf(name), (counts.get(keyOf(name)) ?? 0) + 1));

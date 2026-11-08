@@ -1411,8 +1411,16 @@ body.single-portfolio_work .work-detail--j .work-detail__aside {
 	border: 0;
 }
 
-.work-detail.work-detail--j .work-credits__row + .work-credits__row::before {
-	margin: 0 .7em;
+/* Wrapping: a role and each name stay whole, and a role stays with its first
+   name (keep-all binds them); lines break only after a "/" (the space between
+   rows) or after a "、". A run wider than the line may still break (anywhere). */
+.work-detail.work-detail--j .work-credits {
+	word-break: keep-all;
+	overflow-wrap: anywhere;
+}
+
+.work-detail.work-detail--j .work-credits__row:not(:last-child)::after {
+	margin: 0 .45em 0 .7em;
 	color: rgb(240 238 232 / 22%);
 	content: "/";
 }
@@ -1428,6 +1436,15 @@ body.single-portfolio_work .work-detail--j .work-detail__aside {
 	margin-right: .4em;
 	color: var(--wd-dim);
 	font-size: 0.75rem;
+	white-space: nowrap;
+}
+
+.work-detail.work-detail--j .work-credits__name {
+	white-space: nowrap;
+}
+
+.work-detail.work-detail--j .work-credits__name--long {
+	white-space: normal;
 }
 
 .work-detail.work-detail--j .work-credits dd {
