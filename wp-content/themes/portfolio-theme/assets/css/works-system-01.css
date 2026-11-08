@@ -1592,7 +1592,8 @@ html.portfolio-lightbox-open {
 	min-height: 166px;
 }
 
-.work-media-streetvoice__card {
+.work-media-streetvoice__card,
+.work-media-link-card {
 	display: grid;
 	grid-template-columns: auto minmax(0, 1fr) auto;
 	gap: 1rem;
@@ -1605,35 +1606,42 @@ html.portfolio-lightbox-open {
 	text-decoration: none;
 }
 
-.work-media-streetvoice__card:hover {
+.work-media-streetvoice__card:hover,
+.work-media-link-card:hover {
 	border-color: var(--work-detail-sub, #8b8c90);
 }
 
-.work-media-streetvoice__card img {
+.work-media-streetvoice__card img,
+.work-media-link-card img {
 	display: block;
 	width: 2.5rem;
 	height: 2.5rem;
 }
 
-.work-media-streetvoice__copy {
+.work-media-streetvoice__copy,
+.work-media-link-card__copy {
 	display: grid;
 	gap: 0.2rem;
 	min-width: 0;
 }
 
 .work-media-streetvoice__copy strong,
-.work-media-streetvoice__copy span {
+.work-media-streetvoice__copy span,
+.work-media-link-card__copy strong,
+.work-media-link-card__copy span {
 	overflow-wrap: anywhere;
 }
 
-.work-media-streetvoice__copy span {
+.work-media-streetvoice__copy span,
+.work-media-link-card__copy span {
 	color: var(--works-detail-copy-color);
 	font-size: 0.75rem;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
 }
 
-.work-media-streetvoice__external {
+.work-media-streetvoice__external,
+.work-media-link-card__external {
 	font-size: 1.25rem;
 }
 

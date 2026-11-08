@@ -1320,7 +1320,8 @@ body.single-portfolio_work .work-detail--j .work-detail__aside {
 }
 
 .work-detail--j .work-media-embed,
-.work-detail--j .work-media-streetvoice {
+.work-detail--j .work-media-streetvoice,
+.work-detail--j .work-media-link-cards {
 	max-width: 55rem;
 }
 
