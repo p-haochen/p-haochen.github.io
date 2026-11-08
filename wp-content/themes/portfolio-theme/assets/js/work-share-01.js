@@ -40,6 +40,8 @@ function readSource(root) {
 			title: data.title.trim() || document.title,
 			category: typeof data.category === 'string' ? data.category.trim().toUpperCase() : '',
 			year: typeof data.year === 'string' ? data.year.trim() : '',
+			// Roles credited to PO HAO CHEN in this Work's Credits (may be empty).
+			roles: Array.isArray(data.roles) ? data.roles.filter((role) => typeof role === 'string' && role.trim() !== '').map((role) => role.trim()) : [],
 			cover,
 		};
 	} catch {
@@ -76,10 +78,58 @@ function tokens(text) {
 	return text.match(/[\u2e80-\u9fff\uf900-\ufaff\uff00-\uffef\u3000-\u303f]|[^\s\u2e80-\u9fff\uf900-\ufaff\uff00-\uffef\u3000-\u303f]+|\s+/g) ?? [];
 }
 
-function wrapLines(context, text, maxWidth, maxLines) {
+const TITLE_OPENERS = new Set(['《', '【', '〈', '「', '『', '（', '(', '[', '〔']);
+const TITLE_CLOSERS = new Set(['》', '】', '〉', '」', '』', '）', ')', ']', '〕']);
+
+/**
+ * Title wrap units, matching the Work Detail title (work-detail-j-01.js
+ * titleSegments): break at spaces, before an opening bracket, after a closing
+ * bracket and after "|"; a unit wider than the line falls back to tokens().
+ */
+function titleTokens(context, text, maxWidth) {
+	const segments = [];
+	let current = '';
+	let depth = 0;
+	let spaceBefore = false;
+	const push = () => {
+		if (current !== '') segments.push({ text: current, spaceBefore });
+		current = '';
+		spaceBefore = false;
+	};
+	for (const character of text.replace(/\s+/g, ' ').trim()) {
+		if (character === ' ' && depth === 0) {
+			push();
+			spaceBefore = true;
+			continue;
+		}
+		if (TITLE_OPENERS.has(character)) {
+			if (depth === 0) push();
+			depth += 1;
+			current += character;
+			continue;
+		}
+		current += character;
+		if (TITLE_CLOSERS.has(character)) {
+			depth = Math.max(0, depth - 1);
+			if (depth === 0) push();
+		} else if ((character === '|' || character === '｜') && depth === 0) {
+			push();
+		}
+	}
+	push();
+	const out = [];
+	for (const segment of segments) {
+		if (segment.spaceBefore && out.length > 0) out.push(' ');
+		if (context.measureText(segment.text).width <= maxWidth) out.push(segment.text);
+		else out.push(...tokens(segment.text));
+	}
+	return out;
+}
+
+function wrapLines(context, text, maxWidth, maxLines, units = null) {
 	const lines = [];
 	let line = '';
-	for (const token of tokens(text)) {
+	for (const token of units ?? tokens(text)) {
 		const candidate = line + token;
 		if (line !== '' && context.measureText(candidate.trimEnd()).width > maxWidth) {
 			lines.push(line.trimEnd());
@@ -139,6 +189,7 @@ async function drawCard(source, root) {
 		await Promise.allSettled([
 			document.fonts.load(`700 76px ${sans}`, source.title),
 			document.fonts.load(`600 30px ${sans}`, 'PO HAO CHEN MUSIC 0123456789'),
+			document.fonts.load(`500 26px ${sans}`, source.roles.join(' / ') || 'PO HAO CHEN'),
 		]);
 	}
 	const image = await loadImage(source.cover);
@@ -199,7 +250,7 @@ async function drawCard(source, root) {
 	let wrapped;
 	do {
 		context.font = `700 ${size}px ${sans}`;
-		wrapped = wrapLines(context, source.title, column, 3);
+		wrapped = wrapLines(context, source.title, column, 3, titleTokens(context, source.title, column));
 		if (!wrapped.overflow && wrapped.lines.length <= 2) break;
 		size -= 8;
 	} while (size >= 60);
@@ -210,17 +261,26 @@ async function drawCard(source, root) {
 		context.fillText(line, margin, y - Math.round(size * 0.2));
 	}
 
-	// Footer: site mark and address.
-	const footerY = CARD_HEIGHT - 170;
+	// Footer: name, his roles in this Work's Credits (none when not credited), address.
+	const footerY = CARD_HEIGHT - 190;
 	context.fillStyle = COLORS.line;
 	context.fillRect(margin, footerY - 78, column, 2);
 	context.font = `700 34px ${sans}`;
 	setSpacing(context, '7px');
 	context.fillStyle = COLORS.ink;
 	context.fillText('PO HAO CHEN', margin, footerY);
-	context.font = `600 22px ${sans}`;
-	context.fillStyle = COLORS.ember;
-	context.fillText('COMPOSER', margin, footerY + 40);
+	if (source.roles.length > 0) {
+		context.font = `500 26px ${sans}`;
+		setSpacing(context, '1px');
+		context.fillStyle = COLORS.ember;
+		// Wrap between roles, never inside one (a role wider than the line falls back to tokens()).
+		const roleUnits = source.roles.flatMap((role, index) => {
+			const unit = index < source.roles.length - 1 ? `${role} / ` : role;
+			return context.measureText(unit).width <= column ? [unit] : tokens(unit);
+		});
+		const roles = wrapLines(context, source.roles.join(' / '), column, 2, roleUnits);
+		roles.lines.forEach((line, index) => context.fillText(line, margin, footerY + 46 + index * 38));
+	}
 	setSpacing(context, '1px');
 	context.font = `500 28px ${sans}`;
 	context.fillStyle = COLORS.muted;

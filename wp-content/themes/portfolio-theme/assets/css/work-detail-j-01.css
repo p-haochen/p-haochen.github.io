@@ -1229,6 +1229,29 @@ body.single-portfolio_work .work-detail--j .work-detail__aside {
 	white-space: nowrap;
 }
 
+/* Title wrapping (work-detail-j-01.js): a segment stays whole — it breaks only
+   at spaces, brackets and "|" — unless it is wider than the column, when it may
+   break where Latin meets CJK, and only then between letters. */
+.work-detail--j .work-detail__seg {
+	display: inline-block;
+	white-space: nowrap;
+}
+
+.work-detail--j .work-detail__seg.is-loose {
+	display: inline;
+	white-space: normal;
+}
+
+.work-detail--j .work-detail__part {
+	display: inline-block;
+	white-space: nowrap;
+}
+
+.work-detail--j .work-detail__part.is-loose {
+	display: inline;
+	white-space: normal;
+}
+
 .work-detail--j .work-detail__char {
 	display: inline-block;
 	transform: translateY(var(--dy, 0px));
@@ -1458,6 +1481,53 @@ body.single-portfolio_work .work-detail--j .work-detail__aside {
 	white-space: nowrap;
 	transform: translate(-50%, calc(-100% - 10px));
 	pointer-events: none;
+}
+
+/* A credited person with a website: the name reads like the others in the
+   list, and the hover chip becomes a button that opens the site. */
+.work-detail--j .work-credits__name--link {
+	color: inherit;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.work-detail--j .work-credits__name--link:focus-visible {
+	outline: 2px solid var(--wd-ember);
+	outline-offset: 2px;
+}
+
+.work-credits__chip--link {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	color: var(--wd-canvas, #0b0c0f);
+	text-decoration: none;
+	cursor: pointer;
+	pointer-events: auto;
+	transition: background-color .15s;
+}
+
+/* Bridges the gap between the name and the chip so the pointer can reach it. */
+.work-credits__chip--link::after {
+	content: "";
+	position: absolute;
+	inset: 100% 0 auto;
+	height: 12px;
+}
+
+.work-credits__chip-open {
+	display: inline-grid;
+	place-items: center;
+	width: 1.2em;
+	height: 1.2em;
+	margin: -2px -3px -2px 0;
+	color: var(--wd-ink, #f0eee8);
+	background: var(--wd-ember, #ed661c);
+	font-size: 0.85em;
+}
+
+.work-credits__chip--link:hover {
+	background: #fff3e8;
 }
 
 /* gallery: equal-height justified rows in source order (works-system-01.css), each image at its

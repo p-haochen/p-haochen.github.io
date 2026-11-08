@@ -50,6 +50,48 @@ function decodeText(node, delay = 0) {
 	window.requestAnimationFrame(step);
 }
 
+const TITLE_OPENERS = new Set(['《', '【', '〈', '「', '『', '（', '(', '[', '〔']);
+const TITLE_CLOSERS = new Set(['》', '】', '〉', '」', '』', '）', ')', ']', '〕']);
+
+/**
+ * Split a title into the units it may wrap between: spaces, before an opening
+ * bracket, after a closing bracket and after "|" — never inside a bracketed
+ * name. Returns [{ text, spaceBefore }].
+ */
+export function titleSegments(text) {
+	const segments = [];
+	let current = '';
+	let depth = 0;
+	let spaceBefore = false;
+	const push = () => {
+		if (current !== '') segments.push({ text: current, spaceBefore });
+		current = '';
+		spaceBefore = false;
+	};
+	for (const character of text.replace(/\s+/g, ' ').trim()) {
+		if (character === ' ' && depth === 0) {
+			push();
+			spaceBefore = true;
+			continue;
+		}
+		if (TITLE_OPENERS.has(character)) {
+			if (depth === 0) push();
+			depth += 1;
+			current += character;
+			continue;
+		}
+		current += character;
+		if (TITLE_CLOSERS.has(character)) {
+			depth = Math.max(0, depth - 1);
+			if (depth === 0) push();
+		} else if ((character === '|' || character === '｜') && depth === 0) {
+			push();
+		}
+	}
+	push();
+	return segments;
+}
+
 function splitTitle(title) {
 	if (!(title instanceof HTMLElement) || title.dataset.split === 'true') return [];
 	const text = title.textContent ?? '';
@@ -58,15 +100,9 @@ function splitTitle(title) {
 	title.setAttribute('aria-label', text.trim());
 	const fragment = document.createDocumentFragment();
 	const isLatin = (character) => /[A-Za-z0-9'’&.-]/.test(character);
-	let word = null;
 	let index = 0;
 	const characters = [];
-	for (const character of text) {
-		if (character === ' ' || character === '\n') {
-			word = null;
-			fragment.append(' ');
-			continue;
-		}
+	const charSpan = (character) => {
 		const span = document.createElement('span');
 		span.className = 'work-detail__char';
 		span.setAttribute('aria-hidden', 'true');
@@ -74,20 +110,50 @@ function splitTitle(title) {
 		span.style.setProperty('--i', String(index));
 		index += 1;
 		characters.push(span);
-		if (isLatin(character)) {
-			if (!word) {
-				word = document.createElement('span');
-				word.className = 'work-detail__word';
-				fragment.append(word);
+		return span;
+	};
+	// segment (keeps together) → parts split where Latin meets CJK (the
+	// fallback break points when a segment is wider than the column) → letters.
+	for (const segment of titleSegments(text)) {
+		if (segment.spaceBefore && fragment.childNodes.length > 0) fragment.append(' ');
+		const seg = document.createElement('span');
+		seg.className = 'work-detail__seg';
+		let part = null;
+		let partLatin = null;
+		for (const character of segment.text) {
+			if (character === ' ') {
+				part = null;
+				seg.append(' ');
+				continue;
 			}
-			word.append(span);
-		} else {
-			word = null;
-			fragment.append(span);
+			const latin = isLatin(character);
+			if (!part || latin !== partLatin) {
+				part = document.createElement('span');
+				part.className = latin ? 'work-detail__part work-detail__word' : 'work-detail__part';
+				partLatin = latin;
+				seg.append(part);
+			}
+			part.append(charSpan(character));
 		}
+		fragment.append(seg);
 	}
 	title.replaceChildren(fragment);
 	return characters;
+}
+
+/** Let a segment (then a part) break inside only when it is wider than the title. */
+function fitTitle(title) {
+	const loose = title.querySelectorAll('.is-loose');
+	loose.forEach((element) => element.classList.remove('is-loose'));
+	const available = title.clientWidth;
+	if (!(available > 0)) return;
+	for (const seg of title.querySelectorAll('.work-detail__seg')) {
+		if (seg.getBoundingClientRect().width <= available + 0.5) continue;
+		seg.classList.add('is-loose');
+		for (const part of seg.querySelectorAll('.work-detail__part')) {
+			if (part.getBoundingClientRect().width > available + 0.5) part.classList.add('is-loose');
+		}
+	}
 }
 
 function init(root) {
@@ -155,6 +221,18 @@ function init(root) {
 	const title = root.querySelector('.work-detail__title');
 	const characters = splitTitle(title);
 	if (title instanceof HTMLElement && characters.length > 0) {
+		fitTitle(title);
+		if ('ResizeObserver' in window) {
+			let lastWidth = title.clientWidth;
+			const observer = new ResizeObserver(() => {
+				if (title.clientWidth === lastWidth) return;
+				lastWidth = title.clientWidth;
+				fitTitle(title);
+			});
+			observer.observe(title);
+			releases.push(() => observer.disconnect());
+		}
+		document.fonts?.ready?.then(() => { if (title.isConnected) fitTitle(title); });
 		listen(title, 'pointermove', (event) => {
 			if (event.pointerType !== 'mouse' || reduceMotion.matches) return;
 			for (const character of characters) {
@@ -245,25 +323,37 @@ function init(root) {
 	const credits = root.querySelector('.work-credits');
 	if (credits instanceof HTMLElement) {
 		credits.classList.remove('is-collapsed');
-		const counts = new Map();
 		const values = [...credits.querySelectorAll('dd')];
-		const names = (text) => text.split(/[、,，]\s*/).map((name) => name.trim()).filter(Boolean);
-		values.forEach((value) => names(value.textContent ?? '').forEach((name) => counts.set(name, (counts.get(name) ?? 0) + 1)));
+		// Wrap plain-text names; names with a website arrive as server-rendered links.
 		for (const value of values) {
 			if (value.dataset.split === 'true') continue;
 			value.dataset.split = 'true';
-			const parts = (value.textContent ?? '').split(/([、,，]\s*)/);
-			value.replaceChildren(...parts.map((part) => {
-				const name = part.trim();
-				if (name === '' || /^[、,，]$/.test(name)) return document.createTextNode(part);
-				const span = document.createElement('span');
-				span.className = 'work-credits__name';
-				span.dataset.name = name;
-				span.dataset.count = String(counts.get(name) ?? 1);
-				span.textContent = part;
-				return span;
-			}));
+			const nodes = [];
+			for (const node of [...value.childNodes]) {
+				if (node instanceof HTMLElement && node.classList.contains('work-credits__name')) {
+					nodes.push(node);
+					continue;
+				}
+				for (const part of (node.textContent ?? '').split(/([、,，]\s*)/)) {
+					const name = part.trim();
+					if (name === '' || /^[、,，]$/.test(name)) {
+						if (part !== '') nodes.push(document.createTextNode(part));
+						continue;
+					}
+					const span = document.createElement('span');
+					span.className = 'work-credits__name';
+					span.dataset.name = name;
+					span.textContent = part;
+					nodes.push(span);
+				}
+			}
+			value.replaceChildren(...nodes);
 		}
+		const allNames = [...credits.querySelectorAll('.work-credits__name')].filter((name) => name instanceof HTMLElement);
+		const keyOf = (name) => (name.dataset.name ?? '').toLowerCase();
+		const counts = new Map();
+		allNames.forEach((name) => counts.set(keyOf(name), (counts.get(keyOf(name)) ?? 0) + 1));
+		allNames.forEach((name) => { name.dataset.count = String(counts.get(keyOf(name)) ?? 1); });
 		let chip = null;
 		const clear = () => {
 			credits.classList.remove('is-highlighting');
@@ -271,26 +361,50 @@ function init(root) {
 			chip?.remove();
 			chip = null;
 		};
+		const toCredits = (target) => target instanceof Element && Boolean(target.closest('.work-credits__name'));
 		listen(credits, 'pointerover', (event) => {
 			const name = event.target instanceof Element ? event.target.closest('.work-credits__name') : null;
 			if (!(name instanceof HTMLElement) || !finePointer.matches) return;
 			clear();
 			credits.classList.add('is-highlighting');
-			credits.querySelectorAll('.work-credits__name').forEach((other) => {
-				if (other instanceof HTMLElement && other.dataset.name === name.dataset.name) other.classList.add('is-highlighted');
+			allNames.forEach((other) => {
+				if (keyOf(other) === keyOf(name)) other.classList.add('is-highlighted');
 			});
 			const rect = name.getBoundingClientRect();
 			const count = Number(name.dataset.count);
-			chip = document.createElement('span');
-			chip.className = 'work-credits__chip';
-			chip.textContent = count > 1 ? `${name.dataset.name} × ${count} 項` : name.dataset.name;
+			const label = count > 1 ? `${name.dataset.name} × ${count} 項` : name.dataset.name;
+			// A person with a website: the chip becomes a button that opens it.
+			const href = name instanceof HTMLAnchorElement ? name.href : '';
+			chip = document.createElement(href ? 'a' : 'span');
+			chip.className = href ? 'work-credits__chip work-credits__chip--link' : 'work-credits__chip';
+			if (href) {
+				chip.href = href;
+				chip.target = '_blank';
+				chip.rel = 'noopener noreferrer';
+				chip.tabIndex = -1;
+				chip.setAttribute('aria-hidden', 'true');
+				const text = document.createElement('span');
+				text.textContent = label;
+				const arrow = document.createElement('span');
+				arrow.className = 'work-credits__chip-open';
+				arrow.textContent = '↗';
+				chip.append(text, arrow);
+				chip.addEventListener('pointerleave', (leave) => {
+					if (!toCredits(leave.relatedTarget)) clear();
+				});
+				chip.addEventListener('click', () => window.setTimeout(clear, 0));
+			} else {
+				chip.textContent = label;
+			}
 			chip.style.left = `${rect.left + rect.width / 2}px`;
 			chip.style.top = `${rect.top}px`;
 			document.body.append(chip);
 		});
 		listen(credits, 'pointerout', (event) => {
 			const next = event.relatedTarget;
-			if (!(next instanceof Element) || !next.closest('.work-credits__name')) clear();
+			if (toCredits(next)) return;
+			if (next instanceof Element && next.closest('.work-credits__chip--link')) return;
+			clear();
 		});
 		listen(scrollTarget, 'scroll', clear, { passive: true });
 		releases.push(clear);
