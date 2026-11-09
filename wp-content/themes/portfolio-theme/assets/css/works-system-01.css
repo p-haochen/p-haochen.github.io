@@ -613,6 +613,30 @@
 	padding-inline-start: 0;
 }
 
+.works-filter-panel__copy {
+	min-height: 2.25rem;
+	margin-right: auto;
+	padding: 0.35rem 0.85rem;
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--portal-muted) 40%, transparent);
+	border-radius: 999px;
+	color: inherit;
+	font: inherit;
+	font-size: 0.625rem;
+	letter-spacing: 0.1em;
+	background: transparent;
+	cursor: pointer;
+	transition: border-color 200ms ease, color 200ms ease;
+}
+
+.works-filter-panel__copy:hover {
+	border-color: currentColor;
+}
+
+.works-filter-panel__copy.is-copied {
+	border-color: #ed661c;
+	color: #ed661c;
+}
+
 .works-filter-panel__footer {
 	justify-content: flex-end;
 	padding-top: 0.8rem;

@@ -4,6 +4,45 @@ import { createMusicPlayer } from './music-player-01.js';
 import { attachMusicCapsule } from './music-player-capsule-01.js';
 import { initializeWorkDetailAudio } from './work-detail-audio-01.js';
 
+// WORKS filters in the address bar (a link you can send: /?style=rock#work). They are written with
+// replaceState as the filters change: no navigation, no new history entry, no pause.
+const WORKS_URL_KEYS = ['view', 'sort', 'type', 'role', 'style', 'q'];
+
+function withoutWorksParams(url) {
+	const next = new URL(url, window.location.href);
+	for (const key of WORKS_URL_KEYS) next.searchParams.delete(key);
+	return next;
+}
+
+function worksUrlFor(detail) {
+	const url = withoutWorksParams(window.location.href);
+	const view = detail.view ?? detail.category ?? 'all';
+	if (view !== 'all') url.searchParams.set('view', view);
+	if (detail.sort && detail.sort !== 'curated') url.searchParams.set('sort', detail.sort);
+	for (const key of ['type', 'role', 'style']) {
+		if (typeof detail[key] === 'string' && detail[key] !== 'all' && detail[key] !== '') url.searchParams.set(key, detail[key]);
+	}
+	if (typeof detail.query === 'string' && detail.query !== '') url.searchParams.set('q', detail.query);
+	// Keep commas readable in a shared link (?style=pop,rock).
+	return `${url.pathname}${url.search.replace(/%2C/gi, ',')}${url.hash}`;
+}
+
+// Filters carried by the address (a shared link), or null when it carries none.
+function worksFiltersFromUrl() {
+	const params = new URLSearchParams(window.location.search);
+	if (!WORKS_URL_KEYS.some((key) => params.has(key))) return null;
+	const view = params.get('view') ?? 'all';
+	const perView = (value) => (typeof value === 'string' && value !== '' ? { [view]: value } : {});
+	return {
+		view,
+		sorts: perView(params.get('sort')),
+		types: perView(params.get('type')),
+		roles: perView(params.get('role')),
+		styles: perView(params.get('style')),
+		query: params.get('q') ?? '',
+	};
+}
+
 const siteHeader = document.querySelector('#photo-draft-site-header');
 const landing = document.querySelector('#photo-draft-landing');
 const panel = document.querySelector('#photo-portal-panel');
@@ -101,6 +140,7 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			? landingRoute
 			: new URL(`${landingRoute.pathname}${landingRoute.search}${landingRoute.hash}`, window.location.origin);
 		baseUrl.hash = '';
+		for (const key of WORKS_URL_KEYS) baseUrl.searchParams.delete(key);
 		const seoOrigin = seoOriginFromCanonical(initialDocumentSeo.canonical_url);
 		const initialDocumentStructuredData = readDocumentStructuredData();
 		const landingDocumentStructuredData = embeddedLandingDocumentSeo === null ? initialDocumentStructuredData : null;
@@ -1100,30 +1140,34 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			if (isB3Motion && key === 'work' && panel.classList.contains('is-b3-works-awaiting-covers')) {
 				awaitingWorksReveal = { directory, renderToken: activeRenderToken };
 			}
-			const initialView = restoration?.view ?? restoration?.category ?? 'all';
+			// A shared link (/?style=rock#work) sets the first state; history and Back keep their own.
+			const fromUrl = key === 'work' && !restoration && typeof window.history.state?.portfolioWorksView !== 'string'
+				? worksFiltersFromUrl()
+				: null;
+			const initialView = restoration?.view ?? restoration?.category ?? fromUrl?.view ?? 'all';
 			const initialSorts = restoration?.sorts && typeof restoration.sorts === 'object'
 				? restoration.sorts
 				: window.history.state?.portfolioWorksSorts && typeof window.history.state.portfolioWorksSorts === 'object'
 					? window.history.state.portfolioWorksSorts
-					: {};
+					: fromUrl?.sorts ?? {};
 			const initialRoles = restoration?.roles && typeof restoration.roles === 'object'
 				? restoration.roles
 				: window.history.state?.portfolioWorksRoles && typeof window.history.state.portfolioWorksRoles === 'object'
 					? window.history.state.portfolioWorksRoles
-					: {};
+					: fromUrl?.roles ?? {};
 			const initialStyles = restoration?.styles && typeof restoration.styles === 'object'
 				? restoration.styles
 				: window.history.state?.portfolioWorksStyles && typeof window.history.state.portfolioWorksStyles === 'object'
 					? window.history.state.portfolioWorksStyles
-					: {};
+					: fromUrl?.styles ?? {};
 			const initialQuery = typeof restoration?.query === 'string'
 				? restoration.query
-				: typeof window.history.state?.portfolioWorksQuery === 'string' ? window.history.state.portfolioWorksQuery : '';
+				: typeof window.history.state?.portfolioWorksQuery === 'string' ? window.history.state.portfolioWorksQuery : fromUrl?.query ?? '';
 			const initialTypes = restoration?.types && typeof restoration.types === 'object'
 				? restoration.types
 				: window.history.state?.portfolioWorksTypes && typeof window.history.state.portfolioWorksTypes === 'object'
 					? window.history.state.portfolioWorksTypes
-					: {};
+					: fromUrl?.types ?? {};
 			const mountedContextually = isB3Motion && key === 'work'
 				? mountWorksContextualControls(directory)
 				: false;
@@ -1132,7 +1176,12 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 				&& contextualControls.querySelector('.works-directory__controls') instanceof HTMLElement;
 			const controlsRoot = mountedContextually || controlsAlreadyContextual ? contextualControls : directory;
 			const onWorksStateChange = (detail) => {
-				if (!isB3Motion || currentKey !== 'work' || !window.history.state?.portfolioPortal) return;
+				if (!isB3Motion || currentKey !== 'work') return;
+				if (!window.history.state?.portfolioPortal) {
+					// Opened straight from a link: no Portal state to merge into, but the address still follows.
+					window.history.replaceState(window.history.state, '', worksUrlFor(detail));
+					return;
+				}
 				const view = detail.view ?? detail.category ?? 'all';
 				window.history.replaceState(
 					{
@@ -1150,7 +1199,7 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 						portfolioWorksQuery: detail.query ?? '',
 					},
 					'',
-					window.location.href,
+					worksUrlFor(detail),
 				);
 			};
 			if (Array.isArray(payload?.works)) {
@@ -1618,7 +1667,9 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 				);
 			} else if (shouldUpdateHistory && window.location.hash !== definition.hash) {
 				const nextDepth = currentPortalDepth() + 1;
-				window.history.pushState(portalHistoryState(nextDepth, key), '', definition.hash);
+				const panelUrl = withoutWorksParams(window.location.href);
+				panelUrl.hash = definition.hash;
+				window.history.pushState(portalHistoryState(nextDepth, key), '', `${panelUrl.pathname}${panelUrl.search}${panelUrl.hash}`);
 			}
 		}
 

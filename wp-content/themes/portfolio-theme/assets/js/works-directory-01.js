@@ -161,6 +161,13 @@ function initializeStandaloneSort(directory) {
 }
 
 function initializeDocumentDirectories() {
+	// Filters live in the Portal WORKS: a filtered link that lands here (/work/?style=rock)
+	// opens the Portal with the same filters instead.
+	if (!document.querySelector('.photo-draft-shell')
+		&& ['view', 'sort', 'type', 'role', 'style', 'q'].some((key) => new URLSearchParams(window.location.search).has(key))) {
+		window.location.replace(`/${window.location.search}#work`);
+		return;
+	}
 	const directories = initializeWorksDirectories(document);
 	if (document.querySelector('.photo-draft-shell')) return;
 	for (const directory of directories) initializeStandaloneSort(directory);

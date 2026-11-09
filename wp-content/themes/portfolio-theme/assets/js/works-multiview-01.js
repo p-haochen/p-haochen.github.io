@@ -1421,6 +1421,34 @@ function setFilterPanelOpen(controlsRoot, open, restoreFocus = true) {
 	}
 }
 
+// COPY LINK: the address already carries the filters (written by the Portal as they change).
+async function copyCurrentLink(button) {
+	const url = window.location.href;
+	let copied = false;
+	try {
+		await navigator.clipboard.writeText(url);
+		copied = true;
+	} catch {
+		// Older browsers / no permission: copy through a temporary field.
+		const field = document.createElement('textarea');
+		field.value = url;
+		field.setAttribute('readonly', '');
+		field.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+		document.body.append(field);
+		field.select();
+		try { copied = document.execCommand('copy'); } catch { copied = false; }
+		field.remove();
+	}
+	const label = button.dataset.label ?? 'COPY LINK';
+	button.textContent = copied ? (button.dataset.copiedLabel ?? 'LINK COPIED') : label;
+	button.classList.toggle('is-copied', copied);
+	window.clearTimeout(Number(button.dataset.resetTimer ?? 0));
+	button.dataset.resetTimer = String(window.setTimeout(() => {
+		button.textContent = label;
+		button.classList.remove('is-copied');
+	}, 1800));
+}
+
 // Every chosen value of one dimension (ROLE, STYLE or TYPE), apart from ALL.
 function checkedValues(controlsRoot, dimension) {
 	return [...controlsRoot.querySelectorAll(`[data-work-${dimension}]`)]
@@ -1488,6 +1516,11 @@ function controlsState(controlsRoot) {
 		}
 		if (target?.closest('[data-work-signal-dsp]')) {
 			setSignalSound(!isSignalSoundOn());
+			return;
+		}
+		const copyLink = target?.closest('[data-work-filter-copy-link]');
+		if (copyLink instanceof HTMLButtonElement) {
+			copyCurrentLink(copyLink);
 			return;
 		}
 		const directory = state.directory;
