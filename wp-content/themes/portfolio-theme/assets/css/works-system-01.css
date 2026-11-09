@@ -1249,97 +1249,350 @@
 	outline-offset: 3px;
 }
 
+/*
+ * Work CTAs (Download / GitHub / Ko-fi Support): one pill family that follows
+ * the Ko-fi button's anatomy, a round mark plus a label on a dark pill.
+ * Download leads with the page's ember accent; DM Sans (Ko-fi's face) is served
+ * from the Theme, Latin-only.
+ */
+@font-face {
+	font-family: "DM Sans";
+	font-style: normal;
+	font-weight: 500;
+	font-display: swap;
+	src: url("../fonts/dm-sans/DMSans-Medium-latin.woff2") format("woff2");
+}
+
 .work-ctas {
+	--work-cta-surface: #121419;
+	--work-cta-ink: #f0eee8;
+	--work-cta-muted: #aaa69f;
+	--work-cta-ember: #ed661c;
+	--work-cta-ember-hover: #f27a37;
+	--work-cta-edge: rgb(255 255 255 / 8%);
+	--work-cta-edge-hover: rgb(255 255 255 / 22%);
 	display: flex;
 	flex-wrap: wrap;
-	gap: 0.5rem;
+	align-items: center;
+	gap: 10px;
 	margin: 0;
 }
 
-.work-cta {
+.work-cta,
+.work-cta-group,
+.work-kofi {
 	box-sizing: border-box;
 	display: inline-flex;
-	min-width: 6rem;
-	min-height: 2.5rem;
 	align-items: center;
-	justify-content: center;
-	padding: 0.6rem 0.75rem;
-	border: 1px solid var(--work-detail-line-strong, var(--wp--preset--color--portal-line));
-	color: var(--work-detail-text, var(--works-detail-copy-color));
-	background: transparent;
-	font-family: var(--wp--preset--font-family--sans);
-	font-size: 0.68rem;
+	height: 46px;
+	border: 0;
+	border-radius: 100px;
+	background: var(--work-cta-surface);
+	box-shadow: inset 0 0 0 1px var(--work-cta-edge);
+	color: var(--work-cta-ink);
+	font-family: "DM Sans", var(--wp--preset--font-family--sans), sans-serif;
+	font-size: 16px;
 	font-weight: 500;
-	letter-spacing: 0.12em;
-	line-height: 1.2;
-	text-align: center;
+	font-variant-ligatures: no-common-ligatures;
+	letter-spacing: 0;
+	line-height: 1;
 	text-decoration: none;
-	transition: border-color 180ms ease, color 180ms ease, background-color 180ms ease;
+	white-space: nowrap;
+	transition: box-shadow 180ms ease, background-color 180ms ease, transform 180ms ease;
 }
 
-.work-cta:hover {
-	border-color: var(--work-detail-sub, #8b8c90);
+.work-cta {
+	gap: 10px;
+	padding: 0 20px;
 }
 
-.work-cta:focus-visible {
+.work-cta:has(> .work-cta__icon) {
+	padding-left: 6px;
+}
+
+.work-cta:hover,
+.work-cta-group:hover,
+.work-kofi:hover {
+	box-shadow: inset 0 0 0 1px var(--work-cta-edge-hover);
+}
+
+.work-cta:active,
+.work-kofi:active {
+	transform: scale(0.98);
+}
+
+.work-cta:focus-visible,
+.work-kofi:focus-visible {
 	outline: 2px solid var(--wp--preset--color--portal-focus);
 	outline-offset: 3px;
 }
 
-.work-cta__icon {
+/* Round icon mark, like the Ko-fi logo on its button. */
+.work-cta > .work-cta__icon,
+.work-cta-group__icon > .work-cta__icon {
+	box-sizing: border-box;
 	flex: none;
-	width: 0.95rem;
-	height: 0.95rem;
+	width: 34px;
+	height: 34px;
+	padding: 8px;
+	border-radius: 50%;
+	background: rgb(240 238 232 / 10%);
+	transition: background-color 180ms ease;
 }
 
-.work-cta:has(> .work-cta__icon) {
-	gap: 0.45rem;
+.work-cta__meta {
+	color: var(--work-cta-muted);
+	font-family: var(--wd-mono, ui-monospace, "SF Mono", Menlo, Consolas, monospace);
+	font-size: 11px;
+	font-weight: 400;
+	letter-spacing: 0.02em;
 }
 
-/* Icon-only buttons (GitHub). */
-.work-cta--icon {
-	min-width: 2.5rem;
-	width: 2.5rem;
-	padding: 0;
-}
-
-.work-cta--icon .work-cta__icon {
-	width: 1.15rem;
-	height: 1.15rem;
-}
-
-/* Downloads: one segmented control led by a single download icon. */
+/* Downloads: one pill led by an ember download mark. */
 .work-cta-group {
-	display: inline-flex;
-	align-items: stretch;
-	border: 1px solid var(--work-detail-line-strong, var(--wp--preset--color--portal-line));
-	background: transparent;
+	position: relative;
+	gap: 0;
+	padding: 0 6px;
 }
 
 .work-cta-group__icon {
 	display: inline-flex;
-	align-items: center;
-	padding: 0 0.7rem;
-	color: var(--works-detail-copy-color);
-	opacity: 0.75;
 }
 
-.work-cta-group__icon .work-cta__icon {
-	width: 1.1rem;
-	height: 1.1rem;
+.work-cta-group__icon > .work-cta__icon {
+	background: var(--work-cta-ember);
+	color: #fff;
+}
+
+.work-cta-group:hover .work-cta-group__icon > .work-cta__icon {
+	background: var(--work-cta-ember-hover);
 }
 
 .work-cta-group > .work-cta {
-	min-width: 0;
-	padding-inline: 0.6rem;
-	border: 0;
-	border-left: 1px solid var(--work-detail-line-strong, var(--wp--preset--color--portal-line));
+	height: 36px;
+	padding: 0 13px;
+	gap: 10px;
 	background: transparent;
+	box-shadow: none;
 }
 
-.work-cta-group > .work-cta:hover {
-	color: var(--work-detail-text, #dcdcda);
-	background: color-mix(in srgb, var(--work-detail-text, #dcdcda) 8%, transparent);
+/* One download: the whole pill is the link. */
+.work-cta-group:not(.work-cta-group--split) {
+	padding-right: 8px;
+}
+
+.work-cta-group:not(.work-cta-group--split) > .work-cta {
+	position: static;
+	padding-left: 10px;
+}
+
+.work-cta-group:not(.work-cta-group--split) > .work-cta::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+}
+
+/* Several downloads (macOS / Windows): each platform is its own hover target. */
+.work-cta-group--split > .work-cta {
+	gap: 7px;
+	padding-left: 13px;
+	border-radius: 100px;
+	transition: background-color 180ms ease;
+}
+
+.work-cta-group--split > .work-cta:hover {
+	background: rgb(240 238 232 / 7%);
+	box-shadow: none;
+}
+
+.work-cta-group--split > .work-cta > .work-cta__icon {
+	width: 16px;
+	height: 16px;
+	padding: 0;
+	border-radius: 0;
+	background: none;
+}
+
+/* Ko-fi Support: Ko-fi's own floating-button look (logo + "Support"). */
+.work-kofi {
+	position: relative;
+	gap: 8px;
+	padding: 0 20px 0 14px;
+	cursor: pointer;
+}
+
+.work-kofi__logo {
+	width: 39px;
+	height: auto;
+}
+
+/* "Buy Me a Coffee" sits to the right of the button. */
+.work-kofi__tip {
+	position: absolute;
+	top: 50%;
+	left: calc(100% + 12px);
+	z-index: 2;
+	padding: 7px 11px;
+	border-radius: 8px;
+	background: #fff;
+	box-shadow: 0 6px 18px rgb(0 0 0 / 35%);
+	color: #202020;
+	font-size: 13px;
+	white-space: nowrap;
+	opacity: 0;
+	pointer-events: none;
+	transform: translate(-4px, -50%);
+	transition: opacity 150ms ease, transform 150ms ease;
+}
+
+.work-kofi__tip::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	right: 100%;
+	width: 8px;
+	height: 8px;
+	background: #fff;
+	transform: translate(50%, -50%) rotate(45deg);
+}
+
+@media (hover: hover) {
+	.work-kofi:hover .work-kofi__tip {
+		opacity: 1;
+		transform: translate(0, -50%);
+		transition-delay: 200ms;
+	}
+}
+
+.work-kofi:focus-visible .work-kofi__tip {
+	opacity: 1;
+	transform: translate(0, -50%);
+}
+
+.work-kofi[aria-expanded="true"] .work-kofi__tip {
+	opacity: 0 !important;
+	transition-delay: 0ms !important;
+}
+
+/* Ko-fi popup (work-support-kofi-01.js): Ko-fi's floating panel, beside its button. */
+.work-kofi-popup {
+	position: fixed;
+	z-index: 100200;
+	width: 325px;
+	border-radius: 16px;
+	background: #fff;
+	box-shadow: 0 8px 30px 10px rgb(0 0 0 / 25%), 0 2px 10px rgb(0 0 0 / 25%);
+	opacity: 0;
+	transform: translateY(-6px) scale(0.98);
+	transform-origin: top left;
+	transition: opacity 300ms ease, transform 300ms ease;
+}
+
+.work-kofi-popup.is-open {
+	opacity: 1;
+	transform: none;
+}
+
+.work-kofi-popup[hidden] {
+	display: none;
+}
+
+.work-kofi-popup__closer {
+	position: absolute;
+	top: -7px;
+	right: -9px;
+	z-index: 2;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 25px;
+	height: 25px;
+	padding: 0;
+	border: 0;
+	border-radius: 16px;
+	background: #fff;
+	box-shadow: 0 4px 20px #bdbdbd;
+	cursor: pointer;
+}
+
+.work-kofi-popup__closer:focus-visible {
+	outline: 2px solid var(--wp--preset--color--portal-focus, #d2bd7a);
+	outline-offset: 2px;
+}
+
+.work-kofi-popup__frame {
+	height: 572px;
+	overflow: hidden;
+	border-radius: 16px 16px 0 0;
+}
+
+.work-kofi-popup__frame iframe {
+	display: block;
+	width: 100%;
+	height: 100%;
+	border: 0;
+	color-scheme: light;
+}
+
+.work-kofi-popup__notice {
+	padding: 8px 0;
+	border-top: 1px solid #e0e4e6;
+	border-radius: 0 0 16px 16px;
+	font-family: "DM Sans", var(--wp--preset--font-family--sans), sans-serif;
+	font-size: 14px;
+	line-height: 30px;
+	text-align: center;
+}
+
+.work-kofi-popup__notice a {
+	color: #202020;
+	text-decoration: none;
+}
+
+.work-kofi-popup__notice a:hover {
+	text-decoration: underline;
+}
+
+/* Phones (and short windows): nearly full screen, like Ko-fi's mobile panel. */
+.work-kofi-popup.is-mobi {
+	top: calc(env(safe-area-inset-top, 0px) + 16px);
+	right: 16px;
+	bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+	left: 16px;
+	display: flex;
+	flex-direction: column;
+	width: auto;
+	transform-origin: center;
+}
+
+.work-kofi-popup.is-mobi[hidden] {
+	display: none;
+}
+
+.work-kofi-popup.is-mobi .work-kofi-popup__frame {
+	flex: 1;
+	height: auto;
+	overflow: auto;
+}
+
+/* Voluntary support note (PHC Recorder), under the CTA row. */
+.work-support {
+	max-width: 36rem;
+	margin: -0.35rem 0 0;
+}
+
+.work-support__note {
+	min-width: 0;
+	margin: 0;
+	color: var(--work-detail-sub, #8b8c90);
+	font-family: var(--wp--preset--font-family--sans);
+	font-size: 0.72rem;
+	line-height: 1.6;
+}
+
+.work-support__line {
+	display: block;
 }
 
 .work-detail :is(img, video, iframe) {
@@ -2015,31 +2268,8 @@ html.portfolio-lightbox-open {
 		align-items: flex-start;
 	}
 
-	.work-ctas {
-		gap: 0.65rem;
-	}
-
-	.work-cta {
-		flex: 0 1 6rem;
-	}
-
-	.work-cta--icon {
-		flex: none;
-	}
-
 	.work-cta-group {
 		max-width: 100%;
-	}
-
-	.work-cta-group > .work-cta {
-		flex: 1 1 auto;
-		padding-inline: 0.45rem;
-		letter-spacing: 0.08em;
-		white-space: nowrap;
-	}
-
-	.work-cta-group__icon {
-		padding-inline: 0.55rem;
 	}
 
 	.work-gallery-lightbox {
@@ -2150,9 +2380,98 @@ html.portfolio-lightbox-open {
 		transition-duration: 0.01ms !important;
 	}
 
-	.work-cta {
+	.work-cta,
+	.work-cta-group,
+	.work-kofi,
+	.work-cta__icon,
+	.work-kofi__tip,
+	.work-kofi-popup {
 		transition-duration: 0.01ms;
 	}
+
+	.work-kofi-popup {
+		transform: none;
+	}
+}
+
+/*
+ * Hover / focus text: the page's ember. Scoped under .work-ctas so the
+ * site-wide a:hover accent (site.css) and the Portal's .photo-draft a:hover
+ * wash (home-photo-draft-01.css) cannot recolour the label or the pill.
+ */
+.work-ctas .work-cta:is(:hover, :focus-visible),
+.work-ctas .work-kofi:is(:hover, :focus-visible) {
+	color: var(--work-cta-ember);
+}
+
+/* The version tag stays quiet; the round marks keep their own colours. */
+.work-ctas .work-cta:is(:hover, :focus-visible) > .work-cta__meta {
+	color: var(--work-cta-muted);
+}
+
+.work-ctas > .work-cta:is(:hover, :focus-visible) > .work-cta__icon {
+	color: var(--work-cta-ink);
+}
+
+.work-ctas > .work-cta:is(:hover, :focus-visible) {
+	background: var(--work-cta-surface);
+}
+
+.work-ctas .work-cta-group:not(.work-cta-group--split) > .work-cta:is(:hover, :focus-visible) {
+	background: transparent;
+}
+
+.work-ctas .work-cta-group--split > .work-cta:is(:hover, :focus-visible) {
+	background: rgb(240 238 232 / 9%);
+}
+
+/* Split downloads: the platform icon follows its label. */
+.work-ctas .work-cta-group--split > .work-cta:is(:hover, :focus-visible) > .work-cta__icon {
+	color: var(--work-cta-ember);
+}
+
+/* Phones: Download takes the first row; GitHub and Support share the second. */
+@media (max-width: 480px) {
+	.work-cta-group {
+		flex: 1 1 100%;
+		justify-content: center;
+	}
+
+	.work-cta-group--split > .work-cta {
+		flex: 1 1 0;
+		justify-content: center;
+	}
+
+	.work-ctas > .work-cta,
+	.work-kofi {
+		flex: 1 1 0;
+		justify-content: center;
+	}
+}
+
+/*
+ * No room on the right (work-support-kofi-01.js measures on hover / focus):
+ * the tooltip goes above the button, aligned to its right edge, so it stays on
+ * screen. Hover is listed too: touch-emulating or hybrid devices match
+ * (hover: hover) as well.
+ */
+.work-kofi--tip-above .work-kofi__tip {
+	top: auto;
+	right: 0;
+	bottom: calc(100% + 10px);
+	left: auto;
+	transform: translateY(4px);
+}
+
+.work-kofi--tip-above .work-kofi__tip::after {
+	top: 100%;
+	right: 28px;
+	left: auto;
+	transform: translate(50%, -50%) rotate(45deg);
+}
+
+.work-kofi--tip-above:is(:hover, :focus-visible) .work-kofi__tip {
+	transform: translateY(0);
 }
 
 /* SHARE sheet: Story card preview with share / save / copy (work-share-01.js) */

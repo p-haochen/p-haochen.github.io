@@ -1551,6 +1551,11 @@ body.single-portfolio_work .work-detail--j .work-detail__aside {
 	animation-delay: 100ms;
 }
 
+.work-detail--j.is-enter .work-support {
+	animation: wd-rise .6s var(--wd-ease) both;
+	animation-delay: 420ms;
+}
+
 /* sections */
 .work-detail--j .work-detail__section {
 	position: relative;

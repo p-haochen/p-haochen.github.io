@@ -18,7 +18,8 @@ const COLORS = Object.freeze({
 	ember: '#ed661c',
 	line: 'rgba(240, 238, 232, 0.14)',
 });
-const SHARE_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 1.5 4.75 4.75l.9.9L7.36 3.94V10h1.28V3.94l1.71 1.71.9-.9z" fill="currentColor"/><path d="M3 7.5h2v1.25H4.25v4.5h7.5v-4.5H11V7.5h2v7H3z" fill="currentColor"/></svg>';
+// The common "share" mark (three connected nodes), not a tray-and-arrow that reads as upload.
+const SHARE_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M11.6 3.9 4.4 7.6m0 .8 7.2 3.7" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="12" cy="3.5" r="2.1" fill="currentColor"/><circle cx="4" cy="8" r="2.1" fill="currentColor"/><circle cx="12" cy="12.5" r="2.1" fill="currentColor"/></svg>';
 
 const instances = new WeakMap();
 
