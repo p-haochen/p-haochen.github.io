@@ -80,7 +80,9 @@ function place() {
 	const viewportHeight = window.innerHeight;
 	const height = popup.offsetHeight;
 	const width = popup.offsetWidth;
-	if (viewportWidth < MOBILE_BREAKPOINT || height > viewportHeight - 2 * EDGE) {
+	// Phones get the near-full-screen panel. On wider windows the popup keeps its
+	// width; CSS caps its height to the window, so it always fits beside the button.
+	if (viewportWidth < MOBILE_BREAKPOINT) {
 		popup.classList.add('is-mobi');
 		return;
 	}

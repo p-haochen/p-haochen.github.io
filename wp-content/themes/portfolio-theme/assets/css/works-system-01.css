@@ -1479,7 +1479,13 @@
 .work-kofi-popup {
 	position: fixed;
 	z-index: 100200;
+	display: flex;
+	flex-direction: column;
 	width: 325px;
+	/* Never taller than the window: the Ko-fi panel then scrolls inside its frame,
+	   and the close button and the footer link stay in view. */
+	max-height: calc(100vh - 32px);
+	max-height: calc(100dvh - 32px);
 	border-radius: 16px;
 	background: #fff;
 	box-shadow: 0 8px 30px 10px rgb(0 0 0 / 25%), 0 2px 10px rgb(0 0 0 / 25%);
@@ -1522,20 +1528,27 @@
 }
 
 .work-kofi-popup__frame {
-	height: 572px;
+	position: relative;
+	flex: 0 1 572px;
+	min-height: 0;
 	overflow: hidden;
 	border-radius: 16px 16px 0 0;
 }
 
 .work-kofi-popup__frame iframe {
+	position: absolute;
+	inset: 0;
 	display: block;
 	width: 100%;
 	height: 100%;
+	max-width: none;
+	max-height: none;
 	border: 0;
 	color-scheme: light;
 }
 
 .work-kofi-popup__notice {
+	flex: none;
 	padding: 8px 0;
 	border-top: 1px solid #e0e4e6;
 	border-radius: 0 0 16px 16px;
@@ -1554,26 +1567,19 @@
 	text-decoration: underline;
 }
 
-/* Phones (and short windows): nearly full screen, like Ko-fi's mobile panel. */
+/* Phones: nearly full screen, like Ko-fi's mobile panel. */
 .work-kofi-popup.is-mobi {
 	top: calc(env(safe-area-inset-top, 0px) + 16px);
 	right: 16px;
 	bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
 	left: 16px;
-	display: flex;
-	flex-direction: column;
 	width: auto;
+	max-height: none;
 	transform-origin: center;
 }
 
-.work-kofi-popup.is-mobi[hidden] {
-	display: none;
-}
-
 .work-kofi-popup.is-mobi .work-kofi-popup__frame {
-	flex: 1;
-	height: auto;
-	overflow: auto;
+	flex: 1 1 auto;
 }
 
 /* Voluntary support note (PHC Recorder), under the CTA row. */
@@ -1853,6 +1859,87 @@ html.portfolio-lightbox-open {
 
 .work-media-embed__frame--youtube iframe {
 	height: 100%;
+}
+
+/* Click-to-load still (work-youtube-01.js swaps in the player on press). */
+.work-youtube {
+	position: relative;
+	display: block;
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	border: 0;
+	background: #000;
+	overflow: hidden;
+	cursor: pointer;
+}
+
+.work-youtube__poster {
+	display: block;
+	width: 100%;
+	height: 100%;
+	max-width: none;
+	object-fit: cover;
+	transition: opacity 180ms ease;
+	opacity: 0.92;
+}
+
+.work-youtube:is(:hover, :focus-visible) .work-youtube__poster {
+	opacity: 1;
+}
+
+.work-youtube__play {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 68px;
+	height: 68px;
+	border-radius: 50%;
+	background: rgb(11 12 15 / 72%);
+	box-shadow: inset 0 0 0 1px rgb(240 238 232 / 28%);
+	color: #f0eee8;
+	transform: translate(-50%, -50%);
+	transition: background-color 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.work-youtube__play svg {
+	width: 28px;
+	height: 28px;
+	margin-left: 3px;
+}
+
+.work-youtube:is(:hover, :focus-visible) .work-youtube__play {
+	background: #ed661c;
+	color: #fff;
+	transform: translate(-50%, -50%) scale(1.06);
+}
+
+.work-youtube:focus-visible {
+	outline: 2px solid var(--wp--preset--color--portal-focus);
+	outline-offset: 3px;
+}
+
+.work-youtube__link {
+	position: absolute;
+	inset: auto 0 0 0;
+	padding: 0.5rem 0.75rem;
+	background: rgb(11 12 15 / 80%);
+	color: #f0eee8;
+	font-size: 0.8125rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.work-youtube__poster,
+	.work-youtube__play {
+		transition: none;
+	}
+
+	.work-youtube:is(:hover, :focus-visible) .work-youtube__play {
+		transform: translate(-50%, -50%);
+	}
 }
 
 /* Spotify's official compact (152px) embed: no track list. */
@@ -2629,5 +2716,99 @@ html.work-share-open {
 @media (prefers-reduced-motion: reduce) {
 	.work-share__preview[aria-busy="true"] {
 		animation: none;
+	}
+}
+
+/* Friendly 404 (templates/404.html): the dark Direct shell with a short way back. */
+.portfolio-not-found .site-main {
+	display: grid;
+	min-height: 62vh;
+	align-content: center;
+}
+
+.not-found {
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 44rem;
+	margin-inline: auto;
+	padding: clamp(3rem, 10vh, 7rem) 0;
+	color: var(--wp--preset--color--portal-foreground);
+}
+
+.not-found__code {
+	margin: 0 0 1.25rem;
+	color: #ed661c;
+	font-family: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+	font-size: 0.75rem;
+	letter-spacing: 0.24em;
+}
+
+.not-found__title {
+	margin: 0 0 1.5rem;
+	font-family: var(--wp--preset--font-family--sans);
+	font-size: clamp(2.25rem, 6vw, 3.75rem);
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	line-height: 1.05;
+}
+
+.not-found__copy {
+	max-width: 34rem;
+	margin: 0 0 0.35rem;
+	color: var(--wp--preset--color--portal-muted);
+	font-size: 1rem;
+	line-height: 1.7;
+}
+
+.not-found__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin: 2.25rem 0 0;
+}
+
+.not-found__link {
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	height: 46px;
+	padding: 0 22px;
+	border-radius: 100px;
+	background: #121419;
+	box-shadow: inset 0 0 0 1px rgb(255 255 255 / 8%);
+	color: #f0eee8;
+	font-family: "DM Sans", var(--wp--preset--font-family--sans), sans-serif;
+	font-size: 16px;
+	font-weight: 500;
+	line-height: 1;
+	text-decoration: none;
+	transition: box-shadow 180ms ease, color 180ms ease, background-color 180ms ease;
+}
+
+.not-found .not-found__link:is(:hover, :focus-visible) {
+	box-shadow: inset 0 0 0 1px rgb(255 255 255 / 22%);
+	color: #ed661c;
+}
+
+.not-found .not-found__link--primary {
+	background: #ed661c;
+	box-shadow: none;
+	color: #fff;
+}
+
+.not-found .not-found__link--primary:is(:hover, :focus-visible) {
+	background: #f27a37;
+	box-shadow: none;
+	color: #fff;
+}
+
+.not-found__link:focus-visible {
+	outline: 2px solid var(--wp--preset--color--portal-focus);
+	outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.not-found__link {
+		transition: none;
 	}
 }

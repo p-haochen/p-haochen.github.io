@@ -182,7 +182,8 @@ function createRenderer(target) {
 
 	return {
 		async load(variant, stillSource) {
-			const asset = (name) => new URL(`${name}-${variant.suffix}.${name === 'plate-clean' ? 'webp' : 'png'}`, assetBase).href;
+			// mask / flow-burst / speed-burst are lossless WebP: byte-identical texels to the former PNGs.
+			const asset = (name) => new URL(`${name}-${variant.suffix}.webp`, assetBase).href;
 			await Promise.all([
 				loadTexture(0, stillSource),
 				loadTexture(1, asset('mask')),
