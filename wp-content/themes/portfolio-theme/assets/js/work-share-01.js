@@ -33,7 +33,7 @@ function readSource(root) {
 		if (url.origin !== window.location.origin) return null;
 		const hero = root.querySelector('.work-detail__hero img');
 		const cover = hero instanceof HTMLImageElement && (hero.currentSrc || hero.src)
-			? hero.currentSrc || hero.src
+			? storyCoverSource(hero)
 			: typeof data.cover === 'string' && data.cover !== '' ? new URL(data.cover, window.location.origin).href : '';
 		return {
 			url: url.href,
@@ -48,6 +48,24 @@ function readSource(root) {
 	} catch {
 		return null;
 	}
+}
+
+// The page shows the cover at its on-screen size; the Story card draws it up to
+// the card column (CARD_WIDTH less two 120px margins), so take the smallest
+// srcset file that is at least that wide instead of whatever the page loaded.
+function storyCoverSource(image) {
+	const minimumWidth = CARD_WIDTH - 240;
+	let fitting = null;
+	let largest = null;
+	for (const candidate of (image.getAttribute('srcset') ?? '').split(',')) {
+		const [url, descriptor = ''] = candidate.trim().split(/\s+/);
+		const width = descriptor.endsWith('w') ? Number.parseInt(descriptor, 10) : Number.NaN;
+		if (!url || !Number.isFinite(width)) continue;
+		if (!largest || width > largest.width) largest = { url, width };
+		if (width >= minimumWidth && (!fitting || width < fitting.width)) fitting = { url, width };
+	}
+	const chosen = fitting ?? largest;
+	return chosen ? new URL(chosen.url, document.baseURI).href : image.currentSrc || image.src;
 }
 
 function loadImage(src) {

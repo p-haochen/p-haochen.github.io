@@ -143,7 +143,12 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 		for (const key of WORKS_URL_KEYS) baseUrl.searchParams.delete(key);
 		const seoOrigin = seoOriginFromCanonical(initialDocumentSeo.canonical_url);
 		const initialDocumentStructuredData = readDocumentStructuredData();
-		const landingDocumentStructuredData = embeddedLandingDocumentSeo === null ? initialDocumentStructuredData : null;
+		// The Homepage's own markup is kept for the landing view; a deep-linked
+		// route has no landing markup to restore.
+		const landingDocumentStructuredData = embeddedLandingDocumentSeo === null
+			|| new URL(embeddedLandingDocumentSeo.canonical_url, window.location.href).pathname === new URL(initialDocumentSeo.canonical_url, window.location.href).pathname
+			? initialDocumentStructuredData
+			: null;
 		let currentKey = null;
 		let restoreTarget = null;
 		let activeController = null;
