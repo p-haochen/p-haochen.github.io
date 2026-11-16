@@ -322,13 +322,16 @@ function drawLab(context, W, H, A, t, bus, automaton) {
 
 /* ---------- the view ---------- */
 function normalizeWork(work, categorySlugs) {
-	const cat = categorySlugs(work).find((slug) => CATS.includes(slug)) ?? 'music';
+	const cats = categorySlugs(work).filter((slug) => CATS.includes(slug));
+	const cat = cats[0] ?? 'music';
 	return {
 		id: work.id,
 		title: String(work.title ?? ''),
 		url: String(work.canonical_url ?? ''),
 		year: typeof work.year === 'string' ? work.year : '',
 		cat,
+		// Every category the work belongs to, so source counts match the category tabs (e.g. LIVE + MUSIC).
+		cats: cats.length ? cats : [cat],
 		catName: CAT_NAME[cat],
 		roles: Array.isArray(work.roles) ? work.roles.map((role) => role?.label).filter(Boolean) : [],
 		source: work,
@@ -412,7 +415,7 @@ export function createSignalView({ works, view, display, grouped = false, helper
 		}
 		const cats = view === 'all' ? CATS : CATS.filter((cat) => cat === view);
 		for (const [index, cat] of cats.entries()) {
-			const count = items.filter((item) => item.cat === cat).length;
+			const count = items.filter((item) => item.cats.includes(cat)).length;
 			const src = el('div', `works-net__src${count ? '' : ' is-empty'}`);
 			src.dataset.cat = cat;
 			src.setAttribute('aria-hidden', 'true');

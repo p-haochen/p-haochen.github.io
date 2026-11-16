@@ -17,6 +17,12 @@
     "@id": "https://pohaochen.com/works/uvr5-pro/#creative-work",
     "url": "https://pohaochen.com/works/uvr5-pro/",
     "name": "UVR5 Pro",
+    "inLanguage": "zh-Hant-TW",
+    "contributor": {
+      "@type": "Person",
+      "@id": "https://pohaochen.com/#person",
+      "name": "PO HAO CHEN"
+    },
     "description": "以開源工具 Ultimate Vocal Remover 為基礎的非官方衍生版本，主要新增「Smart Separation（智慧分離）」引導式工作流程。使用者只要依序選擇音源類型、想分離的音軌和效能偏好，就會看到依實測品質、速度與顯示記憶體需求排名的推薦模型，以及處理流程預覽，不需要自行了解各種 AI 模型之間的差異。",
     "image": "https://pohaochen.com/wp-content/uploads/2026/10/UVR5-Pro-Cover-1024x768.png",
     "dateCreated": "2026"

@@ -17,6 +17,12 @@
     "@id": "https://pohaochen.com/works/tsg-falcons-fly-fast/#creative-work",
     "url": "https://pohaochen.com/works/tsg-falcons-fly-fast/",
     "name": "台鋼獵鷹主題曲《鷹速飛翔》",
+    "inLanguage": "zh-Hant-TW",
+    "contributor": {
+      "@type": "Person",
+      "@id": "https://pohaochen.com/#person",
+      "name": "PO HAO CHEN"
+    },
     "image": "https://pohaochen.com/wp-content/uploads/2026/08/tsg-falcons-fly-fast-cover-1024x1024.webp",
     "dateCreated": "2025"
   },

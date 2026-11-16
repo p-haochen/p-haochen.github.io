@@ -17,6 +17,12 @@
     "@id": "https://pohaochen.com/works/miru-miru-nya/#creative-work",
     "url": "https://pohaochen.com/works/miru-miru-nya/",
     "name": "純愛咪戀ミルミルニャー！|〈純白和弦〉杏仁ミル聯動主題曲",
+    "inLanguage": "zh-Hant-TW",
+    "contributor": {
+      "@type": "Person",
+      "@id": "https://pohaochen.com/#person",
+      "name": "PO HAO CHEN"
+    },
     "image": "https://pohaochen.com/wp-content/uploads/2026/08/miru-miru-nya-cover-2026-11-06-1024x1024.webp",
     "dateCreated": "2023"
   },

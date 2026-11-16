@@ -17,6 +17,12 @@
     "@id": "https://pohaochen.com/works/fantasia-nexus-star-sea/#creative-work",
     "url": "https://pohaochen.com/works/fantasia-nexus-star-sea/",
     "name": "風色幻想Nexus主題曲 《星海懸望》",
+    "inLanguage": "zh-Hant-TW",
+    "contributor": {
+      "@type": "Person",
+      "@id": "https://pohaochen.com/#person",
+      "name": "PO HAO CHEN"
+    },
     "image": "https://pohaochen.com/wp-content/uploads/2026/11/fantasia-nexus-star-sea-cover-2026-11-08-1024x1024.webp",
     "dateCreated": "2026"
   },

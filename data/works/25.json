@@ -17,6 +17,12 @@
     "@id": "https://pohaochen.com/works/tong-xing-tower-of-saviors-11th-anniversary/#creative-work",
     "url": "https://pohaochen.com/works/tong-xing-tower-of-saviors-11th-anniversary/",
     "name": "神魔之塔11週年主題曲《同行》",
+    "inLanguage": "zh-Hant-TW",
+    "contributor": {
+      "@type": "Person",
+      "@id": "https://pohaochen.com/#person",
+      "name": "PO HAO CHEN"
+    },
     "image": "https://pohaochen.com/wp-content/uploads/2026/08/tongxing-cover-1024x1024.webp",
     "dateCreated": "2024"
   },

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html lang="zh-Hant-TW">
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -59,15 +59,67 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 .skip-link.screen-reader-text{border:0;clip-path:inset(50%);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute!important;width:1px;word-wrap:normal!important;word-break:normal!important}.skip-link.screen-reader-text:focus{background-color:#eee;clip-path:none;color:#444;display:block;font-size:1em;height:auto;left:5px;line-height:normal;padding:15px 23px 14px;text-decoration:none;top:5px;width:auto;z-index:100000}
 /*# sourceURL=/wp-includes/css/wp-block-template-skip-link.min.css */
 </style>
-<link rel='stylesheet' id='portfolio-theme-site-css' href='/wp-content/themes/portfolio-theme/assets/css/site.css?ver=0.6.14' media='all' />
-<link rel='stylesheet' id='portfolio-theme-home-photo-draft-01-css' href='/wp-content/themes/portfolio-theme/assets/css/home-photo-draft-01.css?ver=0.6.14' media='all' />
-<link rel='stylesheet' id='portfolio-theme-works-system-01-css' href='/wp-content/themes/portfolio-theme/assets/css/works-system-01.css?ver=0.6.14' media='all' />
-<link rel='stylesheet' id='portfolio-theme-works-multiview-01-css' href='/wp-content/themes/portfolio-theme/assets/css/works-multiview-01.css?ver=0.6.14' media='all' />
-<link rel='stylesheet' id='portfolio-theme-works-signal-01-css' href='/wp-content/themes/portfolio-theme/assets/css/works-signal-01.css?ver=0.6.14' media='all' />
-<link rel='stylesheet' id='portfolio-theme-music-collections-01-css' href='/wp-content/themes/portfolio-theme/assets/css/music-collections-01.css?ver=0.6.14' media='all' />
-<link rel='stylesheet' id='portfolio-theme-work-detail-j-01-css' href='/wp-content/themes/portfolio-theme/assets/css/work-detail-j-01.css?ver=0.6.14' media='all' />
+<link rel='stylesheet' id='portfolio-theme-site-css' href='/wp-content/themes/portfolio-theme/assets/css/site.css?ver=0.8.2' media='all' />
+<link rel='stylesheet' id='portfolio-theme-home-photo-draft-01-css' href='/wp-content/themes/portfolio-theme/assets/css/home-photo-draft-01.css?ver=0.8.2' media='all' />
+<link rel='stylesheet' id='portfolio-theme-works-system-01-css' href='/wp-content/themes/portfolio-theme/assets/css/works-system-01.css?ver=0.8.2' media='all' />
+<link rel='stylesheet' id='portfolio-theme-works-multiview-01-css' href='/wp-content/themes/portfolio-theme/assets/css/works-multiview-01.css?ver=0.8.2' media='all' />
+<link rel='stylesheet' id='portfolio-theme-works-signal-01-css' href='/wp-content/themes/portfolio-theme/assets/css/works-signal-01.css?ver=0.8.2' media='all' />
+<link rel='stylesheet' id='portfolio-theme-music-collections-01-css' href='/wp-content/themes/portfolio-theme/assets/css/music-collections-01.css?ver=0.8.2' media='all' />
+<link rel='stylesheet' id='portfolio-theme-work-detail-j-01-css' href='/wp-content/themes/portfolio-theme/assets/css/work-detail-j-01.css?ver=0.8.2' media='all' />
+<link rel='stylesheet' id='portfolio-theme-language-switch-01-css' href='/wp-content/themes/portfolio-theme/assets/css/language-switch-01.css?ver=0.8.2' media='all' />
 <meta name="generator" content="WordPress 7.1.4" />
-<script id="wp-importmap" type="importmap">
+<script>(() => {
+	if (window.parent === window) return;
+	let hostOrigin;
+	let apple;
+	let navigationId;
+	const reportAdminBar = () => {
+		if (!hostOrigin) return;
+		window.parent.postMessage({ type: 'studio:preview:admin-bar-state', visible: (() => {
+	if (document.contentType && document.contentType !== 'text/html') return null;
+	const bar = document.getElementById('wpadminbar');
+	if (!bar) return false;
+	if (bar.checkVisibility) return bar.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true });
+	const style = getComputedStyle(bar);
+	return bar.getClientRects().length > 0 && style.visibility === 'visible' && style.opacity !== '0';
+})(), url: location.href, title: document.title, navigationId }, hostOrigin);
+	};
+	window.addEventListener('pagehide', () => {
+		if (hostOrigin) window.parent.postMessage({ type: 'studio:preview:navigating', navigationId }, hostOrigin);
+	});
+	window.addEventListener('pageshow', reportAdminBar);
+	window.addEventListener('hashchange', reportAdminBar);
+	window.addEventListener('popstate', reportAdminBar);
+	window.addEventListener('message', (event) => {
+		if (event.source !== window.parent) return;
+		if (event.data?.type === 'studio:preview:read-admin-bar') {
+			if (event.origin === hostOrigin) reportAdminBar();
+			return;
+		}
+		if (event.data?.type === 'studio:preview:login') {
+			if (!hostOrigin || event.origin !== hostOrigin || location.pathname.split('/').some((part) => ['wp-admin', 'wp-login.php', 'wp-signup.php', 'wp-activate.php'].includes(part))) return;
+			const login = new URL('/studio-auto-login', location.href);
+			login.searchParams.set('redirect_to', location.href);
+			location.assign(login.toString());
+			return;
+		}
+		if (event.data?.type !== 'studio:preview-shortcuts:init') return;
+		if ((!event.origin.startsWith('http://') && !event.origin.startsWith('https://')) || typeof event.data.apple !== 'boolean') return;
+		hostOrigin = event.origin;
+		apple = event.data.apple;
+		navigationId = event.data.navigationId;
+		reportAdminBar();
+	});
+	document.addEventListener('keydown', (event) => {
+		if (!hostOrigin || location.pathname.split('/').includes('wp-admin')) return;
+		const primary = apple ? event.metaKey && !event.ctrlKey : event.ctrlKey && !event.metaKey;
+		if (!primary || event.altKey || event.shiftKey || event.repeat || event.isComposing || event.getModifierState('AltGraph')) return;
+		if (event.code !== 'KeyK') return;
+		event.preventDefault();
+		event.stopPropagation();
+		window.parent.postMessage({ type: 'studio:preview-shortcuts:command-palette' }, hostOrigin);
+	}, true);
+})();</script><script id="wp-importmap" type="importmap">
 {"imports":{"@wordpress/interactivity":"/wp-includes/js/dist/script-modules/interactivity/index.min.js?ver=6a43cba92ed701f32cd9"}}
 </script>
 <link rel="modulepreload" href="/wp-includes/js/dist/script-modules/interactivity/index.min.js?ver=6a43cba92ed701f32cd9" id="@wordpress/interactivity-js-modulepreload" fetchpriority="low">
@@ -91,20 +143,25 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 <meta property="og:image" content="https://pohaochen.com/wp-content/uploads/2026/08/kingdom-cover-1024x683.webp">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://pohaochen.com/works/kingdom/">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:locale:alternate" content="en_US">
+<link rel="alternate" hreflang="zh-Hant" href="https://pohaochen.com/works/kingdom/">
+<link rel="alternate" hreflang="en" href="https://pohaochen.com/en/works/kingdom/">
+<link rel="alternate" hreflang="x-default" href="https://pohaochen.com/works/kingdom/">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="《KINGDOM》 趙亭婷x安娜琪舞蹈劇場 | PO HAO CHEN">
 <meta name="twitter:description" content="在虛擬世界中，空間與時間被切割、壓縮與延展，彷彿成了一層層可被讀取的切片，身體不再有固定的位置，而是跟隨著失衡的記憶斷層，懸浮在虛實之間。">
 <meta name="twitter:image" content="https://pohaochen.com/wp-content/uploads/2026/08/kingdom-cover-1024x683.webp">
 
 
-<script id="portfolio-structured-data" type="application/ld+json">{"@context":"https://schema.org","@type":"CreativeWork","@id":"https://pohaochen.com/works/kingdom/#creative-work","url":"https://pohaochen.com/works/kingdom/","name":"《KINGDOM》 趙亭婷x安娜琪舞蹈劇場","description":"在虛擬世界中，空間與時間被切割、壓縮與延展，彷彿成了一層層可被讀取的切片，身體不再有固定的位置，而是跟隨著失衡的記憶斷層，懸浮在虛實之間。","image":"https://pohaochen.com/wp-content/uploads/2026/08/kingdom-cover-1024x683.webp","dateCreated":"2025"}</script>
+<script id="portfolio-structured-data" type="application/ld+json">{"@context":"https://schema.org","@type":"CreativeWork","@id":"https://pohaochen.com/works/kingdom/#creative-work","url":"https://pohaochen.com/works/kingdom/","name":"《KINGDOM》 趙亭婷x安娜琪舞蹈劇場","inLanguage":"zh-Hant-TW","contributor":{"@type":"Person","@id":"https://pohaochen.com/#person","name":"PO HAO CHEN"},"description":"在虛擬世界中，空間與時間被切割、壓縮與延展，彷彿成了一層層可被讀取的切片，身體不再有固定的位置，而是跟隨著失衡的記憶斷層，懸浮在虛實之間。","image":"https://pohaochen.com/wp-content/uploads/2026/08/kingdom-cover-1024x683.webp","dateCreated":"2025"}</script>
 </head>
 
-<body class="home wp-singular page-template-default page page-id-16 wp-embed-responsive wp-theme-portfolio-theme portfolio-home-photo-draft portfolio-home-promoted">
+<body class="home wp-singular page-template-default page page-id-16 wp-embed-responsive wp-theme-portfolio-theme has-language-switch portfolio-home-photo-draft portfolio-home-promoted">
 
 <a class="skip-link screen-reader-text" id="wp-skip-link" href="#photo-draft-landing">Skip to content</a><div class="wp-site-blocks">
 
-<div class="wp-block-group alignfull photo-draft-shell is-layout-flow wp-block-group-is-layout-flow" data-portal-landing-robots="max-image-preview:large" data-portal-landing-og-type="website" data-portal-landing-image-url="https://pohaochen.com/wp-content/themes/portfolio-theme/assets/media/homepage-draft-01/homepage-background-desktop.webp" data-portal-landing-canonical-url="https://pohaochen.com/" data-portal-landing-description="PO HAO CHEN — Composer &#183; Music Producer &#183; Sound Artist &#183; Multidisciplinary Creator." data-portal-landing-title="PO HAO CHEN | Composer &#183; Music Producer &#183; Sound Artist" data-portal-prerendered="true" data-portal-initial-work-url="/works/kingdom/" data-portal-initial-work-title="《KINGDOM》 趙亭婷x安娜琪舞蹈劇場" data-portal-initial-work-id="28" data-portal-static-base="/data/" data-portal-endpoint="/data/panels/" data-portfolio-work-endpoint="/data/works/" data-portal-motion-mode="fade" data-portal-shell-mode="frame-on-open-b3" data-portal-shell-state="landing">
+<div class="wp-block-group alignfull photo-draft-shell is-layout-flow wp-block-group-is-layout-flow" data-portal-landing-robots="max-image-preview:large" data-portal-landing-og-type="website" data-portal-landing-image-url="https://pohaochen.com/wp-content/themes/portfolio-theme/assets/media/homepage-draft-01/homepage-background-desktop.webp" data-portal-landing-canonical-url="https://pohaochen.com/" data-portal-landing-description="PO HAO CHEN — 作曲家 &#183; 音樂製作人 &#183; 聲音藝術家 &#183; 跨域創作者。" data-portal-landing-title="PO HAO CHEN – 作曲家 &#183; 音樂製作人 &#183; 聲音藝術家 &#183; 跨域創作者" data-portal-prerendered="true" data-portal-initial-work-url="/works/kingdom/" data-portal-initial-work-title="《KINGDOM》 趙亭婷x安娜琪舞蹈劇場" data-portal-initial-work-id="28" data-portal-static-base="/data/" data-portal-endpoint="/data/panels/" data-portfolio-work-endpoint="/data/works/" data-portal-motion-mode="fade" data-portal-shell-mode="frame-on-open-b3" data-portal-shell-state="landing">
 
 	<header id="photo-draft-site-header" class="wp-block-group photo-draft__navigation-shell is-content-justification-space-between is-nowrap is-layout-flex wp-container-core-group-is-layout-3997d898 wp-block-group-is-layout-flex">
 
@@ -184,7 +241,7 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 
 		<p class="photo-draft__role wp-block-paragraph">MUSIC PRODUCER / SOUND ARTIST</p>
 
-	</section>
+			</section>
 
 
 	<script>
@@ -274,12 +331,12 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 					<p class="work-detail__metadata-label wp-block-paragraph">YEAR</p>
 
 
-					<p class="work-detail__year work-year work-detail__metadata-value wp-block-paragraph">2025</p>
+					<p class="work-detail__year work-year work-detail__metadata-value wp-block-paragraph">2025~2026</p>
 
 				</div>
 
 
-				<div class="wp-block-group work-detail__metadata-row work-detail__metadata-row--type"><p class="work-detail__metadata-label">TYPE</p><p class="work-detail__metadata-value work-detail__terms work-detail__type" data-work-categories="live"><span>IMMERSIVE MIXED REALITY PERFORMANCE</span></p></div><div class="wp-block-group work-detail__metadata-row work-detail__metadata-row--event"><p class="work-detail__metadata-label">EVENT</p><p class="work-detail__metadata-value work-detail__terms work-detail__event"><span class="work-detail__line">C-LAB 聲音藝術節 (2025)</span></p></div><div class="wp-block-group work-detail__metadata-row work-detail__metadata-row--venue"><p class="work-detail__metadata-label">VENUE</p><p class="work-detail__metadata-value work-detail__terms work-detail__venue"><span class="work-detail__line">台灣, 台北, 臺灣當代文化實驗場 C-LAB (2025)</span> <span class="work-detail__line">台灣, 台中, 屯區藝文中心 (2026)</span></p></div>
+				<div class="wp-block-group work-detail__metadata-row work-detail__metadata-row--type"><p class="work-detail__metadata-label">TYPE</p><p class="work-detail__metadata-value work-detail__terms work-detail__type" data-work-categories="live"><span>IMMERSIVE MIXED REALITY PERFORMANCE</span></p></div><div class="wp-block-group work-detail__metadata-row work-detail__metadata-row--event"><p class="work-detail__metadata-label">EVENT</p><p class="work-detail__metadata-value work-detail__terms work-detail__event"><span class="work-detail__line">C-LAB 聲響藝術節 (2025)</span> <span class="work-detail__line">2026科技跨藝實驗場 (2026)</span></p></div><div class="wp-block-group work-detail__metadata-row work-detail__metadata-row--venue"><p class="work-detail__metadata-label">VENUE</p><p class="work-detail__metadata-value work-detail__terms work-detail__venue"><span class="work-detail__line">台灣, 台北, 臺灣當代文化實驗場 C-LAB (2025)</span> <span class="work-detail__line">台灣, 台中, 屯區藝文中心 (2026)</span></p></div>
 				<div class="wp-block-group work-detail__metadata-row work-detail__metadata-row--role"><p class="work-detail__metadata-label">ROLE</p><p class="work-detail__metadata-value work-detail__terms"><span>LIVE ELECTRONICS</span> <span>LIVE SOUND ENGINEERING</span> <span>SOUND DESIGN</span> <span>SPATIAL / MULTICHANNEL AUDIO</span></p></div><div class="wp-block-group work-detail__metadata-row work-detail__metadata-row--style"><p class="work-detail__metadata-label">STYLE</p><p class="work-detail__metadata-value work-detail__terms"><span>ELECTRONIC</span> <span>AMBIENT</span></p></div>
 				<div class="wp-block-group work-detail__metadata-row work-detail__metadata-row--award"><p class="work-detail__metadata-label">AWARD</p><p class="work-detail__metadata-value">入圍第24屆台新藝術獎</p></div>
 			</div>
@@ -295,13 +352,13 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 		<div class="wp-block-group work-detail__main is-layout-flow wp-block-group-is-layout-flow">
 
 			<div class="wp-block-group work-detail__header is-layout-flow wp-block-group-is-layout-flow">
-				<p class="work-detail__eyebrow" aria-hidden="true"><svg viewBox="0 0 18 12" aria-hidden="true" focusable="false"><g fill="currentColor"><circle cx="2.5" cy="2" r="1.35"/><circle cx="6.8" cy="2" r="1.35" opacity=".45"/><circle cx="11.1" cy="2" r="1.35" opacity=".8"/><circle cx="15.4" cy="2" r="1.35" opacity=".3"/><circle cx="2.5" cy="6" r="1.35" opacity=".6"/><circle cx="6.8" cy="6" r="1.35"/><circle cx="11.1" cy="6" r="1.35" opacity=".35"/><circle cx="15.4" cy="6" r="1.35" opacity=".9"/><circle cx="2.5" cy="10" r="1.35" opacity=".5"/><circle cx="6.8" cy="10" r="1.35" opacity=".7"/><circle cx="11.1" cy="10" r="1.35"/><circle cx="15.4" cy="10" r="1.35" opacity=".4"/></g></svg><span>LIVE</span><i></i><span>2025</span></p>
-				<h1 class="work-detail__title wp-block-post-title">《KINGDOM》 趙亭婷x安娜琪舞蹈劇場</h1><script type="application/json" data-work-share-source>{"url":"/works/kingdom/","title":"\u300aKINGDOM\u300b \u8d99\u4ead\u5a77x\u5b89\u5a1c\u742a\u821e\u8e48\u5287\u5834","category":"LIVE","year":"2025","cover":"/wp-content/uploads/2026/08/kingdom-cover.webp","roles":["\u8072\u97f3\u57f7\u884c"]}</script>
+				<p class="work-detail__eyebrow" aria-hidden="true"><svg viewBox="0 0 18 12" aria-hidden="true" focusable="false"><g fill="currentColor"><circle cx="2.5" cy="2" r="1.35"/><circle cx="6.8" cy="2" r="1.35" opacity=".45"/><circle cx="11.1" cy="2" r="1.35" opacity=".8"/><circle cx="15.4" cy="2" r="1.35" opacity=".3"/><circle cx="2.5" cy="6" r="1.35" opacity=".6"/><circle cx="6.8" cy="6" r="1.35"/><circle cx="11.1" cy="6" r="1.35" opacity=".35"/><circle cx="15.4" cy="6" r="1.35" opacity=".9"/><circle cx="2.5" cy="10" r="1.35" opacity=".5"/><circle cx="6.8" cy="10" r="1.35" opacity=".7"/><circle cx="11.1" cy="10" r="1.35"/><circle cx="15.4" cy="10" r="1.35" opacity=".4"/></g></svg><span>LIVE</span><i></i><span>2025~2026</span></p>
+				<h1 class="work-detail__title wp-block-post-title">《KINGDOM》 趙亭婷x安娜琪舞蹈劇場</h1><script type="application/json" data-work-share-source>{"url":"/works/kingdom/","title":"\u300aKINGDOM\u300b \u8d99\u4ead\u5a77x\u5b89\u5a1c\u742a\u821e\u8e48\u5287\u5834","category":"LIVE","year":"2025","cover":"/wp-content/uploads/2026/08/kingdom-cover.webp","roles":["\u8072\u97f3\u57f7\u884c","\u8072\u97f3\u8a2d\u8a08\u66a8\u8072\u97f3\u57f7\u884c"]}</script>
 			</div>
 
 
 			<section class="work-detail__section work-detail__section--description" data-work-detail-section="ABOUT" aria-labelledby="work-detail-section-description-28"><h2 class="work-detail__label" id="work-detail-section-description-28"><span class="work-detail__label-text">ABOUT</span></h2><div class="work-detail__section-body"><div class="work-detail__post-content work-detail__description"><h2 class="wp-block-heading screen-reader-text">Description</h2>
-<p class="wp-block-paragraph">在虛擬世界中，空間與時間被切割、壓縮與延展，彷彿成了一層層可被讀取的切片，身體不再有固定的位置，而是跟隨著失衡的記憶斷層，懸浮在虛實之間。</p>
+<p class="wp-block-paragraph"><em>在虛擬世界中，空間與時間被切割、壓縮與延展，彷彿成了一層層可被讀取的切片，身體不再有固定的位置，而是跟隨著失衡的記憶斷層，懸浮在虛實之間。</em></p>
 
 <p class="wp-block-paragraph">身處於網路與數位技術高速發展的世代，我們早已熟練地運用各式媒介捕捉與記錄周遭事物。然而，在這樣不斷更新的洪流中，《KINGDOM》正試圖邀請觀眾，一同回望那些被遺落、被忽視、被淘汰的事物。那些日常的顯而易見，正是我們不曾記得的，也正是如此它長出了自己的個性、色調與溫度。</p>
 
@@ -309,7 +366,7 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 </div></div></section>
 
 			<section class="work-detail__section work-detail__section--watch" data-work-detail-section="WATCH" aria-labelledby="work-detail-section-watch-28"><h2 class="work-detail__label" id="work-detail-section-watch-28"><span class="work-detail__label-text">WATCH</span></h2><div class="work-detail__section-body"><div class="work-media work-media--watch"><section class="work-media__section work-media-embed work-media-embed--youtube" aria-labelledby="work-media-youtube-28"><h2 id="work-media-youtube-28" class="work-media__heading">Video</h2><div class="work-media-embed__frame work-media-embed__frame--youtube"><button type="button" class="work-youtube" data-youtube-id="_y70YY5ATW0" data-youtube-src="https://www.youtube.com/embed/_y70YY5ATW0" data-youtube-title="《KINGDOM》 趙亭婷x安娜琪舞蹈劇場 — YouTube video" aria-label="Play video: 《KINGDOM》 趙亭婷x安娜琪舞蹈劇場"><img class="work-youtube__poster" src="https://i.ytimg.com/vi/_y70YY5ATW0/maxresdefault.jpg" data-youtube-fallback="https://i.ytimg.com/vi/_y70YY5ATW0/hqdefault.jpg" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span class="work-youtube__play" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" focusable="false"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></span></button><noscript><a class="work-youtube__link" href="https://www.youtube.com/watch?v=_y70YY5ATW0" target="_blank" rel="noopener noreferrer">Watch on YouTube: 《KINGDOM》 趙亭婷x安娜琪舞蹈劇場</a></noscript></div></section></div></div></section>
-			<section class="work-detail__section work-detail__section--credits" data-work-detail-section="CREDITS" aria-labelledby="work-detail-section-credits-28"><h2 class="work-detail__label" id="work-detail-section-credits-28"><span class="work-detail__label-text">CREDITS</span></h2><div class="work-detail__section-body"><section class="work-detail__credits" aria-labelledby="work-detail-credits-28"><h2 id="work-detail-credits-28" class="work-media__heading">Credits</h2><dl id="work-credits-list-28" class="work-credits work-credits--long is-collapsed"><div class="work-credits__row"><dt>概念及編舞／演出</dt><dd>趙亭婷</dd></div>
+			<section class="work-detail__section work-detail__section--credits" data-work-detail-section="CREDITS" aria-labelledby="work-detail-section-credits-28"><h2 class="work-detail__label" id="work-detail-section-credits-28"><span class="work-detail__label-text">CREDITS</span></h2><div class="work-detail__section-body"><section class="work-detail__credits" aria-labelledby="work-detail-credits-28"><h2 id="work-detail-credits-28" class="work-media__heading">Credits</h2><p class="work-credits__group">2025 聲響藝術節：</p><dl id="work-credits-list-28" class="work-credits work-credits--long is-collapsed"><div class="work-credits__row"><dt>概念及編舞／演出</dt><dd>趙亭婷</dd></div>
 <div class="work-credits__row"><dt>VR影像內容暨互動設計</dt><dd>鄭伊婷</dd></div>
 <div class="work-credits__row"><dt>VR技術工程</dt><dd>柯柏羽</dd></div>
 <div class="work-credits__row"><dt>VR場景設計</dt><dd>許子安</dd></div>
@@ -335,7 +392,26 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 <div class="work-credits__row"><dt>製作單位</dt><dd>安娜琪舞蹈劇場</dd></div>
 <div class="work-credits__row"><dt>贊助單位</dt><dd>革蘭科技股份有限公司、文化部、台北市政府文化局、菁霖文化藝術基金會</dd></div>
 <div class="work-credits__row"><dt>合作單位</dt><dd>C-LAB臺灣聲響實驗室、臺北數位藝術媒合平台、財團法人工業技術研究院</dd></div>
-</dl><ul class="work-credits__notes"><li>本演出由114年文化部「扶植青年藝術發展補助」支持</li><li>安娜琪舞蹈劇場為 2025TAIWAN TOP演藝團隊</li></ul><button type="button" class="work-credits__toggle" data-work-credits-toggle aria-controls="work-credits-list-28" aria-expanded="false" data-label-more="顯示全部 26 位" data-label-less="收合">顯示全部 26 位</button></section></div></section>
+</dl><ul class="work-credits__notes"><li>本演出由114年文化部「扶植青年藝術發展補助」支持</li><li>安娜琪舞蹈劇場為 2025TAIWAN TOP演藝團隊</li></ul><p class="work-credits__group">2026 屯區藝文中心：</p><dl class="work-credits"><div class="work-credits__row"><dt>概念編舞/演出</dt><dd>趙亭婷</dd></div>
+<div class="work-credits__row"><dt>VR影像與互動設計暨技術執行</dt><dd>鄭伊婷</dd></div>
+<div class="work-credits__row"><dt>VR技術工程暨互動系統技術統籌</dt><dd>柯柏羽</dd></div>
+<div class="work-credits__row"><dt>VR場景設計</dt><dd>許子安</dd></div>
+<div class="work-credits__row"><dt>燈光設計</dt><dd>王宥珺</dd></div>
+<div class="work-credits__row"><dt>空間設計</dt><dd>江冠男</dd></div>
+<div class="work-credits__row"><dt>聲音設計</dt><dd>張欣語</dd></div>
+<div class="work-credits__row"><dt>聲音設計暨聲音執行</dt><dd>陳柏豪</dd></div>
+<div class="work-credits__row"><dt>服裝設計</dt><dd>郭 萱</dd></div>
+<div class="work-credits__row"><dt>舞臺監督暨燈光技術指導</dt><dd>蔡政霖</dd></div>
+<div class="work-credits__row"><dt>舞臺技術指導</dt><dd>沈承志</dd></div>
+<div class="work-credits__row"><dt>創作陪伴</dt><dd>黃美寧</dd></div>
+<div class="work-credits__row"><dt>製作人</dt><dd>戴筱凡</dd></div>
+<div class="work-credits__row"><dt>製作單位</dt><dd>安娜琪舞蹈劇場</dd></div>
+<div class="work-credits__row"><dt>合作單位</dt><dd>財團法人工業技術研究院</dd></div>
+<div class="work-credits__row"><dt>贊助單位</dt><dd>革蘭科技股份有限公司、台新銀行文化藝術基金會</dd></div>
+<div class="work-credits__row"><dt>主辦單位</dt><dd>臺中市政府文化局、俠客行文創顧問有限公司</dd></div>
+<div class="work-credits__row"><dt>補助單位</dt><dd>文化部</dd></div>
+<div class="work-credits__row"><dt>執行單位</dt><dd>俠客行文創顧問有限公司</dd></div>
+</dl><ul class="work-credits__notes"><li>本演出計畫獲第24屆台新藝術獎入圍贊助</li><li>本團隊為國藝會2026 TAIWAN TOP演藝團隊</li></ul><button type="button" class="work-credits__toggle" data-work-credits-toggle aria-controls="work-credits-list-28" aria-expanded="false" data-label-more="顯示全部 45 位" data-label-less="收合">顯示全部 45 位</button></section></div></section>
 			<section class="work-detail__section work-detail__section--gallery" data-work-detail-section="GALLERY" aria-labelledby="work-detail-section-gallery-28"><h2 class="work-detail__label" id="work-detail-section-gallery-28"><span class="work-detail__label-text">GALLERY</span></h2><div class="work-detail__section-body"><div class="work-media work-media--gallery"><section class="work-media__section work-media-gallery" aria-labelledby="work-media-gallery-28"><h2 id="work-media-gallery-28" class="work-media__heading">Gallery</h2><div class="work-media-gallery__grid"><figure class="work-media-gallery__item" style="--work-gallery-ratio: 0.8000"><a class="work-media-gallery__link" href="/wp-content/uploads/2026/08/1uQKc_JlBP-EuOUAkVnM9wVMZYwar931n.webp" data-work-gallery-item data-work-gallery-index="0" data-work-gallery-count="6" aria-haspopup="dialog" aria-label="Open image 1 of 6: 《KINGDOM》 趙亭婷x安娜琪舞蹈劇場 — SnapInsta.to_571413236_841694015179750_2582012147598559308_n.jpg"><img width="819" height="1024" src="/wp-content/uploads/2026/08/1uQKc_JlBP-EuOUAkVnM9wVMZYwar931n-819x1024.webp" class="work-media-gallery__image" alt="《KINGDOM》 趙亭婷x安娜琪舞蹈劇場 — SnapInsta.to_571413236_841694015179750_2582012147598559308_n.jpg" loading="lazy" decoding="async" sizes="auto, (max-width: 760px) calc(100vw - 2rem), (max-width: 1599px) 45vw, 720px" srcset="/wp-content/uploads/2026/08/1uQKc_JlBP-EuOUAkVnM9wVMZYwar931n-819x1024.webp 819w, /wp-content/uploads/2026/08/1uQKc_JlBP-EuOUAkVnM9wVMZYwar931n-240x300.webp 240w, /wp-content/uploads/2026/08/1uQKc_JlBP-EuOUAkVnM9wVMZYwar931n-768x960.webp 768w, /wp-content/uploads/2026/08/1uQKc_JlBP-EuOUAkVnM9wVMZYwar931n.webp 1080w" /></a></figure><figure class="work-media-gallery__item" style="--work-gallery-ratio: 0.7500"><a class="work-media-gallery__link" href="/wp-content/uploads/2026/08/14AqKb8Lzaj86WUgmk9jUERvTmCGnx90t.webp" data-work-gallery-item data-work-gallery-index="1" data-work-gallery-count="6" aria-haspopup="dialog" aria-label="Open image 2 of 6: 《KINGDOM》 趙亭婷x安娜琪舞蹈劇場 — SnapInsta.to_564292401_18430629364097035_4497904497207147882_n.jpg"><img width="768" height="1024" src="/wp-content/uploads/2026/08/14AqKb8Lzaj86WUgmk9jUERvTmCGnx90t-768x1024.webp" class="work-media-gallery__image" alt="《KINGDOM》 趙亭婷x安娜琪舞蹈劇場 — SnapInsta.to_564292401_18430629364097035_4497904497207147882_n.jpg" loading="lazy" decoding="async" sizes="auto, (max-width: 760px) calc(100vw - 2rem), (max-width: 1599px) 45vw, 720px" srcset="/wp-content/uploads/2026/08/14AqKb8Lzaj86WUgmk9jUERvTmCGnx90t-768x1024.webp 768w, /wp-content/uploads/2026/08/14AqKb8Lzaj86WUgmk9jUERvTmCGnx90t-225x300.webp 225w, /wp-content/uploads/2026/08/14AqKb8Lzaj86WUgmk9jUERvTmCGnx90t-1152x1536.webp 1152w, /wp-content/uploads/2026/08/14AqKb8Lzaj86WUgmk9jUERvTmCGnx90t.webp 1440w" /></a></figure><figure class="work-media-gallery__item" style="--work-gallery-ratio: 1.5000"><a class="work-media-gallery__link" href="/wp-content/uploads/2026/08/1l0KM_UA08FkWasNi0-1OZSz38vvXrwTU.webp" data-work-gallery-item data-work-gallery-index="2" data-work-gallery-count="6" aria-haspopup="dialog" aria-label="Open image 3 of 6: 《KINGDOM》 趙亭婷x安娜琪舞蹈劇場 — 《KINGDOM》 趙亭婷x安娜琪舞蹈劇場 攝影：林峻永 17.JPEG"><img width="1024" height="683" src="/wp-content/uploads/2026/08/1l0KM_UA08FkWasNi0-1OZSz38vvXrwTU-1024x683.webp" class="work-media-gallery__image" alt="《KINGDOM》 趙亭婷x安娜琪舞蹈劇場 — 《KINGDOM》 趙亭婷x安娜琪舞蹈劇場 攝影：林峻永 17.JPEG" loading="lazy" decoding="async" sizes="auto, (max-width: 760px) calc(100vw - 2rem), (max-width: 1599px) 45vw, 720px" srcset="/wp-content/uploads/2026/08/1l0KM_UA08FkWasNi0-1OZSz38vvXrwTU-1024x683.webp 1024w, /wp-content/uploads/2026/08/1l0KM_UA08FkWasNi0-1OZSz38vvXrwTU-300x200.webp 300w, /wp-content/uploads/2026/08/1l0KM_UA08FkWasNi0-1OZSz38vvXrwTU-768x512.webp 768w, /wp-content/uploads/2026/08/1l0KM_UA08FkWasNi0-1OZSz38vvXrwTU-1536x1024.webp 1536w, /wp-content/uploads/2026/08/1l0KM_UA08FkWasNi0-1OZSz38vvXrwTU-2048x1365.webp 2048w" /></a></figure><figure class="work-media-gallery__item" style="--work-gallery-ratio: 1.5000"><a class="work-media-gallery__link" href="/wp-content/uploads/2026/08/1uFKfBuv1PPdC_9Jj8oHEkRWILv68uXuM.webp" data-work-gallery-item data-work-gallery-index="3" data-work-gallery-count="6" aria-haspopup="dialog" aria-label="Open image 4 of 6: 《KINGDOM》 趙亭婷x安娜琪舞蹈劇場 — 《KINGDOM》 趙亭婷x安娜琪舞蹈劇場 攝影：林峻永 14.JPEG"><img width="1024" height="683" src="/wp-content/uploads/2026/08/1uFKfBuv1PPdC_9Jj8oHEkRWILv68uXuM-1024x683.webp" class="work-media-gallery__image" alt="《KINGDOM》 趙亭婷x安娜琪舞蹈劇場 — 《KINGDOM》 趙亭婷x安娜琪舞蹈劇場 攝影：林峻永 14.JPEG" loading="lazy" decoding="async" sizes="auto, (max-width: 760px) calc(100vw - 2rem), (max-width: 1599px) 45vw, 720px" srcset="/wp-content/uploads/2026/08/1uFKfBuv1PPdC_9Jj8oHEkRWILv68uXuM-1024x683.webp 1024w, /wp-content/uploads/2026/08/1uFKfBuv1PPdC_9Jj8oHEkRWILv68uXuM-300x200.webp 300w, /wp-content/uploads/2026/08/1uFKfBuv1PPdC_9Jj8oHEkRWILv68uXuM-768x512.webp 768w, /wp-content/uploads/2026/08/1uFKfBuv1PPdC_9Jj8oHEkRWILv68uXuM-1536x1024.webp 1536w, /wp-content/uploads/2026/08/1uFKfBuv1PPdC_9Jj8oHEkRWILv68uXuM-2048x1365.webp 2048w" /></a></figure><figure class="work-media-gallery__item" style="--work-gallery-ratio: 1.5000"><a class="work-media-gallery__link" href="/wp-content/uploads/2026/08/10IhJ8EtL9-hyH57SxL-YPqLOobYqpxx.webp" data-work-gallery-item data-work-gallery-index="4" data-work-gallery-count="6" aria-haspopup="dialog" aria-label="Open image 5 of 6: 《KINGDOM》 趙亭婷x安娜琪舞蹈劇場 — 《KINGDOM》 趙亭婷x安娜琪舞蹈劇場 攝影：林峻永 5.JPEG"><img width="1024" height="683" src="/wp-content/uploads/2026/08/10IhJ8EtL9-hyH57SxL-YPqLOobYqpxx-1024x683.webp" class="work-media-gallery__image" alt="《KINGDOM》 趙亭婷x安娜琪舞蹈劇場 — 《KINGDOM》 趙亭婷x安娜琪舞蹈劇場 攝影：林峻永 5.JPEG" loading="lazy" decoding="async" sizes="auto, (max-width: 760px) calc(100vw - 2rem), (max-width: 1599px) 45vw, 720px" srcset="/wp-content/uploads/2026/08/10IhJ8EtL9-hyH57SxL-YPqLOobYqpxx-1024x683.webp 1024w, /wp-content/uploads/2026/08/10IhJ8EtL9-hyH57SxL-YPqLOobYqpxx-300x200.webp 300w, /wp-content/uploads/2026/08/10IhJ8EtL9-hyH57SxL-YPqLOobYqpxx-768x512.webp 768w, /wp-content/uploads/2026/08/10IhJ8EtL9-hyH57SxL-YPqLOobYqpxx-1536x1024.webp 1536w, /wp-content/uploads/2026/08/10IhJ8EtL9-hyH57SxL-YPqLOobYqpxx-2048x1365.webp 2048w" /></a></figure><figure class="work-media-gallery__item" style="--work-gallery-ratio: 1.5000"><a class="work-media-gallery__link" href="/wp-content/uploads/2026/08/1idqCIAzfJGWYQKQCJcPHlZrW6_yYYYi0.webp" data-work-gallery-item data-work-gallery-index="5" data-work-gallery-count="6" aria-haspopup="dialog" aria-label="Open image 6 of 6: 《KINGDOM》 趙亭婷x安娜琪舞蹈劇場 — 《KINGDOM》 趙亭婷x安娜琪舞蹈劇場 攝影：林峻永 1.JPEG"><img width="1024" height="683" src="/wp-content/uploads/2026/08/1idqCIAzfJGWYQKQCJcPHlZrW6_yYYYi0-1024x683.webp" class="work-media-gallery__image" alt="《KINGDOM》 趙亭婷x安娜琪舞蹈劇場 — 《KINGDOM》 趙亭婷x安娜琪舞蹈劇場 攝影：林峻永 1.JPEG" loading="lazy" decoding="async" sizes="auto, (max-width: 760px) calc(100vw - 2rem), (max-width: 1599px) 45vw, 720px" srcset="/wp-content/uploads/2026/08/1idqCIAzfJGWYQKQCJcPHlZrW6_yYYYi0-1024x683.webp 1024w, /wp-content/uploads/2026/08/1idqCIAzfJGWYQKQCJcPHlZrW6_yYYYi0-300x200.webp 300w, /wp-content/uploads/2026/08/1idqCIAzfJGWYQKQCJcPHlZrW6_yYYYi0-768x512.webp 768w, /wp-content/uploads/2026/08/1idqCIAzfJGWYQKQCJcPHlZrW6_yYYYi0-1536x1024.webp 1536w, /wp-content/uploads/2026/08/1idqCIAzfJGWYQKQCJcPHlZrW6_yYYYi0-2048x1365.webp 2048w" /></a></figure></div></section></div></div></section>
 		</div>
 
@@ -367,25 +443,32 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 
 
 </div>
-<script type="speculationrules">
+<div class="language-switch" data-language-switch data-state="zh" data-language-prefix="/en" role="group" aria-label="Language / 語言">
+	<span class="language-switch__label" aria-hidden="true">LANG</span>
+		<span class="language-switch__option is-current" lang="zh-Hant" aria-current="true">中</span>
+	<span class="language-switch__track" aria-hidden="true" data-language-target="en"><i class="language-switch__cap"></i></span>
+	<a class="language-switch__option" lang="en" hreflang="en" href="/en/" data-language-target="en">EN</a>
+	</div>
+	<script type="speculationrules">
 {"prefetch":[{"source":"document","where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":["/wp-*.php","/wp-admin/*","/wp-content/uploads/*","/wp-content/*","/wp-content/plugins/*","/wp-content/themes/portfolio-theme/*","/*\\?(.+)"]}},{"not":{"selector_matches":"a[rel~=\"nofollow\"]"}},{"not":{"selector_matches":".no-prefetch, .no-prefetch a"}}]},"eagerness":"conservative"}]}
 </script>
 <script data-wp-router-options="{&quot;loadOnClientNavigation&quot;:true}" fetchpriority="low" id="@wordpress/block-library/navigation/view-js-module" src="/wp-includes/js/dist/script-modules/block-library/navigation/view.min.js?ver=1bf28ded04f9f188bdcb" type="module"></script>
-<script id="portfolio-theme-site-icon-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/site-icon-01.js?ver=0.6.14" type="module"></script>
-<script id="portfolio-theme-contact-form-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/contact-form-01.js?ver=0.6.14" type="module"></script>
-<script id="portfolio-theme-contact-field-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/contact-field-01.js?ver=0.6.14" type="module"></script>
-<script id="portfolio-theme-cv-arrangement-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/cv-arrangement-01.js?ver=0.6.14" type="module"></script>
-<script id="portfolio-theme-home-portal-panels-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/home-portal-panels-01.js?ver=0.6.14" type="module"></script>
-<script id="portfolio-theme-brand-mark-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/brand-mark-01.js?ver=0.6.14" type="module"></script>
-<script id="portfolio-theme-nav-cursor-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/nav-cursor-01.js?ver=0.6.14" type="module"></script>
-<script id="portfolio-theme-home-hero-motion-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/home-hero-motion-01.js?ver=0.6.14" type="module"></script>
-<script id="portfolio-theme-work-gallery-lightbox-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/work-gallery-lightbox-01.js?ver=0.6.14" type="module"></script>
-<script id="portfolio-theme-work-detail-j-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/work-detail-j-01.js?ver=0.6.14" type="module"></script>
-<script id="portfolio-theme-work-share-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/work-share-01.js?ver=0.6.14" type="module"></script>
-<script id="portfolio-theme-work-youtube-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/work-youtube-01.js?ver=0.6.14" type="module"></script>
-<script id="portfolio-theme-work-support-kofi-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/work-support-kofi-01.js?ver=0.6.14" type="module"></script>
-<script id="portfolio-theme-work-detail-credits-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/work-detail-credits-01.js?ver=0.6.14" type="module"></script>
-<script data-wp-strategy="defer" defer id="portfolio-theme-home-photo-draft-01-js" src="/wp-content/themes/portfolio-theme/assets/js/home-photo-draft-01.js?ver=0.6.14"></script>
+<script id="portfolio-theme-site-icon-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/site-icon-01.js?ver=0.8.2" type="module"></script>
+<script id="portfolio-theme-contact-form-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/contact-form-01.js?ver=0.8.2" type="module"></script>
+<script id="portfolio-theme-contact-field-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/contact-field-01.js?ver=0.8.2" type="module"></script>
+<script id="portfolio-theme-cv-arrangement-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/cv-arrangement-01.js?ver=0.8.2" type="module"></script>
+<script id="portfolio-theme-home-portal-panels-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/home-portal-panels-01.js?ver=0.8.2" type="module"></script>
+<script id="portfolio-theme-brand-mark-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/brand-mark-01.js?ver=0.8.2" type="module"></script>
+<script id="portfolio-theme-nav-cursor-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/nav-cursor-01.js?ver=0.8.2" type="module"></script>
+<script id="portfolio-theme-home-hero-motion-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/home-hero-motion-01.js?ver=0.8.2" type="module"></script>
+<script id="portfolio-theme-work-gallery-lightbox-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/work-gallery-lightbox-01.js?ver=0.8.2" type="module"></script>
+<script id="portfolio-theme-work-detail-j-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/work-detail-j-01.js?ver=0.8.2" type="module"></script>
+<script id="portfolio-theme-work-share-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/work-share-01.js?ver=0.8.2" type="module"></script>
+<script id="portfolio-theme-work-youtube-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/work-youtube-01.js?ver=0.8.2" type="module"></script>
+<script id="portfolio-theme-work-support-kofi-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/work-support-kofi-01.js?ver=0.8.2" type="module"></script>
+<script id="portfolio-theme-work-detail-credits-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/work-detail-credits-01.js?ver=0.8.2" type="module"></script>
+<script id="portfolio-theme-language-switch-01-js-module" src="/wp-content/themes/portfolio-theme/assets/js/language-switch-01.js?ver=0.8.2" type="module"></script>
+<script data-wp-strategy="defer" defer id="portfolio-theme-home-photo-draft-01-js" src="/wp-content/themes/portfolio-theme/assets/js/home-photo-draft-01.js?ver=0.8.2"></script>
 <script id="wp-emoji-settings" type="application/json">
 {"baseUrl":"https://s.w.org/images/core/emoji/17.0.2/72x72/","ext":".png","svgUrl":"https://s.w.org/images/core/emoji/17.0.2/svg/","svgExt":".svg","source":{"concatemoji":"/wp-includes/js/wp-emoji-release.min.js?ver=7.1.4"}}
 </script>

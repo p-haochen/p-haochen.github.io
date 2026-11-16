@@ -8,6 +8,33 @@ import { initializeWorkDetailAudio } from './work-detail-audio-01.js';
 // replaceState as the filters change: no navigation, no new history entry, no pause.
 const WORKS_URL_KEYS = ['view', 'sort', 'type', 'role', 'style', 'q'];
 
+// The English site lives under /en/ (<html data-portfolio-lang-prefix="/en">); '' on the Chinese site.
+// It changes in place when the visitor switches language (switchContentLanguage).
+const ENGLISH_SEGMENT = '/en';
+let LANG_PREFIX = (document.documentElement.dataset.portfolioLangPrefix ?? '').replace(/\/$/, '');
+const HOME_PATH = LANG_PREFIX.endsWith(ENGLISH_SEGMENT) ? LANG_PREFIX.slice(0, -ENGLISH_SEGMENT.length) : '';
+// The Chinese site's own <html lang>, restored when switching back from English.
+const ZH_LANG = LANG_PREFIX === '' ? document.documentElement.lang : (document.documentElement.dataset.portfolioZhLang ?? 'zh-Hant');
+const prefixFor = (language) => (language === 'en' ? `${HOME_PATH}${ENGLISH_SEGMENT}` : '');
+// A same-site path in another language: '/work/' → '/en/work/' and back.
+function pathInLanguage(pathname, prefix) {
+	let path = HOME_PATH !== '' && pathname.startsWith(HOME_PATH) ? pathname.slice(HOME_PATH.length) : pathname;
+	if (path === ENGLISH_SEGMENT || path.startsWith(`${ENGLISH_SEGMENT}/`)) path = path.slice(ENGLISH_SEGMENT.length) || '/';
+	if (!path.startsWith('/')) path = `/${path}`;
+	return prefix === '' ? `${HOME_PATH}${path}` : `${prefix}${path}`;
+}
+function urlInLanguage(value, prefix) {
+	const url = new URL(value, window.location.href);
+	if (url.origin === window.location.origin) url.pathname = pathInLanguage(url.pathname, prefix);
+	return url.href;
+}
+const sitePath = (path) => `${LANG_PREFIX}${path}`;
+// A pathname without the language prefix, so routes match in either language.
+function routePath(pathname) {
+	if (LANG_PREFIX === '' || !(pathname === LANG_PREFIX || pathname.startsWith(`${LANG_PREFIX}/`))) return pathname;
+	return pathname.slice(LANG_PREFIX.length) || '/';
+}
+
 function withoutWorksParams(url) {
 	const next = new URL(url, window.location.href);
 	for (const key of WORKS_URL_KEYS) next.searchParams.delete(key);
@@ -63,9 +90,9 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 	const errorMessage = panel.querySelector('.photo-portal__error-message');
 	const fallbackLink = panel.querySelector('.photo-portal__fallback');
 	const musicPlayerRoot = shell.querySelector('[data-music-player]');
-	const endpointBase = shell.dataset.portalEndpoint;
-	const workEndpointBase = shell.dataset.portfolioWorkEndpoint;
-	const staticDataBase = shell.dataset.portalStaticBase ?? '';
+	let endpointBase = shell.dataset.portalEndpoint;
+	let workEndpointBase = shell.dataset.portfolioWorkEndpoint;
+	let staticDataBase = shell.dataset.portalStaticBase ?? '';
 
 	if (
 		navigation instanceof HTMLElement
@@ -96,33 +123,33 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 				// The signal design's horizontal bar carries the WORKS title and every control.
 				hideTitle: true,
 				worksSignal: true,
-				canonicalPath: '/work/',
+				get canonicalPath() { return sitePath('/work/'); },
 			},
 			services: {
 				hash: '#services',
 				payloadSlug: 'services',
 				title: 'Services',
-				canonicalPath: '/services/',
+				get canonicalPath() { return sitePath('/services/'); },
 			},
 			about: {
 				hash: '#about',
 				payloadSlug: 'about',
 				title: 'About',
-				canonicalPath: '/about/',
+				get canonicalPath() { return sitePath('/about/'); },
 			},
 			cv: {
 				hash: '#cv',
 				payloadSlug: 'about',
 				title: 'CV',
 				hideTitle: true,
-				canonicalPath: '/about/#cv-placeholder',
+				get canonicalPath() { return sitePath('/about/#cv-placeholder'); },
 			},
 			contact: {
 				hash: '#contact',
 				payloadSlug: 'contact',
 				title: 'Contact',
 				hideTitle: true,
-				canonicalPath: '/contact/',
+				get canonicalPath() { return sitePath('/contact/'); },
 			},
 		});
 		const cache = new Map();
@@ -317,7 +344,32 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			setHeadMeta('meta[name="twitter:description" i]', { name: 'twitter:description' }, metadata.description);
 			setHeadMeta('meta[name="twitter:image" i]', { name: 'twitter:image' }, metadata.imageUrl);
 			setHeadMeta('meta[name="robots" i]', { name: 'robots' }, metadata.robots);
+			applyLanguageAlternates(metadata.canonicalUrl, metadata.robots);
 			return true;
+		}
+
+		// hreflang pair + og:locale for the page now shown (the server writes the same tags
+		// into every indexable document; no alternates on noindex pages).
+		function applyLanguageAlternates(canonicalUrl, robots) {
+			let canonical;
+			try { canonical = new URL(canonicalUrl); } catch { return; }
+			const english = (() => {
+				const path = HOME_PATH !== '' && canonical.pathname.startsWith(HOME_PATH) ? canonical.pathname.slice(HOME_PATH.length) : canonical.pathname;
+				return path === ENGLISH_SEGMENT || path.startsWith(`${ENGLISH_SEGMENT}/`);
+			})();
+			setHeadMeta('meta[property="og:locale" i]', { property: 'og:locale' }, english ? 'en_US' : 'zh_TW');
+			setHeadMeta('meta[property="og:locale:alternate" i]', { property: 'og:locale:alternate' }, english ? 'zh_TW' : 'en_US');
+			for (const link of document.head.querySelectorAll('link[rel="alternate" i][hreflang]')) link.remove();
+			if (/\bnoindex\b/i.test(robots)) return;
+			const inLanguage = (prefix) => { const url = new URL(canonical.href); url.pathname = pathInLanguage(url.pathname, prefix); return url.href; };
+			const zh = inLanguage('');
+			for (const [hreflang, href] of [['zh-Hant', zh], ['en', inLanguage(prefixFor('en'))], ['x-default', zh]]) {
+				const link = document.createElement('link');
+				link.rel = 'alternate';
+				link.hreflang = hreflang;
+				link.href = href;
+				document.head.append(link);
+			}
 		}
 
 		function applyDocumentStructuredData(candidate) {
@@ -365,17 +417,21 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			return panelDefinitions[key] ?? dynamicWorkDefinitions.get(key) ?? null;
 		}
 
-		function definitionCacheKey(definition) {
-			return definition.cacheKey ?? definition.payloadSlug;
+		// Payloads are cached per language, so switching back and forth never waits twice.
+		function definitionCacheKey(definition, prefix = LANG_PREFIX) {
+			return `${prefix}|${definition.cacheKey ?? definition.payloadSlug}`;
 		}
 
-		function definitionRequestUrl(definition) {
+		function definitionRequestUrl(definition, prefix = LANG_PREFIX) {
+			const inLanguage = (base) => (prefix === LANG_PREFIX ? base : urlInLanguage(base, prefix));
 			if (staticDataBase !== '') {
-				const normalizedBase = staticDataBase.endsWith('/') ? staticDataBase : `${staticDataBase}/`;
+				const dataBase = inLanguage(staticDataBase);
+				const normalizedBase = dataBase.endsWith('/') ? dataBase : `${dataBase}/`;
 				if (definition.kind === 'work-detail') return `${normalizedBase}works/${definition.postId}.json`;
 				return `${normalizedBase}panels/${definition.payloadSlug}.json`;
 			}
-			return definition.requestUrl ?? `${endpointBase}${definition.payloadSlug}`;
+			if (definition.kind === 'work-detail') return `${inLanguage(workEndpointBase)}${definition.postId}`;
+			return `${inLanguage(endpointBase)}${definition.payloadSlug}`;
 		}
 
 		function definitionCanonicalUrl(definition) {
@@ -392,7 +448,7 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			} catch {
 				return null;
 			}
-			if (targetUrl.origin !== window.location.origin || !/^\/works\/[^/]+\/$/.test(targetUrl.pathname)) return null;
+			if (targetUrl.origin !== window.location.origin || !/^\/works\/[^/]+\/$/.test(routePath(targetUrl.pathname))) return null;
 
 			const key = `work:${postId}`;
 			const definition = {
@@ -626,10 +682,151 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			panelHeader.insertBefore(languageControl, closeButton);
 		}
 
+		// ---- Language switch: swap the open view in place (no reload; music keeps playing) ----
+
+		function otherLanguagePrefix() {
+			return LANG_PREFIX === '' ? prefixFor('en') : '';
+		}
+
+		// The current view's definition in the language whose prefix is given.
+		function definitionInLanguage(definition, prefix) {
+			if (definition?.kind !== 'work-detail') return definition;
+			return { ...definition, canonicalUrl: urlInLanguage(definition.canonicalUrl, prefix) };
+		}
+
+		// Warm the other language of what is on screen, so the switch is immediate.
+		function prefetchCounterpart(priority = 'low') {
+			const definition = currentKey !== null && !panel.hidden ? definitionForKey(currentKey) : null;
+			if (!definition) return;
+			const prefix = otherLanguagePrefix();
+			if (cache.has(definitionCacheKey(definition, prefix))) return;
+			void requestB3Payload(definitionInLanguage(definition, prefix), { priority, prefix }).catch(() => {});
+		}
+
+		function relinkChrome(prefix) {
+			for (const anchor of shell.querySelectorAll('#photo-draft-site-header a[href], .photo-draft__noscript-nav a[href], .photo-portal__fallback')) {
+				const url = new URL(anchor.href, window.location.href);
+				if (url.origin !== window.location.origin || /^\/wp-(?:content|includes|json)\//.test(url.pathname)) continue;
+				anchor.href = urlInLanguage(anchor.href, prefix);
+			}
+			const workLink = shell.querySelector('.music-capsule__work-link');
+			const label = workLink?.firstChild;
+			if (label && label.nodeType === Node.TEXT_NODE) label.textContent = prefix === '' ? '作品頁 ' : 'Work page ';
+		}
+
+		function setLanguagePrefix(prefix) {
+			endpointBase = urlInLanguage(endpointBase, prefix);
+			if (typeof workEndpointBase === 'string' && workEndpointBase !== '') workEndpointBase = urlInLanguage(workEndpointBase, prefix);
+			if (staticDataBase !== '') staticDataBase = urlInLanguage(staticDataBase, prefix);
+			LANG_PREFIX = prefix;
+			const root = document.documentElement;
+			root.lang = prefix === '' ? ZH_LANG : 'en';
+			if (prefix === '') delete root.dataset.portfolioLangPrefix;
+			else root.dataset.portfolioLangPrefix = prefix;
+			for (const definition of dynamicWorkDefinitions.values()) {
+				definition.canonicalUrl = urlInLanguage(definition.canonicalUrl, prefix);
+				const url = new URL(definition.canonicalUrl);
+				definition.canonicalPath = `${url.pathname}${url.search}${url.hash}`;
+			}
+			relinkChrome(prefix);
+		}
+
+		async function switchContentLanguage(language) {
+			const prefix = prefixFor(language);
+			if (prefix === LANG_PREFIX) return true;
+			const key = currentKey !== null && !panel.hidden ? currentKey : null;
+			const definition = key !== null ? definitionForKey(key) : null;
+			// The view in the other language first; nothing changes until it is here.
+			let payload = null;
+			if (definition) {
+				try {
+					payload = await requestB3Payload(definitionInLanguage(definition, prefix), { priority: 'high', prefix });
+				} catch {
+					return false;
+				}
+				if (currentKey !== key) return false;
+			}
+
+			const range = scroller.scrollHeight - scroller.clientHeight;
+			const position = range > 0 ? scroller.scrollTop / range : 0;
+			setLanguagePrefix(prefix);
+			const state = window.history.state && typeof window.history.state === 'object' ? { ...window.history.state } : window.history.state;
+			if (state && typeof state.portfolioWorkUrl === 'string') state.portfolioWorkUrl = urlInLanguage(state.portfolioWorkUrl, prefix);
+			window.history.replaceState(state, '', urlInLanguage(window.location.href, prefix));
+			if (!definition || payload === null) return true;
+			swapOpenView(key, payload, position);
+			return true;
+		}
+
+		// Replace the open view's content with the same view in the current language.
+		function swapOpenView(key, payload, position) {
+			const presentation = languagePresentation(payload);
+			const template = document.createElement('template');
+			template.innerHTML = presentation.html.trim();
+			const fragment = template.content.cloneNode(true);
+			prepareIncomingPortalFragment(key, fragment);
+			clearContextualControls();
+			destroyActiveWorkDetailAudio();
+			destroyWorksMultiView();
+			content.replaceChildren(fragment);
+			mountWorkDetailAudio(key);
+			const nextDefinition = definitionForKey(key);
+			if (nextDefinition.kind === 'work-detail' && typeof payload.title === 'string' && payload.title.trim() !== '') {
+				nextDefinition.title = payload.title.trim();
+			}
+			syncRouteRail(nextDefinition);
+			syncLanguageControl(presentation, key);
+			fallbackLink.href = payload.canonical_url;
+			initializeRenderedWorksDirectory(key, payload);
+			panelTitle.textContent = nextDefinition.title;
+			applyDocumentSeo(payload.seo);
+			applyDocumentStructuredData(payload.structured_data);
+			configureRenderedContentHeading(false);
+			// Same place in the other language, as with a page translator.
+			window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
+				const nextRange = scroller.scrollHeight - scroller.clientHeight;
+				scroller.scrollTop = Math.round(position * Math.max(nextRange, 0));
+			}));
+			scheduleIdleTask(() => prefetchCounterpart('low'));
+		}
+
+		// The language an address belongs to ('' Chinese, '/en' English).
+		function languagePrefixOfPath(pathname) {
+			const english = prefixFor('en');
+			return pathname === english || pathname.startsWith(`${english}/`) ? english : '';
+		}
+
+		// Back / Forward to an address in the other language (an entry from before a switch).
+		function followAddressLanguage() {
+			const prefix = languagePrefixOfPath(window.location.pathname);
+			if (prefix === LANG_PREFIX) return;
+			const keyBefore = currentKey !== null && !panel.hidden ? currentKey : null;
+			setLanguagePrefix(prefix);
+			window.dispatchEvent(new CustomEvent('portfolio:language-changed', { detail: { language: prefix === '' ? 'zh' : 'en' } }));
+			// The history handler opens a different view in the new language; the same view is swapped here.
+			window.setTimeout(() => {
+				if (keyBefore === null || currentKey !== keyBefore || panel.hidden) return;
+				const definition = definitionForKey(keyBefore);
+				if (!definition) return;
+				void requestB3Payload(definition, { priority: 'high' })
+					.then((payload) => { if (currentKey === keyBefore && LANG_PREFIX === prefix) swapOpenView(keyBefore, payload, 0); })
+					.catch(() => {});
+			}, 0);
+		}
+
+		window.addEventListener('portfolio:language-request', (event) => {
+			if (!(event instanceof CustomEvent) || document.body.classList.contains('error404')) return;
+			const language = event.detail?.language === 'en' ? 'en' : 'zh';
+			event.preventDefault();
+			event.detail.handled = switchContentLanguage(language);
+		});
+		window.addEventListener('portfolio:language-prefetch', () => prefetchCounterpart('high'));
+
 		function keyFromUrl(url) {
 			if (url.origin !== window.location.origin) return null;
 
-			const normalizedPath = url.pathname.endsWith('/') ? url.pathname : `${url.pathname}/`;
+			const pathname = routePath(url.pathname);
+			const normalizedPath = pathname.endsWith('/') ? pathname : `${pathname}/`;
 			if (normalizedPath === '/work/') return 'work';
 			if (normalizedPath === '/services/') return 'services';
 			if (normalizedPath === '/about/' && url.hash === '#cv-placeholder') return 'cv';
@@ -1330,6 +1527,7 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			if (!(key === 'work' && panel.classList.contains('is-b3-works-awaiting-covers'))) {
 				settlePanelBusyState();
 			}
+			scheduleIdleTask(() => prefetchCounterpart('low'));
 		}
 
 		async function renderError(key, renderToken, animateReplacement, signal) {
@@ -1406,7 +1604,8 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 		}
 
 		async function requestB3Payload(definition, options = {}) {
-			const cacheKey = definitionCacheKey(definition);
+			const prefix = options.prefix ?? LANG_PREFIX;
+			const cacheKey = definitionCacheKey(definition, prefix);
 			const cached = cache.get(cacheKey);
 			if (cached) return cached;
 
@@ -1419,7 +1618,7 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 					? null
 					: window.setTimeout(() => controller.abort(), worksPayloadTimeoutMs);
 				try {
-					const response = await fetch(definitionRequestUrl(definition), {
+					const response = await fetch(definitionRequestUrl(definition, prefix), {
 						method: 'GET',
 						credentials: 'same-origin',
 						headers: { Accept: 'application/json' },
@@ -1645,6 +1844,8 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			}
 
 			openPanel(key, options);
+			// A prerendered route never runs the payload render: warm its other language here.
+			if (options.preservePrerendered === true) scheduleIdleTask(() => prefetchCounterpart('low'));
 		}
 
 		function commitPanelHistory(key, definition, options) {
@@ -2097,6 +2298,7 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			closePanel({ updateHistory: true, restoreFocus: false });
 		});
 		window.addEventListener('popstate', () => {
+			followAddressLanguage();
 			const historyState = window.history.state && typeof window.history.state === 'object'
 				? window.history.state
 				: {};

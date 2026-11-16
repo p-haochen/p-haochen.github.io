@@ -426,7 +426,7 @@ function init(root) {
 			});
 			const rect = name.getBoundingClientRect();
 			const count = Number(name.dataset.count);
-			const label = count > 1 ? `${name.dataset.name} × ${count} 項` : name.dataset.name;
+			const label = count > 1 ? `${name.dataset.name} × ${count}${document.documentElement.lang === 'en' ? ' credits' : ' 項'}` : name.dataset.name;
 			// A person with a website: the chip becomes a button that opens it.
 			const href = name instanceof HTMLAnchorElement ? name.href : '';
 			chip = document.createElement(href ? 'a' : 'span');

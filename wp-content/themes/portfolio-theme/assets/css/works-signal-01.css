@@ -1344,15 +1344,19 @@
 		grid-row: 1 / span 3;
 		width: 72px;
 		height: 54px;
+		grid-template: minmax(0, 1fr) / minmax(0, 1fr);
 		background: #07080a;
 		place-items: center;
 	}
 
+	/* Fill the 72×54 box and letterbox inside it. With an implicit auto row, square covers
+	   grew the row to 72px and lost their bottom 18px; the row is now pinned to the box. */
 	.works-signal .works-row__thumb img {
-		width: auto;
-		height: auto;
-		max-width: 100%;
-		max-height: 100%;
+		width: 100%;
+		height: 100%;
+		max-width: none;
+		max-height: none;
+		object-fit: contain;
 	}
 
 	.works-row__title {

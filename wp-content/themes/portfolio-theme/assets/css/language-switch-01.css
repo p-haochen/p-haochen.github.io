@@ -1,0 +1,287 @@
+/* Language switch N: a channel fader — LANG / 中 / track with an ember cap / EN.
+   Desktop: fixed in the bottom-right corner, inside the Portal's right gutter.
+   Phones: shown along the bottom of the open navigation menu. */
+
+.language-switch {
+	--language-switch-ember: #ed661c;
+	--language-switch-text: #f0eee8;
+	--language-switch-muted: rgb(240 238 232 / 58%);
+	--language-switch-faint: rgb(240 238 232 / 38%);
+	--language-switch-line: rgb(240 238 232 / 22%);
+	position: fixed;
+	z-index: 100150;
+	right: max(0.9rem, env(safe-area-inset-right));
+	bottom: max(1.6rem, env(safe-area-inset-bottom));
+	display: grid;
+	justify-items: center;
+	row-gap: 0.45rem;
+	color: var(--language-switch-muted);
+	font: 500 0.6875rem/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+	letter-spacing: 0.16em;
+}
+
+.language-switch__label {
+	padding-bottom: 0.35rem;
+	border-bottom: 1px solid var(--language-switch-line);
+	color: var(--language-switch-faint);
+	font-size: 0.5625rem;
+	letter-spacing: 0.24em;
+}
+
+.language-switch__option {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 1.75rem;
+	min-height: 1.25rem;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: var(--language-switch-muted);
+	font: inherit;
+	font-size: 0.75rem;
+	letter-spacing: 0.16em;
+	transition: color 160ms ease;
+}
+
+.language-switch__option[lang="zh-Hant"] {
+	letter-spacing: 0;
+}
+
+.language-switch__option.is-current {
+	color: var(--language-switch-text);
+}
+
+a.language-switch__option {
+	cursor: pointer;
+	text-decoration: none;
+}
+
+a.language-switch__option:hover {
+	color: var(--language-switch-ember);
+}
+
+a.language-switch__option:focus-visible {
+	outline: 2px solid #d2bd7a;
+	outline-offset: 3px;
+}
+
+.language-switch__track {
+	position: relative;
+	display: block;
+	width: 1.75rem;
+	height: 2.6rem;
+	cursor: pointer;
+}
+
+/* rail */
+.language-switch__track::before {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 50%;
+	width: 1px;
+	background: rgb(240 238 232 / 30%);
+	content: "";
+}
+
+/* centre detent */
+.language-switch__track::after {
+	position: absolute;
+	top: 50%;
+	right: 25%;
+	left: 25%;
+	height: 1px;
+	background: rgb(240 238 232 / 18%);
+	content: "";
+}
+
+.language-switch__cap {
+	position: absolute;
+	z-index: 1;
+	top: 0;
+	left: 50%;
+	display: block;
+	width: 0.95rem;
+	height: 0.45rem;
+	margin-left: -0.475rem;
+	border-radius: 1px;
+	background: var(--language-switch-ember);
+	box-shadow: 0 0 8px rgb(237 102 28 / 70%), inset 0 -1px 0 rgb(0 0 0 / 35%);
+	transition: top 320ms cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 160ms ease;
+}
+
+.language-switch[data-state="en"] .language-switch__cap {
+	top: calc(100% - 0.45rem);
+}
+
+.language-switch__track:hover .language-switch__cap {
+	box-shadow: 0 0 12px rgb(237 102 28 / 95%), inset 0 -1px 0 rgb(0 0 0 / 35%);
+}
+
+/* EN is pending: the cap starts towards EN and springs back. */
+.language-switch.is-nudged .language-switch__cap {
+	animation: language-switch-nudge 620ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Loading the other language (only when it was not warmed yet). */
+.language-switch.is-switching .language-switch__cap {
+	animation: language-switch-pulse 700ms ease-in-out infinite alternate;
+}
+
+@keyframes language-switch-pulse {
+	to {
+		box-shadow: 0 0 2px rgb(237 102 28 / 40%), inset 0 -1px 0 rgb(0 0 0 / 35%);
+	}
+}
+
+@keyframes language-switch-nudge {
+	45% {
+		top: 32%;
+	}
+}
+
+.language-switch__note {
+	position: absolute;
+	right: calc(100% + 0.6rem);
+	bottom: 1.25rem;
+	padding: 0.45rem 0.6rem;
+	border: 1px solid var(--language-switch-line);
+	background: var(--language-switch-note-surface, #121419);
+	color: var(--language-switch-text);
+	font-size: 0.625rem;
+	letter-spacing: 0.14em;
+	white-space: nowrap;
+	opacity: 0;
+	pointer-events: none;
+	transform: translateX(4px);
+	transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.language-switch__note:empty {
+	padding: 0;
+	border: 0;
+}
+
+.language-switch.is-noted .language-switch__note {
+	opacity: 1;
+	transform: none;
+}
+
+/* Phones: the corner belongs to the content; the switch rides along the bottom of the open menu. */
+@media (max-width: 700px) {
+	.language-switch {
+		display: none;
+	}
+
+	body:has(.wp-block-navigation__responsive-container.is-menu-open) .language-switch {
+		/* The homepage menu lives in a header stacked at 100200. */
+		z-index: 100250;
+		right: auto;
+		bottom: max(1.25rem, env(safe-area-inset-bottom));
+		left: max(1rem, env(safe-area-inset-left));
+		display: flex;
+		align-items: center;
+		column-gap: 0.6rem;
+	}
+
+	body:has(.wp-block-navigation__responsive-container.is-menu-open) .language-switch__label {
+		padding: 0 0.6rem 0 0;
+		border-right: 1px solid var(--language-switch-line);
+		border-bottom: 0;
+	}
+
+	body:has(.wp-block-navigation__responsive-container.is-menu-open) .language-switch__option {
+		min-width: 2.75rem;
+		min-height: 2.75rem;
+		font-size: 0.875rem;
+	}
+
+	/* horizontal fader */
+	body:has(.wp-block-navigation__responsive-container.is-menu-open) .language-switch__track {
+		width: 3rem;
+		height: 2.75rem;
+	}
+
+	body:has(.wp-block-navigation__responsive-container.is-menu-open) .language-switch__track::before {
+		top: 50%;
+		right: 0;
+		bottom: auto;
+		left: 0;
+		width: auto;
+		height: 1px;
+	}
+
+	body:has(.wp-block-navigation__responsive-container.is-menu-open) .language-switch__track::after {
+		top: 30%;
+		right: auto;
+		bottom: 30%;
+		left: 50%;
+		width: 1px;
+		height: auto;
+	}
+
+	body:has(.wp-block-navigation__responsive-container.is-menu-open) .language-switch__cap {
+		top: 50%;
+		left: 0;
+		width: 0.45rem;
+		height: 0.95rem;
+		margin: -0.475rem 0 0;
+		transition-property: left, box-shadow;
+	}
+
+	body:has(.wp-block-navigation__responsive-container.is-menu-open) .language-switch[data-state="en"] .language-switch__cap {
+		top: 50%;
+		left: calc(100% - 0.45rem);
+	}
+
+	body:has(.wp-block-navigation__responsive-container.is-menu-open) .language-switch.is-nudged .language-switch__cap {
+		animation-name: language-switch-nudge-x;
+	}
+
+	body:has(.wp-block-navigation__responsive-container.is-menu-open) .language-switch__note {
+		right: auto;
+		bottom: calc(100% + 0.4rem);
+		left: 0;
+	}
+
+	/* Direct pages open a light menu: follow its colours. */
+	body:has(.site-header .wp-block-navigation__responsive-container.is-menu-open) .language-switch {
+		--language-switch-text: #111;
+		--language-switch-muted: rgb(17 17 17 / 55%);
+		--language-switch-faint: rgb(17 17 17 / 45%);
+		--language-switch-line: rgb(17 17 17 / 18%);
+		--language-switch-note-surface: #fff;
+	}
+
+	body:has(.site-header .wp-block-navigation__responsive-container.is-menu-open) .language-switch__track::before {
+		background: rgb(17 17 17 / 30%);
+	}
+
+	body:has(.site-header .wp-block-navigation__responsive-container.is-menu-open) .language-switch__track::after {
+		background: rgb(17 17 17 / 18%);
+	}
+}
+
+@keyframes language-switch-nudge-x {
+	45% {
+		left: 32%;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.language-switch__cap {
+		transition: none;
+	}
+
+	.language-switch.is-nudged .language-switch__cap {
+		animation: none;
+	}
+}
+
+@media print {
+	.language-switch {
+		display: none;
+	}
+}

@@ -17,6 +17,12 @@
     "@id": "https://pohaochen.com/works/huang-yi-m-score/#creative-work",
     "url": "https://pohaochen.com/works/huang-yi-m-score/",
     "name": "黃易群俠傳 M 配樂",
+    "inLanguage": "zh-Hant-TW",
+    "contributor": {
+      "@type": "Person",
+      "@id": "https://pohaochen.com/#person",
+      "name": "PO HAO CHEN"
+    },
     "image": "https://pohaochen.com/wp-content/uploads/2026/08/huang-yi-m-score-cover-1024x1024.webp",
     "dateCreated": "2020"
   },

@@ -1,6 +1,9 @@
 const contactFormSelector = '[data-contact-form]';
 const pendingForms = new WeakSet();
 
+// English pages (<html lang="en">) show English only; the Chinese site keeps its bilingual text.
+const say = (zh, en) => (document.documentElement.lang === 'en' ? en : zh);
+
 function fieldErrorElement(form, fieldName) {
 	return form.querySelector(`[data-contact-field-error="${CSS.escape(fieldName)}"]`);
 }
@@ -58,11 +61,11 @@ document.addEventListener('submit', async (event) => {
 
 	pendingForms.add(form);
 	clearFieldErrors(form);
-	setStatus(status, 'pending', '訊息傳送中，請稍候。 · SENDING');
+	setStatus(status, 'pending', say('訊息傳送中，請稍候。 · SENDING', 'Sending your message…'));
 	form.setAttribute('aria-busy', 'true');
 	submitButton.disabled = true;
 	const idleLabel = submitButton.textContent;
-	submitButton.textContent = '傳送中 · SENDING';
+	submitButton.textContent = say('傳送中 · SENDING', 'SENDING');
 
 	try {
 		const response = await fetch(form.action, {
@@ -87,17 +90,17 @@ document.addEventListener('submit', async (event) => {
 				status,
 				'error',
 				hasFieldError
-					? '請檢查標示的欄位後再送出。 · PLEASE CHECK THE FORM'
-					: '目前無法送出，請稍後再試，或直接以 Email 聯絡。 · UNABLE TO SEND',
+					? say('請檢查標示的欄位後再送出。 · PLEASE CHECK THE FORM', 'Please check the highlighted fields and try again.')
+					: say('目前無法送出，請稍後再試，或直接以 Email 聯絡。 · UNABLE TO SEND', 'Unable to send right now. Please try again later, or get in touch by email.'),
 			);
 			return;
 		}
 
 		form.reset();
 		clearFieldErrors(form);
-		setStatus(status, 'success', '訊息已成功送出，謝謝你的聯絡。 · MESSAGE SENT');
+		setStatus(status, 'success', say('訊息已成功送出，謝謝你的聯絡。 · MESSAGE SENT', 'Message sent. Thank you for getting in touch.'));
 	} catch {
-		setStatus(status, 'error', '目前無法送出，請檢查網路後再試，或直接以 Email 聯絡。 · UNABLE TO SEND');
+		setStatus(status, 'error', say('目前無法送出，請檢查網路後再試，或直接以 Email 聯絡。 · UNABLE TO SEND', 'Unable to send. Please check your connection and try again, or get in touch by email.'));
 	} finally {
 		pendingForms.delete(form);
 		form.setAttribute('aria-busy', 'false');

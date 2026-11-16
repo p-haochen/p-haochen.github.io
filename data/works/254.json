@@ -17,6 +17,12 @@
     "@id": "https://pohaochen.com/works/aetris-glimmer/#creative-work",
     "url": "https://pohaochen.com/works/aetris-glimmer/",
     "name": "【沉珀 Aetris】微光 Glimmer",
+    "inLanguage": "zh-Hant-TW",
+    "contributor": {
+      "@type": "Person",
+      "@id": "https://pohaochen.com/#person",
+      "name": "PO HAO CHEN"
+    },
     "image": "https://pohaochen.com/wp-content/uploads/2026/09/aetris-glimmer-cover-1024x576.webp",
     "dateCreated": "2026"
   },

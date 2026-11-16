@@ -17,6 +17,12 @@
     "@id": "https://pohaochen.com/works/the-beginning-2-the-end-tour/#creative-work",
     "url": "https://pohaochen.com/works/the-beginning-2-the-end-tour/",
     "name": "《The Beginning 2 The End 開始到最後》 二手菸樂團 EP發表巡迴演唱會｜黑熊合唱團共演",
+    "inLanguage": "zh-Hant-TW",
+    "contributor": {
+      "@type": "Person",
+      "@id": "https://pohaochen.com/#person",
+      "name": "PO HAO CHEN"
+    },
     "description": "2021 年，二手菸樂團推出第二張 EP《開始到最後》，並於2022年展開全台巡迴演出，走訪台北、台中、彰化、台南、花蓮及高雄六座城市，攜手各地獨立樂團，共同呈現精彩的演出。",
     "image": "https://pohaochen.com/wp-content/uploads/2026/11/beginning-2-the-end-cover-1024x1024.webp",
     "dateCreated": "2022"

@@ -1259,6 +1259,33 @@ body.single-portfolio_work .work-detail--j .work-detail__aside {
 	text-decoration: none;
 }
 
+/* WEBSITE row: an external-link mark after the domain says "this opens a site". */
+.work-detail--j .work-detail__website-link {
+	display: inline-flex;
+	align-items: center;
+	gap: .4em;
+	transition: color .2s;
+}
+
+.work-detail--j .work-detail__website-icon {
+	flex: none;
+	width: .85em;
+	height: .85em;
+	opacity: .75;
+	transition: opacity .2s, transform .2s;
+}
+
+.work-detail--j .work-detail__website-link:hover,
+.work-detail--j .work-detail__website-link:focus-visible {
+	color: var(--wd-ink);
+}
+
+.work-detail--j .work-detail__website-link:hover .work-detail__website-icon,
+.work-detail--j .work-detail__website-link:focus-visible .work-detail__website-icon {
+	opacity: 1;
+	transform: translate(1px, -1px);
+}
+
 .work-detail--j .work-detail__terms span:not(:last-child)::after {
 	margin: 0 .45em;
 	color: var(--wd-dim);
@@ -1754,6 +1781,11 @@ body.single-portfolio_work .work-detail--j .work-detail__aside {
 	margin-top: 1.25rem;
 }
 
+/* A group's own notes close it before the next caption. */
+.work-detail--j .work-credits__notes + .work-credits__group {
+	margin-top: 1.875rem;
+}
+
 .work-detail--j .work-credits__toggle {
 	display: none !important;
 }
@@ -1761,9 +1793,10 @@ body.single-portfolio_work .work-detail--j .work-detail__aside {
 .work-detail--j .work-credits__notes {
 	display: grid;
 	gap: 6px;
-	margin: 1.875rem 0 0;
-	padding: 1rem 0 0;
-	border-top: 1px solid var(--wd-line);
+	/* The notes sit right under their credits; the rule below closes the group. */
+	margin: 1.25rem 0 0;
+	padding: 0 0 1rem;
+	border-bottom: 1px solid var(--wd-line);
 	list-style: none;
 	color: var(--wd-muted);
 	font-size: 0.78rem;

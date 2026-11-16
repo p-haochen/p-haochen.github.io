@@ -17,6 +17,12 @@
     "@id": "https://pohaochen.com/works/tower-of-saviors-12th/#creative-work",
     "url": "https://pohaochen.com/works/tower-of-saviors-12th/",
     "name": "神魔之塔12週年主題曲《星恆相伴》",
+    "inLanguage": "zh-Hant-TW",
+    "contributor": {
+      "@type": "Person",
+      "@id": "https://pohaochen.com/#person",
+      "name": "PO HAO CHEN"
+    },
     "image": "https://pohaochen.com/wp-content/uploads/2026/08/tower-of-saviors-12th-cover-1024x1024.webp",
     "dateCreated": "2025"
   },

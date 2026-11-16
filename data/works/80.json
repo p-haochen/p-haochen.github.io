@@ -17,6 +17,12 @@
     "@id": "https://pohaochen.com/works/tower-of-saviors-10th/#creative-work",
     "url": "https://pohaochen.com/works/tower-of-saviors-10th/",
     "name": "神魔之塔10週年主題曲《與你相遇》",
+    "inLanguage": "zh-Hant-TW",
+    "contributor": {
+      "@type": "Person",
+      "@id": "https://pohaochen.com/#person",
+      "name": "PO HAO CHEN"
+    },
     "image": "https://pohaochen.com/wp-content/uploads/2026/08/tower-of-saviors-10th-cover-1024x1024.webp",
     "dateCreated": "2023"
   },

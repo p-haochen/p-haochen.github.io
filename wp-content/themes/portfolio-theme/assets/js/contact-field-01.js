@@ -180,7 +180,7 @@ function initField(root) {
 		const label = copy.dataset.label ?? 'EMAIL';
 		copy.dataset.label = copy.dataset.copiedLabel ?? 'COPIED';
 		copy.classList.add('is-copied');
-		if (copyStatus) copyStatus.textContent = '已複製電子郵件。 · EMAIL COPIED';
+		if (copyStatus) copyStatus.textContent = document.documentElement.lang === 'en' ? 'Email address copied.' : '已複製電子郵件。 · EMAIL COPIED';
 		window.clearTimeout(state.copyTimer);
 		state.copyTimer = window.setTimeout(() => { copy.classList.remove('is-copied'); copy.dataset.label = label; }, 1800);
 	};

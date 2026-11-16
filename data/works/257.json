@@ -17,6 +17,12 @@
     "@id": "https://pohaochen.com/works/phc-recorder/#creative-work",
     "url": "https://pohaochen.com/works/phc-recorder/",
     "name": "PHC Recorder",
+    "inLanguage": "zh-Hant-TW",
+    "contributor": {
+      "@type": "Person",
+      "@id": "https://pohaochen.com/#person",
+      "name": "PO HAO CHEN"
+    },
     "description": "PHC Recorder is a free and open-source multichannel recording utility for Cycling ’74 Max, supporting 1–64 channels with synchronized mono or interleaved WAV recording.",
     "image": "https://pohaochen.com/wp-content/uploads/2026/09/PHC-Recorder-Cover-1024x768.png",
     "dateCreated": "2026"

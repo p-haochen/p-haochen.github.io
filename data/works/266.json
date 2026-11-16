@@ -17,6 +17,12 @@
     "@id": "https://pohaochen.com/works/fantasia-online-wind-light/#creative-work",
     "url": "https://pohaochen.com/works/fantasia-online-wind-light/",
     "name": "風色幻想Online國際版主題曲《風色之光》",
+    "inLanguage": "zh-Hant-TW",
+    "contributor": {
+      "@type": "Person",
+      "@id": "https://pohaochen.com/#person",
+      "name": "PO HAO CHEN"
+    },
     "image": "https://pohaochen.com/wp-content/uploads/2026/09/fengse-cover-1024x1024.webp",
     "dateCreated": "2024"
   },
