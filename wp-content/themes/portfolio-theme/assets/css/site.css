@@ -1009,6 +1009,11 @@ button:focus-visible,
 	cursor: grabbing;
 }
 
+/* A finger on the rig turns it instead of scrolling (the rig fits the screen). */
+.contact-field.is-enhanced:not(.is-writing) .contact-field__stage {
+	touch-action: none;
+}
+
 .contact-field.is-enhanced .contact-field__canvas {
 	position: absolute;
 	inset: 0;
@@ -1339,8 +1344,22 @@ button:focus-visible,
 		--contact-node: 3.1rem;
 	}
 
+	/* The whole rig and the message button fit one screen: the site header (3rem), the
+	   panel header (4rem) and the scroller's padding (3rem) take the rest. */
 	.contact-field.is-enhanced .contact-field__stage {
-		min-height: 40rem;
+		min-height: 0;
+		height: max(26rem, calc(100svh - 10rem));
+	}
+
+	/* The hidden form must not stretch the row past the stage (the pill sits at its foot). */
+	.contact-field.is-enhanced:not(.is-writing) .contact-field__stage {
+		grid-template-rows: minmax(0, 1fr);
+	}
+
+	/* The form may need more room than the screen; it grows the stage and scrolls. */
+	.contact-field.is-enhanced.is-writing .contact-field__stage {
+		height: auto;
+		min-height: max(26rem, calc(100svh - 10rem));
 	}
 
 	.contact-field__hud {

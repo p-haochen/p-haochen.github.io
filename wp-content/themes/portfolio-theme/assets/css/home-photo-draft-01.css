@@ -830,6 +830,14 @@ body.portfolio-home-promoted .photo-draft-shell[data-portal-shell-mode="frame-on
 		padding: 4.5rem 0 4.25rem;
 	}
 
+	/* With the language switch along the bottom, the pages end where the switch begins,
+	   so the close button, WORKS, CV, CONTACT and LANG sit at equal distances. The content box runs one
+	   close-button height (2.75rem) past the screen; the switch label sits 0.375rem into its 2.75rem row. */
+	body.has-language-switch .photo-draft__navigation .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-container-content {
+		padding-top: 0;
+		padding-bottom: calc(max(1.25rem, env(safe-area-inset-bottom)) - max(1rem, env(safe-area-inset-bottom)) + 5.125rem);
+	}
+
 	/* The open menu's three pages share the free space evenly: equal room above, between and below. */
 	.photo-draft__navigation .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__container {
 		display: grid;

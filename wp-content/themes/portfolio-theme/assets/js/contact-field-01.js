@@ -171,7 +171,7 @@ function initField(root) {
 
 		const R = tall ? Math.min(w * 0.43, h * 0.3) : Math.min(w * 0.36, h * 0.4);
 		const dist = 3.6;
-		const P = camera(state.yaw, state.pitch, dist, R * dist, w / 2, h * (tall ? 0.46 : 0.5));
+		const P = camera(state.yaw, state.pitch, dist, R * dist, w / 2, h * 0.5);
 		const seg = (a, b, alpha) => { ctx.strokeStyle = css(fg, alpha); ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); };
 		const byDepth = (p, lo, hi) => lo + (hi - lo) * ((p[2] + 1) / 2);
 		ctx.lineWidth = 1;
@@ -335,19 +335,21 @@ function initField(root) {
 		stillFrame();
 	};
 	const onPointerLeave = () => { if (!state.drag?.active) state.pointer = null; stillFrame(); };
-	// Drag to orbit with a mouse or pen; touch keeps scrolling the page.
+	// Drag to orbit with a mouse, pen or finger (the stage has touch-action: none).
 	const onPointerDown = (event) => {
-		if (event.pointerType === 'touch' || event.button !== 0 || root.classList.contains('is-writing')) return;
+		if (event.button !== 0 || root.classList.contains('is-writing')) return;
 		if (event.target instanceof Element && event.target.closest('a, button, input, textarea, label')) return;
 		const p = local(event);
 		state.drag = { active: true, x: p.x, y: p.y, dx: 0, dy: 0 };
 		stage.setPointerCapture?.(event.pointerId);
 		stage.classList.add('is-grabbing');
 	};
-	const onPointerUp = () => {
+	const onPointerUp = (event) => {
 		if (!state.drag?.active) return;
 		state.drag.active = false;
 		stage.classList.remove('is-grabbing');
+		// A lifted finger leaves no pointer over the rig, so the slow drift resumes.
+		if (event.pointerType !== 'mouse') state.pointer = null;
 	};
 	// Capture phase on the document: Escape closes the open form view first, even when focus
 	// has dropped to <body> (the submit button is disabled while sending), and the surrounding
