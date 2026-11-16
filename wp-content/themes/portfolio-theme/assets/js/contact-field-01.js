@@ -1,20 +1,85 @@
 /*
- * Contact sound field (J3 "noise cancelling").
+ * Contact sound field (G "speaker rig").
  *
- * A field of shimmering noise; quiet zones cancel it around the cursor, a hovered
- * node, the message pill and a slowly wandering bubble. The message pill opens
- * the form view with a circular reveal. Form submission stays in contact-form-01.js.
- * Works for server-rendered pages and for Portal panels injected later.
+ * An Ambisonic studio dome around the listener: rings of loudspeakers at 0°, 30°, 60° and
+ * the zenith. Every contact is one of the speakers; each speaker now and then sends a
+ * wavefront toward the listener, and a hovered contact keeps sending its own. Drag the
+ * stage to orbit the dome.
+ * The message pill opens the form view with a circular reveal; Escape closes it. Form
+ * submission stays in contact-form-01.js. Works for server-rendered pages and for Portal
+ * panels injected later.
  */
 const FIELD_SELECTOR = '[data-contact-field]';
 const fields = new WeakMap();
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+const DEG = Math.PI / 180;
 
-// Node order in the markup: email, instagram, facebook, x, spotify, soundcloud, streetvoice, github.
-const LAYOUT = {
-	wide: [[0.22, 0.3], [0.36, 0.62], [0.1, 0.56], [0.6, 0.24], [0.82, 0.42], [0.66, 0.64], [0.9, 0.7], [0.42, 0.2], [0.2, 0.8]],
-	tall: [[0.24, 0.12], [0.2, 0.56], [0.16, 0.32], [0.76, 0.16], [0.8, 0.38], [0.74, 0.6], [0.6, 0.76], [0.28, 0.78], [0.5, 0.42]],
-};
+// Contacts on the rig, in markup order: email, instagram, facebook, x, spotify,
+// soundcloud, streetvoice, github, portaly, discord (the zenith speaker).
+// Azimuth + = left, elevation + = up.
+const RIG = [
+	{ az: 0, el: 0 }, { az: 60, el: 0 }, { az: 120, el: 0 }, { az: 157.5, el: 30 }, { az: -150, el: 0 },
+	{ az: -112.5, el: 30 }, { az: -60, el: 0 }, { az: 22.5, el: 30 }, { az: -45, el: 60 }, { az: 0, el: 90 },
+];
+// [elevation, speakers, azimuth offset]
+const RINGS = [[0, 12, 0], [30, 8, 22.5], [60, 4, 45], [90, 1, 0]];
+const TRAVEL = 2800; // ms for a wavefront to reach the listener
+const rand = (a, b) => a + Math.random() * (b - a);
+const FLOOR = -0.34;
+
+// World: x right, y up, z toward the viewer; the listener faces -z.
+function dir(az, el) {
+	const a = az * DEG, e = el * DEG;
+	return [-Math.cos(e) * Math.sin(a), Math.sin(e), -Math.cos(e) * Math.cos(a)];
+}
+
+// Perspective camera orbiting the origin: project(p) -> [x, y, depth (-1 far .. 1 near), scale].
+function camera(yaw, pitch, dist, focal, cx, cy) {
+	const cyw = Math.cos(yaw), syw = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+	return (p) => {
+		const x = p[0] * cyw + p[2] * syw;
+		const z = -p[0] * syw + p[2] * cyw;
+		const y2 = p[1] * cp - z * sp;
+		const z2 = p[1] * sp + z * cp;
+		const k = focal / (dist - z2);
+		return [cx + x * k, cy - y2 * k, z2, k];
+	};
+}
+
+function rgb(value, fallback) {
+	const hex = (value || fallback).trim().replace('#', '');
+	const n = Number.parseInt(hex.length === 3 ? hex.replace(/./g, '$&$&') : hex, 16);
+	return Number.isNaN(n) ? rgb(fallback, fallback) : [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+const mix = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+const css = (c, a) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${Math.max(0, Math.min(1, a)).toFixed(3)})`;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const ease = (dt, ms) => Math.min(1, (dt || 16) / ms);
+const sameSpeaker = (a, b) => a.el === b.el && Math.abs(((a.az - b.az + 540) % 360) - 180) < 0.1;
+const angle = (v) => `${v >= 0 ? '+' : '−'}${String(Math.round(Math.abs(v))).padStart(3, '0')}°`;
+
+// Small mono readout: rows of [label, value, hot, keepCase].
+function readout(host, className) {
+	const block = document.createElement('div');
+	block.className = `contact-field__hud-block ${className}`;
+	host.append(block);
+	let last = '';
+	return (rows) => {
+		const key = JSON.stringify(rows);
+		if (key === last) return;
+		last = key;
+		block.replaceChildren(...rows.map(([label, value, hot, keepCase]) => {
+			const row = document.createElement('span');
+			if (label) { const i = document.createElement('i'); i.textContent = label; row.append(i); }
+			const b = document.createElement('b');
+			b.textContent = value;
+			if (hot) b.classList.add('is-hot');
+			if (keepCase) b.classList.add('is-verbatim');
+			row.append(b);
+			return row;
+		}));
+	};
+}
 
 function initField(root) {
 	if (fields.has(root)) return;
@@ -31,15 +96,41 @@ function initField(root) {
 	if (!(stage instanceof HTMLElement) || !ctx || !(nodesView instanceof HTMLElement) || !(formView instanceof HTMLElement) || !(wrap instanceof HTMLElement) || !(pill instanceof HTMLButtonElement)) return;
 
 	const nodes = [...wrap.querySelectorAll('.contact-node')];
+	const labels = nodes.map((node) => node.dataset.label ?? '');
 	const style = getComputedStyle(root);
-	const fg = style.getPropertyValue('--contact-fg').trim() || '#f0eee8';
-	const accent = style.getPropertyValue('--contact-accent').trim() || '#d2bd7a';
+	const fg = rgb(style.getPropertyValue('--contact-fg'), '#f0eee8');
+	const accent = rgb(style.getPropertyValue('--contact-accent'), '#ed661c');
+	const english = document.documentElement.lang === 'en';
+
+	const hud = document.createElement('div');
+	hud.className = 'contact-field__hud';
+	hud.setAttribute('aria-hidden', 'true');
+	canvas.after(hud);
+	const info = readout(hud, 'contact-field__hud-block--info');
+	// Where each contact leads: the address or the profile path.
+	const routes = nodes.map((node) => {
+		const href = node.getAttribute('href') ?? '';
+		if (href.startsWith('mailto:')) return href.slice(7);
+		try {
+			const url = new URL(href, window.location.href);
+			return `${url.hostname.replace(/^www\./, '')}${url.pathname.split('/').filter(Boolean).slice(0, 1).map((part) => `/${part}`).join('')}`;
+		} catch {
+			return '';
+		}
+	});
+	const clockFormat = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Taipei', hour: '2-digit', minute: '2-digit', hour12: false });
+
+	const speakers = [];
+	for (const [el, count, offset] of RINGS) for (let k = 0; k < count; k++) speakers.push({ az: offset + (k * 360) / count, el });
+	// Each speaker fires on its own random schedule; a hovered contact keeps firing.
+	const emitters = speakers.map((spk) => ({ u: dir(spk.az, spk.el), contact: RIG.findIndex((r) => sameSpeaker(r, spk)), pulses: [], next: rand(300, 16000) }));
+	const sources = RIG.map((r) => dir(r.az, r.el));
 
 	const state = {
-		raf: 0, running: false, visible: true, last: 0, phase: 0, speed: 1,
-		pointer: null, pts: [], half: 28, tall: false, hoverIdx: -1, pillHover: false,
-		dots: [], gridKey: '', bubbles: [], cursorQ: 0, wanderQ: 0, pillQ: 0,
-		quietR: new Array(nodes.length).fill(0), wander: { x: 0, y: 0 },
+		raf: 0, running: false, visible: true, last: 0, speed: 1, t: 0,
+		yaw: Math.PI - 0.4, pitch: 0.5, vy: 0, vp: 0, flash: 0,
+		pointer: null, hoverIdx: -1, drag: null, half: 28,
+		gain: RIG.map(() => 0.5),
 	};
 	fields.set(root, state);
 
@@ -48,82 +139,162 @@ function initField(root) {
 	formView.inert = true;
 	formView.setAttribute('aria-hidden', 'true');
 
-	const size = () => { const rect = stage.getBoundingClientRect(); return { w: rect.width, h: rect.height }; };
 	const pillCenter = () => { const s = stage.getBoundingClientRect(), b = pill.getBoundingClientRect(); return [b.left + b.width / 2 - s.left, b.top + b.height / 2 - s.top]; };
 
-	function geometry(w, h) {
-		state.tall = w < 700;
-		state.half = (nodes[0]?.offsetWidth ?? 56) / 2;
-		const layout = state.tall ? LAYOUT.tall : LAYOUT.wide;
-		state.pts = nodes.map((_, i) => { const [u, v] = layout[i % layout.length]; return [u * w, v * h]; });
+	function orbit(dt) {
+		const drag = state.drag;
+		if (drag?.active) {
+			const vy = drag.dx * 0.006, vp = drag.dy * 0.004;
+			state.yaw += vy; state.pitch += vp;
+			state.vy = vy / Math.max(dt, 1); state.vp = vp / Math.max(dt, 1);
+			drag.dx = 0; drag.dy = 0;
+		} else {
+			state.yaw += state.vy * dt; state.pitch += state.vp * dt;
+			state.vy *= 0.94; state.vp *= 0.9;
+			state.yaw += (state.hoverIdx >= 0 ? 0 : state.pointer ? 0.0000175 : 0.00005) * dt;
+			if (Math.abs(state.vp) < 0.0002) state.pitch += (0.5 - state.pitch) * ease(dt, 2400);
+		}
+		state.pitch = clamp(state.pitch, 0.12, 1.2);
 	}
-	function place() {
-		const { half, pts } = state;
-		nodes.forEach((node, i) => { node.style.transform = `translate(${(pts[i][0] - half).toFixed(1)}px, ${(pts[i][1] - half).toFixed(1)}px)`; });
-	}
-	const nearNode = (x, y) => { let m = Infinity; for (const p of state.pts) m = Math.min(m, Math.hypot(x - p[0], y - p[1])); return m; };
 
 	function draw(dt, w, h) {
-		const dpr = Math.min(window.devicePixelRatio || 1, 2), cw = Math.round(w * dpr), ch = Math.round(h * dpr);
+		const dpr = Math.min(window.devicePixelRatio || 1, 2);
+		const cw = Math.round(w * dpr), ch = Math.round(h * dpr);
 		if (canvas.width !== cw || canvas.height !== ch) { canvas.width = cw; canvas.height = ch; }
-		ctx.clearRect(0, 0, cw, ch);
-		const gap = state.tall ? 7 : 8, key = `${Math.round(w)}x${Math.round(h)}`;
-		if (key !== state.gridKey) {
-			state.gridKey = key; state.dots = [];
-			for (let y = gap / 2; y < h; y += gap) for (let x = gap / 2; x < w; x += gap) state.dots.push([x, y, Math.random() * 100]);
+		ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+		ctx.clearRect(0, 0, w, h);
+
+		const tall = w < 700;
+		const hover = state.hoverIdx;
+		state.t += dt;
+		state.gain = state.gain.map((g, i) => g + ((hover === i ? 1 : hover >= 0 ? 0.1 : 0.5) - g) * ease(dt, 260));
+
+		const R = tall ? Math.min(w * 0.43, h * 0.3) : Math.min(w * 0.36, h * 0.4);
+		const dist = 3.6;
+		const P = camera(state.yaw, state.pitch, dist, R * dist, w / 2, h * (tall ? 0.46 : 0.5));
+		const seg = (a, b, alpha) => { ctx.strokeStyle = css(fg, alpha); ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); };
+		const byDepth = (p, lo, hi) => lo + (hi - lo) * ((p[2] + 1) / 2);
+		ctx.lineWidth = 1;
+
+		// Floor disc, the 0° / 30° / 60° rings and the meridians of the truss.
+		for (let n = 0; n < 96; n++) {
+			const a0 = (n / 96) * 360, a1 = ((n + 1) / 96) * 360;
+			const f0 = P([Math.cos(a0 * DEG), FLOOR, Math.sin(a0 * DEG)]);
+			const f1 = P([Math.cos(a1 * DEG), FLOOR, Math.sin(a1 * DEG)]);
+			seg(f0, f1, byDepth(f0, 0.05, 0.16));
+			for (const [el] of RINGS.slice(0, 3)) { const p0 = P(dir(a0, el)), p1 = P(dir(a1, el)); seg(p0, p1, byDepth(p0, 0.04, el ? 0.12 : 0.2)); }
 		}
-		const ease = (ms) => Math.min(1, (dt || 16) / ms);
-		const { tall } = state;
-		for (let i = 0; i < nodes.length; i++) state.quietR[i] += ((i === state.hoverIdx ? (tall ? 120 : 190) : 0) - state.quietR[i]) * ease(320);
-		const engaged = state.pointer || state.hoverIdx >= 0 || state.pillHover;
-		state.cursorQ += ((state.pointer && state.hoverIdx < 0 && !state.pillHover ? (tall ? 80 : 110) : 0) - state.cursorQ) * ease(240);
-		state.wanderQ += ((engaged ? 0 : (tall ? 70 : 95)) - state.wanderQ) * ease(600);
-		state.pillQ += ((state.pillHover ? (tall ? 120 : 170) : (tall ? 52 : 64)) - state.pillQ) * ease(300);
-		state.wander.x = w * (0.5 + 0.34 * Math.sin(state.phase * 0.00021));
-		state.wander.y = h * (0.46 + 0.26 * Math.sin(state.phase * 0.00033 + 1.2));
-		state.bubbles = state.bubbles.filter((b) => (b.life -= (dt || 0) / 3200) > 0);
+		for (let m = 0; m < 8; m++) {
+			const az = m * 45;
+			for (let e = 0; e < 90; e += 5) { const p0 = P(dir(az, e)), p1 = P(dir(az, e + 5)); seg(p0, p1, byDepth(p0, 0.02, 0.06)); }
+			const foot = dir(az, 0);
+			const top = P(foot), bottom = P([foot[0], FLOOR, foot[2]]);
+			seg(top, bottom, byDepth(top, 0.04, 0.12));
+		}
 
-		const [px, py] = pillCenter();
-		const zones = state.pts.map((p, i) => [p[0], p[1], state.quietR[i]]);
-		zones.push([px, py, state.pillQ]);
-		if (state.pointer && state.cursorQ > 1) zones.push([state.pointer.x, state.pointer.y, state.cursorQ]);
-		if (state.wanderQ > 1) zones.push([state.wander.x, state.wander.y, state.wanderQ]);
-		for (const b of state.bubbles) zones.push([b.x, b.y, b.r * Math.sin(Math.min(1, b.life * 1.4) * Math.PI / 2)]);
-
-		const t = state.phase * 0.001;
-		for (const [x, y, seed] of state.dots) {
-			let calm = 0, edge = 0;
-			for (const [zx, zy, zr] of zones) {
-				if (zr < 2) continue;
-				const d = Math.hypot(x - zx, y - zy);
-				calm = Math.max(calm, Math.min(1, Math.max(0, (zr - d) / 40)));
-				edge = Math.max(edge, Math.exp(-(((d - zr) / 6) ** 2)) * Math.min(1, zr / 60));
+		// Every speaker sends wavefronts toward the listener: shells growing from the
+		// speaker (radius 0 → 1, the distance to the sweet spot), drawn as the arc facing it.
+		const centre = P([0, 0, 0]);
+		const plainGain = hover >= 0 ? 0.25 : 0.55;
+		let hit = 0;
+		for (const emitter of emitters) {
+			const { u, contact } = emitter;
+			const hot = contact >= 0 && hover === contact;
+			if (hot && emitter.next - state.t > 1300) emitter.next = state.t;
+			if (state.t >= emitter.next) {
+				emitter.pulses.push(state.t);
+				emitter.next = state.t + (hot ? 1300 : contact >= 0 ? rand(6000, 14000) : rand(8000, 20000));
 			}
-			const noise = 1 - calm;
-			const n1 = Math.sin(seed * 12.9898 + t * 23.1) * 43758.5453, r1 = n1 - Math.floor(n1);
-			const n2 = Math.sin(seed * 78.233 + t * 19.7) * 12543.1, r2 = n2 - Math.floor(n2);
-			const fade = Math.min(1, Math.max(0, (nearNode(x, y) - 34) / 26));
-			if (fade <= 0) continue;
-			const alpha = (noise * (0.08 + 0.32 * r2) + calm * 0.22 + edge * 0.5) * fade;
-			if (alpha < 0.03) continue;
-			ctx.globalAlpha = alpha;
-			ctx.fillStyle = edge > 0.5 ? accent : fg;
-			const s = (edge > 0.5 ? 1.6 : 1.1) * dpr;
-			ctx.fillRect((x + (r1 - 0.5) * 5 * noise) * dpr - s / 2, (y + (r2 - 0.5) * 5 * noise) * dpr - s / 2, s, s);
+			emitter.pulses = emitter.pulses.filter((start) => state.t - start < TRAVEL);
+			if (!emitter.pulses.length) continue;
+			const gain = contact >= 0 ? Math.max(0.6, state.gain[contact] * 1.4) * (hover >= 0 && !hot ? 0.4 : 1) : plainGain;
+			const pc = P(u);
+			const depth = (pc[2] + 1) / 2;
+			const toward = Math.atan2(centre[1] - pc[1], centre[0] - pc[0]);
+			const color = hot ? accent : mix(fg, accent, contact >= 0 ? 0.45 : 0.2);
+			for (const start of emitter.pulses) {
+				const age = (state.t - start) / TRAVEL;
+				const g = gain * Math.sin(age * Math.PI) ** 0.7 * (0.55 + 0.45 * depth);
+				if (contact >= 0 && age > 0.95) hit = Math.max(hit, Math.min(1, gain));
+				if (g < 0.03) continue;
+				const r = age * pc[3];
+				const span = (contact >= 0 ? 0.75 : 0.55) + age * 0.35;
+				ctx.strokeStyle = css(color, (hot ? 0.35 : 0.12) * g);
+				ctx.lineWidth = hot ? 7 : 5;
+				ctx.beginPath(); ctx.arc(pc[0], pc[1], r, toward - span, toward + span); ctx.stroke();
+				ctx.strokeStyle = css(color, (hot ? 1 : contact >= 0 ? 0.62 : 0.4) * g);
+				ctx.lineWidth = hot ? 1.8 : 1.2;
+				ctx.beginPath(); ctx.arc(pc[0], pc[1], r, toward - span, toward + span); ctx.stroke();
+			}
 		}
-		ctx.globalAlpha = 1;
+		ctx.lineWidth = 1;
+		state.flash = Math.max(hit, state.flash - dt / 500);
+
+		// Speakers that are not contacts: small boxes.
+		for (const { u, contact } of emitters) {
+			if (contact >= 0) continue;
+			const p = P(u);
+			const t = (p[2] + 1) / 2, size = 3 + 4 * t;
+			ctx.fillStyle = css(fg, 0.12 + 0.3 * t);
+			ctx.fillRect(p[0] - size / 2, p[1] - size / 2, size, size);
+		}
+
+		// Listener at the sweet spot (facing -z), standing over the floor.
+		const headR = 0.085 * centre[3];
+		const nose = P([0, 0, -0.14]), earL = P([-0.095, 0, 0]), earR = P([0.095, 0, 0]), foot = P([0, FLOOR, 0]);
+		ctx.strokeStyle = css(fg, 0.85); ctx.lineWidth = 1.2;
+		ctx.beginPath(); ctx.arc(centre[0], centre[1], headR, 0, Math.PI * 2); ctx.stroke();
+		ctx.beginPath(); ctx.moveTo(centre[0], centre[1]); ctx.lineTo(nose[0], nose[1]); ctx.stroke();
+		for (const e of [earL, earR]) { ctx.beginPath(); ctx.arc(e[0], e[1], headR * 0.28, 0, Math.PI * 2); ctx.stroke(); }
+		ctx.lineWidth = 1; ctx.setLineDash([2, 4]);
+		seg([centre[0], centre[1] + headR], foot, 0.25);
+		ctx.setLineDash([]);
+		if (state.flash > 0.01) {
+			ctx.strokeStyle = css(accent, 0.8 * state.flash);
+			ctx.beginPath(); ctx.arc(centre[0], centre[1], headR * (1.5 + (1 - state.flash) * 1.4), 0, Math.PI * 2); ctx.stroke();
+		}
+
+		// Contacts.
+		sources.forEach((u, i) => {
+			const p = P(u);
+			const t = (p[2] + 1) / 2;
+			if (hover === i) {
+				ctx.strokeStyle = css(accent, 0.8); ctx.lineWidth = 1.3;
+				ctx.beginPath(); ctx.moveTo(centre[0], centre[1]); ctx.lineTo(p[0], p[1]); ctx.stroke();
+				ctx.lineWidth = 1;
+			}
+			const node = nodes[i];
+			const scale = clamp(0.66 + 0.46 * t, 0.66, 1.12);
+			node.style.transform = `translate(${(p[0] - state.half).toFixed(1)}px, ${(p[1] - state.half).toFixed(1)}px) scale(${scale.toFixed(3)})`;
+			node.style.setProperty('--contact-depth', (0.45 + 0.55 * t).toFixed(3));
+			node.style.zIndex = String(10 + Math.round(t * 50));
+		});
+
+		// The readout reads the page as a session: the listener at the sweet spot is the
+		// artist, every contact is an open channel; the address is there to read or copy.
+		if (!state.clock || Date.now() - state.clockAt > 5000) { state.clock = clockFormat.format(new Date()); state.clockAt = Date.now(); }
+		info(hover >= 0
+			? [['CHANNEL', `${String(hover + 1).padStart(2, '0')} · ${labels[hover]}`, true], ['ROUTE', routes[hover], false, true], ['POSITION', `AZ ${angle(RIG[hover].az)} · EL ${angle(RIG[hover].el)}`]]
+			: [['SESSION', 'PO HAO CHEN · CONTACT'], ['EMAIL', routes[0] ?? '', true, true], ['LOCAL TIME', `TAIWAN · UTC+8 · ${state.clock}`], ['CHANNELS', `${String(nodes.length).padStart(2, '0')} OPEN`]]);
 	}
 
-	function frame(dt) { const { w, h } = size(); if (w < 1 || h < 1) return; geometry(w, h); place(); draw(dt, w, h); }
+	function frame(dt) {
+		const rect = stage.getBoundingClientRect();
+		if (rect.width < 1 || rect.height < 1) return;
+		state.half = (nodes[0]?.offsetWidth ?? 56) / 2;
+		orbit(dt);
+		draw(dt, rect.width, rect.height);
+	}
+	function readHover() {
+		const hovered = wrap.querySelector('.contact-node:hover, .contact-node:focus-visible');
+		state.hoverIdx = hovered ? nodes.indexOf(hovered) : -1;
+	}
 	function loop(time) {
 		if (!state.running) return;
 		if (!root.isConnected) { teardown(); return; }
 		const dt = state.last ? Math.min(40, time - state.last) : 16; state.last = time;
-		const hovered = wrap.querySelector('.contact-node:hover, .contact-node:focus-visible');
-		state.hoverIdx = hovered ? nodes.indexOf(hovered) : -1;
-		state.pillHover = pill.matches(':hover, :focus-visible');
+		readHover();
 		state.speed += ((root.classList.contains('is-writing') ? 0.2 : 1) - state.speed) * Math.min(1, dt / 250);
-		state.phase += dt * state.speed;
 		frame(dt * state.speed);
 		state.raf = requestAnimationFrame(loop);
 	}
@@ -132,13 +303,18 @@ function initField(root) {
 		state.running = true; state.last = 0; state.raf = requestAnimationFrame(loop);
 	}
 	function pause() { state.running = false; cancelAnimationFrame(state.raf); }
+	// Reduced motion: no loop, but the rig still answers hover, focus and dragging.
+	let still = 0;
+	function stillFrame() {
+		if (!reduceMotion.matches || still) return;
+		still = requestAnimationFrame(() => { still = 0; readHover(); frame(0); });
+	}
 
 	function setWriting(on, moveFocus = true) {
 		if (on) {
 			const [x, y] = pillCenter();
 			formView.style.setProperty('--contact-ox', `${x}px`);
 			formView.style.setProperty('--contact-oy', `${y}px`);
-			state.bubbles.push({ x, y, r: 320, life: 1 });
 		}
 		root.classList.toggle('is-writing', on);
 		nodesView.inert = on; formView.inert = !on;
@@ -149,15 +325,29 @@ function initField(root) {
 			const target = on ? formView.querySelector('input:not([type="hidden"]):not([tabindex="-1"])') : pill;
 			if (target instanceof HTMLElement) target.focus({ preventScroll: true });
 		}, on ? 550 : 60);
-		if (reduceMotion.matches) frame(16);
 	}
 
-	const onPointerMove = (event) => { const r = stage.getBoundingClientRect(); state.pointer = { x: event.clientX - r.left, y: event.clientY - r.top }; };
-	const onPointerLeave = () => { state.pointer = null; };
+	const local = (event) => { const r = stage.getBoundingClientRect(); return { x: event.clientX - r.left, y: event.clientY - r.top }; };
+	const onPointerMove = (event) => {
+		const p = local(event);
+		if (state.drag?.active) { state.drag.dx += p.x - state.drag.x; state.drag.dy += p.y - state.drag.y; state.drag.x = p.x; state.drag.y = p.y; }
+		state.pointer = p;
+		stillFrame();
+	};
+	const onPointerLeave = () => { if (!state.drag?.active) state.pointer = null; stillFrame(); };
+	// Drag to orbit with a mouse or pen; touch keeps scrolling the page.
 	const onPointerDown = (event) => {
+		if (event.pointerType === 'touch' || event.button !== 0 || root.classList.contains('is-writing')) return;
 		if (event.target instanceof Element && event.target.closest('a, button, input, textarea, label')) return;
-		const r = stage.getBoundingClientRect();
-		state.bubbles.push({ x: event.clientX - r.left, y: event.clientY - r.top, r: state.tall ? 110 : 160, life: 1 });
+		const p = local(event);
+		state.drag = { active: true, x: p.x, y: p.y, dx: 0, dy: 0 };
+		stage.setPointerCapture?.(event.pointerId);
+		stage.classList.add('is-grabbing');
+	};
+	const onPointerUp = () => {
+		if (!state.drag?.active) return;
+		state.drag.active = false;
+		stage.classList.remove('is-grabbing');
 	};
 	// Capture phase on the document: Escape closes the open form view first, even when focus
 	// has dropped to <body> (the submit button is disabled while sending), and the surrounding
@@ -180,7 +370,7 @@ function initField(root) {
 		const label = copy.dataset.label ?? 'EMAIL';
 		copy.dataset.label = copy.dataset.copiedLabel ?? 'COPIED';
 		copy.classList.add('is-copied');
-		if (copyStatus) copyStatus.textContent = document.documentElement.lang === 'en' ? 'Email address copied.' : '已複製電子郵件。 · EMAIL COPIED';
+		if (copyStatus) copyStatus.textContent = english ? 'Email address copied.' : '已複製電子郵件。 · EMAIL COPIED';
 		window.clearTimeout(state.copyTimer);
 		state.copyTimer = window.setTimeout(() => { copy.classList.remove('is-copied'); copy.dataset.label = label; }, 1800);
 	};
@@ -192,13 +382,17 @@ function initField(root) {
 	stage.addEventListener('pointermove', onPointerMove);
 	stage.addEventListener('pointerleave', onPointerLeave);
 	stage.addEventListener('pointerdown', onPointerDown);
+	stage.addEventListener('pointerup', onPointerUp);
+	stage.addEventListener('pointercancel', onPointerUp);
+	wrap.addEventListener('focusin', stillFrame);
+	wrap.addEventListener('focusout', stillFrame);
 	document.addEventListener('keydown', onKeydown, true);
 	pill.addEventListener('click', onOpen);
 	back?.addEventListener('click', onClose);
 	copy?.addEventListener('click', onCopy);
 	document.addEventListener('visibilitychange', onVisibility);
 	reduceMotion.addEventListener?.('change', onMotionChange);
-	const resizeObserver = new ResizeObserver(() => { state.gridKey = ''; if (!state.running) frame(0); });
+	const resizeObserver = new ResizeObserver(() => { if (!state.running) frame(0); });
 	resizeObserver.observe(stage);
 	const visibilityObserver = new IntersectionObserver((entries) => {
 		state.visible = entries.some((entry) => entry.isIntersecting);
@@ -218,7 +412,7 @@ function initField(root) {
 	state.teardown = teardown;
 
 	frame(0);
-	if (reduceMotion.matches) { for (let i = 0; i < 30; i += 1) { state.phase += 16; frame(16); } }
+	if (reduceMotion.matches) for (let i = 0; i < 40; i += 1) frame(16);
 	requestAnimationFrame(() => root.classList.add('is-placed'));
 	window.setTimeout(() => root.classList.add('is-live'), 1600);
 	play();

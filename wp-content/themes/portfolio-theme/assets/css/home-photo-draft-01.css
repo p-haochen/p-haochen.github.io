@@ -1371,6 +1371,24 @@ body.portfolio-home-promoted .photo-draft-shell[data-portal-shell-mode="frame-on
 	padding-left: var(--photo-portal-works-content-left);
 }
 
+/* ABOUT / CONTACT / SERVICES: the page name in the WORKS bar's face and size. */
+.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-portal.has-display-title .photo-portal__header {
+	min-height: 4rem;
+}
+
+.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-portal.has-display-title #photo-portal-panel-title {
+	font: 400 clamp(1.375rem, 2.3vw, 2rem)/1 "Syncopate", "Syncopate Title", var(--wp--preset--font-family--sans);
+	letter-spacing: .01em;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+	.photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-portal.has-display-title #photo-portal-panel-title {
+		font-size: 1.125rem;
+	}
+}
+
 .photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-portal.has-route-rail #photo-portal-panel-title,
 .photo-draft-shell[data-portal-motion-mode="fade"][data-portal-shell-mode="frame-on-open-b3"] .photo-portal.has-hidden-title #photo-portal-panel-title {
 	position: absolute;

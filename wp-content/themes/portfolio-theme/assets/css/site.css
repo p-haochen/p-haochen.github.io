@@ -851,7 +851,8 @@ button:focus-visible,
 	--contact-fg: var(--wp--preset--color--portal-foreground, #f0eee8);
 	--contact-muted: var(--wp--preset--color--portal-muted, #aaa69f);
 	--contact-canvas: var(--wp--preset--color--portal-canvas, #0b0c0f);
-	--contact-accent: var(--wp--preset--color--portal-focus, #d2bd7a);
+	--contact-accent: #ed661c;
+	--contact-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 	--contact-rule: color-mix(in srgb, var(--contact-fg) 22%, transparent);
 	--contact-ease: cubic-bezier(0.23, 1, 0.32, 1);
 	--contact-node: 3.5rem;
@@ -1000,8 +1001,12 @@ button:focus-visible,
 /* Enhanced: noise field with absolutely placed nodes and a separate form view. */
 .contact-field.is-enhanced .contact-field__stage {
 	display: grid;
-	min-height: clamp(34rem, 74vh, 42rem);
+	min-height: clamp(36rem, 84vh, 54rem);
 	overflow: hidden;
+}
+
+.contact-field.is-enhanced .contact-field__stage.is-grabbing {
+	cursor: grabbing;
 }
 
 .contact-field.is-enhanced .contact-field__canvas {
@@ -1051,12 +1056,77 @@ button:focus-visible,
 }
 
 .contact-field.is-placed .contact-node {
-	opacity: 1;
+	opacity: var(--contact-depth, 1);
 	transition-delay: 0ms, 0ms, calc(var(--contact-i, 0) * 70ms + 150ms);
 }
 
+/* Once placed, depth follows the rig every frame. */
 .contact-field.is-live .contact-node {
-	transition-delay: 0ms;
+	transition: border-color 220ms ease, background-color 300ms ease, box-shadow 260ms ease;
+}
+
+.contact-field.is-enhanced .contact-node:is(:hover, :focus-visible) {
+	border-color: var(--contact-accent);
+	background: color-mix(in srgb, var(--contact-accent) 16%, var(--contact-canvas));
+	box-shadow: 0 0 0 6px color-mix(in srgb, var(--contact-accent) 14%, transparent), 0 0 28px color-mix(in srgb, var(--contact-accent) 40%, transparent);
+}
+
+.contact-field.is-enhanced .contact-node::after {
+	font-family: var(--contact-mono);
+	letter-spacing: 0.14em;
+}
+
+/* Rig readout: what the dome is, or the hovered speaker. */
+.contact-field__hud {
+	position: absolute;
+	inset: 0;
+	color: var(--contact-muted);
+	font: 500 0.66rem/1.55 var(--contact-mono);
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	pointer-events: none;
+	transition: opacity 400ms ease;
+}
+
+.contact-field.is-writing .contact-field__hud {
+	opacity: 0;
+}
+
+.contact-field__hud-block {
+	position: absolute;
+	display: grid;
+	gap: 0.1rem;
+}
+
+.contact-field__hud-block span {
+	display: flex;
+	gap: 0.9em;
+	white-space: nowrap;
+}
+
+.contact-field__hud-block i {
+	min-width: 8em;
+	font-style: normal;
+	opacity: 0.6;
+}
+
+.contact-field__hud-block b {
+	color: var(--contact-fg);
+	font-weight: 500;
+}
+
+.contact-field__hud-block b.is-hot {
+	color: var(--contact-accent);
+}
+
+/* Addresses and profile paths keep their case. */
+.contact-field__hud-block b.is-verbatim {
+	text-transform: none;
+}
+
+.contact-field__hud-block--info {
+	top: 0.25rem;
+	left: 0.25rem;
 }
 
 .contact-field.is-enhanced .contact-pill {
@@ -1270,7 +1340,11 @@ button:focus-visible,
 	}
 
 	.contact-field.is-enhanced .contact-field__stage {
-		min-height: 38rem;
+		min-height: 40rem;
+	}
+
+	.contact-field__hud {
+		font-size: 0.58rem;
 	}
 
 	.contact-field.is-enhanced .contact-field__view--form {
@@ -1578,5 +1652,399 @@ button:focus-visible,
 		animation-duration: 0.01ms !important;
 		animation-iteration-count: 1 !important;
 		transition-duration: 0.01ms !important;
+	}
+}
+
+/* ---------------------------------------------------------------------------
+ * Services: rate card (2026-11-17). The CV's language: hairlines, monospaced
+ * labels, the site's ember accent; one row per service with a dotted leader to its
+ * price; amounts line up in one column whatever their unit.
+ * ------------------------------------------------------------------------ */
+.services-prototype {
+	--rate-width: 56rem;
+	--rate-hairline: color-mix(in srgb, currentcolor 16%, transparent);
+	--rate-faint: color-mix(in srgb, currentcolor 46%, transparent);
+	--rate-muted: color-mix(in srgb, currentcolor 68%, transparent);
+	--rate-accent: #ed661c;
+	--rate-unit: 3.8rem;
+	--rate-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+.rate-card {
+	box-sizing: border-box;
+	width: min(100%, var(--rate-width));
+	margin-inline: auto;
+	padding: clamp(1.5rem, 3vw, 2.75rem) clamp(0.75rem, 1.5vw, 1.25rem) clamp(2.5rem, 5vw, 4.5rem);
+}
+
+.rate-card__head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.5rem 2rem;
+	padding-bottom: 1.1rem;
+	border-bottom: 1px solid var(--rate-hairline);
+}
+
+.rate-card__title {
+	margin: 0;
+	font-size: clamp(1.5rem, 1.2vw + 1.1rem, 2.1rem);
+	font-weight: 600;
+	line-height: 1.15;
+	letter-spacing: 0.01em;
+}
+
+.rate-card__note {
+	margin: 0;
+	color: var(--rate-faint);
+	font: 500 0.6875rem/1.4 var(--rate-mono);
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+}
+
+.rate-card__groups {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0 clamp(2rem, 4vw, 3rem);
+}
+
+.rate-card__group {
+	min-width: 0;
+	padding-top: clamp(1.5rem, 2.5vw, 2rem);
+}
+
+.rate-card__group-title {
+	display: flex;
+	align-items: baseline;
+	gap: 0.75rem;
+	margin: 0 0 0.6rem;
+	color: var(--rate-muted);
+	font: 500 0.75rem/1.4 var(--rate-mono);
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+}
+
+.rate-card__group-index {
+	color: var(--rate-accent);
+	letter-spacing: 0.08em;
+}
+
+.rate-card__list {
+	margin: 0;
+}
+
+.rate-card__row {
+	display: flex;
+	align-items: baseline;
+	gap: 0.6rem;
+	padding: 0.7rem 0 0.7rem 0.85rem;
+	border-left: 2px solid var(--rate-hairline);
+	transition: border-color 300ms ease;
+}
+
+.rate-card__row:hover {
+	border-left-color: var(--rate-accent);
+}
+
+/* Names keep one line; only a very narrow row lets them wrap. */
+.rate-card__item {
+	flex: 0 0 auto;
+	min-width: 0;
+	max-width: calc(100% - 10.75rem);
+	margin: 0;
+	font-size: clamp(0.9375rem, 0.28vw + 0.88rem, 1.0625rem);
+	line-height: 1.45;
+}
+
+/* Length, track count, exclusions: under the name, not in brackets beside it. */
+.rate-card__detail {
+	display: block;
+	margin-top: 0.15rem;
+	color: var(--rate-faint);
+	font: 500 0.6875rem/1.4 var(--rate-mono);
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+}
+
+/* dotted leader between the service and its price */
+.rate-card__row::after {
+	order: 1;
+	flex: 1 1 0.75rem;
+	min-width: 0.75rem;
+	align-self: baseline;
+	height: 0;
+	border-bottom: 1px dotted var(--rate-hairline);
+	transform: translateY(-0.3em);
+	content: "";
+}
+
+.rate-card__prices {
+	order: 2;
+	display: grid;
+	justify-items: end;
+	gap: 0.15rem;
+	margin: 0;
+	white-space: nowrap;
+}
+
+.rate-card__price {
+	display: grid;
+	grid-template-columns: auto var(--rate-unit);
+	align-items: baseline;
+	column-gap: 0.45em;
+	font: 500 0.9375rem/1.45 var(--rate-mono);
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.02em;
+}
+
+.rate-card__amount {
+	justify-self: end;
+}
+
+.rate-card__currency {
+	margin-right: 0.3em;
+	color: var(--rate-accent);
+	font-size: 0.75em;
+	letter-spacing: 0.08em;
+}
+
+.rate-card__unit {
+	color: var(--rate-faint);
+	font-size: 0.8em;
+	letter-spacing: 0.04em;
+}
+
+.rate-card__foot {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem 2rem;
+	margin-top: clamp(2rem, 4vw, 3rem);
+	padding-top: 1.25rem;
+	border-top: 1px solid var(--rate-hairline);
+}
+
+.rate-card__foot-copy {
+	margin: 0;
+	color: var(--rate-muted);
+	font-size: 0.9375rem;
+	line-height: 1.6;
+}
+
+.rate-card__cta {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	padding: 0.6rem 1.15rem;
+	border: 1px solid color-mix(in srgb, currentcolor 32%, transparent);
+	border-radius: 999px;
+	color: inherit;
+	font: 600 0.75rem/1 var(--rate-mono);
+	letter-spacing: 0.16em;
+	text-decoration: none;
+	text-transform: uppercase;
+	transition: border-color 200ms ease, color 200ms ease;
+}
+
+.rate-card__cta:hover,
+.rate-card__cta:focus-visible {
+	border-color: var(--rate-accent);
+	color: var(--rate-accent);
+}
+
+@media (max-width: 760px) {
+	.rate-card__groups {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+/* ---------------------------------------------------------------------------
+ * CV timeline, option A "Clips" (2026-11-17): the WORKS palette and DAW clips.
+ * The year row is a bar ruler; every credit is an arrangement clip; credits with a
+ * Work link to it (hover shows its cover).
+ * ------------------------------------------------------------------------ */
+
+.about-prototype {
+	--cv-accent: #ed661c;
+	--cv-hairline: rgb(240 238 232 / 12%);
+	--cvx-ink: #f0eee8;
+	--cvx-dim: rgb(240 238 232 / 38%);
+	--cvx-faint: rgb(240 238 232 / 16%);
+	--cvx-line: rgb(240 238 232 / 12%);
+	--cvx-raise: #131418;
+	--cvx-deep: #0b0c0f;
+	--cvx-ember: #ed661c;
+	--cvx-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+.cv-biography__media {
+	outline: 1px solid var(--cvx-line);
+	outline-offset: 6px;
+}
+
+.cv-arrangement__mark:hover {
+	color: var(--cvx-ember);
+}
+
+/* Playhead: the WORKS ember, with the glow the signal wires carry. */
+@media (min-width: 761px) {
+	.cv-arrangement.is-enhanced .cv-arrangement__head {
+		background: var(--cvx-ember);
+		box-shadow: 0 0 8px rgb(237 102 28 / 55%);
+	}
+
+	.cv-arrangement.is-enhanced .cv-arrangement__head::before {
+		border-top-color: var(--cvx-ember);
+	}
+}
+
+.cv-arrangement .cv-experience__year {
+	position: relative;
+	margin-block-end: 1rem;
+	padding: 0.45rem 0.75rem 0.5rem;
+	border-bottom: 1px solid var(--cvx-line);
+	background:
+		repeating-linear-gradient(90deg, rgb(240 238 232 / 22%) 0 1px, transparent 1px 4rem) left bottom / 100% 0.55rem no-repeat,
+		repeating-linear-gradient(90deg, rgb(240 238 232 / 10%) 0 1px, transparent 1px 1rem) left bottom / 100% 0.3rem no-repeat,
+		var(--cvx-raise);
+	color: var(--cvx-dim);
+	font-family: var(--cvx-mono);
+	font-size: 0.75rem;
+	letter-spacing: 0.14em;
+	opacity: 1;
+}
+
+
+.cv-arrangement .cv-experience__list {
+	gap: 0.55rem;
+}
+
+.cv-arrangement .cv-experience__row {
+	overflow: hidden;
+	padding: 0;
+	border: 1px solid var(--cvx-line);
+	border-radius: 4px;
+	background: rgb(240 238 232 / 4%);
+	transition: opacity 450ms ease, border-color 450ms ease, background-color 450ms ease;
+}
+
+.cv-arrangement .cv-experience__description {
+	gap: 0;
+	opacity: 1;
+}
+
+/* the clip's name strip */
+.cv-arrangement .cv-experience__title {
+	display: block;
+	padding: 0.3rem 0.6rem 0.25rem;
+	background: rgb(240 238 232 / 7%);
+	font-size: 0.875rem;
+	line-height: 1.35;
+}
+
+.cv-arrangement .cv-experience__roles {
+	display: block;
+	padding: 0.35rem 0.6rem 0.45rem;
+	color: var(--cvx-dim);
+	font-family: var(--cvx-mono);
+	font-size: 0.6875rem;
+	letter-spacing: 0.04em;
+	line-height: 1.5;
+	opacity: 1;
+}
+
+.cv-arrangement.is-enhanced .cv-arrangement__block.is-current .cv-experience__row {
+	border-color: rgb(237 102 28 / 55%);
+	background: rgb(237 102 28 / 9%);
+}
+
+.cv-arrangement.is-enhanced .cv-arrangement__block.is-current .cv-experience__title {
+	background: rgb(237 102 28 / 30%);
+	color: #fff4ea;
+}
+
+.cv-arrangement.is-enhanced .cv-arrangement__block.is-current .cv-experience__year {
+	color: var(--cvx-ember);
+}
+
+.cv-arrangement.is-enhanced .cv-arrangement__block:not(.is-current) .cv-experience__row {
+	opacity: 0.55;
+}
+
+@media (min-width: 761px) {
+	.cv-arrangement.is-enhanced .cv-experience__year {
+		margin-block-end: 1rem;
+		padding: 0.45rem 1.1rem 0.6rem;
+	}
+
+	.cv-arrangement.is-enhanced .cv-experience__list {
+		column-gap: 0.6rem;
+		padding: 0 1rem 0 1.1rem;
+	}
+
+	.cv-arrangement.is-enhanced .cv-arrangement__block::before {
+		background: var(--cvx-line);
+	}
+}
+
+/* credits that are Works: the clip opens the Work */
+.cv-experience__link {
+	color: inherit;
+	text-decoration: none;
+}
+
+.cv-experience__row:has(.cv-experience__link) {
+	cursor: pointer;
+}
+
+.cv-arrangement .cv-experience__row:has(.cv-experience__link):hover {
+	border-color: rgb(237 102 28 / 70%);
+}
+
+.cv-experience__row:has(.cv-experience__link) .cv-experience__title::after {
+	margin-left: 0.4em;
+	color: var(--cvx-dim);
+	font-size: 0.8em;
+	content: "↗";
+}
+
+/* the Work cover that follows the pointer (cv-arrangement-01.js) */
+.cv-work-peek {
+	position: fixed;
+	z-index: 100300;
+	top: 0;
+	left: 0;
+	width: 13rem;
+	padding: 0.35rem;
+	border: 1px solid rgb(240 238 232 / 16%);
+	border-radius: 6px;
+	background: #131418;
+	box-shadow: 0 18px 40px rgb(0 0 0 / 55%);
+	opacity: 0;
+	pointer-events: none;
+	transform: translate3d(var(--peek-x, 0), var(--peek-y, 0), 0) scale(0.96);
+	transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.cv-work-peek.is-visible {
+	opacity: 1;
+	transform: translate3d(var(--peek-x, 0), var(--peek-y, 0), 0) scale(1);
+}
+
+.cv-work-peek img {
+	display: block;
+	width: 100%;
+	height: auto;
+	max-height: 13rem;
+	border-radius: 3px;
+	background: #0b0c0f;
+	object-fit: contain;
+}
+
+@media (hover: none) {
+	.cv-work-peek {
+		display: none;
 	}
 }

@@ -125,30 +125,33 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 				worksSignal: true,
 				get canonicalPath() { return sitePath('/work/'); },
 			},
+			// Page panels show their name in the WORKS bar's display face (displayTitle).
 			services: {
 				hash: '#services',
 				payloadSlug: 'services',
 				title: 'Services',
+				displayTitle: true,
 				get canonicalPath() { return sitePath('/services/'); },
 			},
 			about: {
 				hash: '#about',
 				payloadSlug: 'about',
 				title: 'About',
+				displayTitle: true,
 				get canonicalPath() { return sitePath('/about/'); },
 			},
 			cv: {
 				hash: '#cv',
 				payloadSlug: 'about',
-				title: 'CV',
-				hideTitle: true,
+				title: 'About',
+				displayTitle: true,
 				get canonicalPath() { return sitePath('/about/#cv-placeholder'); },
 			},
 			contact: {
 				hash: '#contact',
 				payloadSlug: 'contact',
 				title: 'Contact',
-				hideTitle: true,
+				displayTitle: true,
 				get canonicalPath() { return sitePath('/contact/'); },
 			},
 		});
@@ -519,12 +522,13 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			panel.classList.toggle('has-route-rail', label !== '');
 			panel.classList.toggle('has-hidden-title', isB3Motion && definition?.hideTitle === true);
 			panel.classList.toggle('is-works-signal', isB3Motion && definition?.worksSignal === true);
+			panel.classList.toggle('has-display-title', isB3Motion && definition?.displayTitle === true);
 		}
 
 		function clearRouteRail() {
 			routeRail.textContent = '';
 			routeRail.hidden = true;
-			panel.classList.remove('has-route-rail', 'has-hidden-title', 'is-works-signal');
+			panel.classList.remove('has-route-rail', 'has-hidden-title', 'is-works-signal', 'has-display-title');
 		}
 
 		function syncWorksFilterRailPosition() {
@@ -752,6 +756,7 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			setLanguagePrefix(prefix);
 			const state = window.history.state && typeof window.history.state === 'object' ? { ...window.history.state } : window.history.state;
 			if (state && typeof state.portfolioWorkUrl === 'string') state.portfolioWorkUrl = urlInLanguage(state.portfolioWorkUrl, prefix);
+			if (state && typeof state.portfolioWorkTitle === 'string' && typeof payload?.title === 'string' && payload.title.trim() !== '') state.portfolioWorkTitle = payload.title.trim();
 			window.history.replaceState(state, '', urlInLanguage(window.location.href, prefix));
 			if (!definition || payload === null) return true;
 			swapOpenView(key, payload, position);
@@ -796,22 +801,14 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			return pathname === english || pathname.startsWith(`${english}/`) ? english : '';
 		}
 
-		// Back / Forward to an address in the other language (an entry from before a switch).
-		function followAddressLanguage() {
-			const prefix = languagePrefixOfPath(window.location.pathname);
-			if (prefix === LANG_PREFIX) return;
-			const keyBefore = currentKey !== null && !panel.hidden ? currentKey : null;
-			setLanguagePrefix(prefix);
-			window.dispatchEvent(new CustomEvent('portfolio:language-changed', { detail: { language: prefix === '' ? 'zh' : 'en' } }));
-			// The history handler opens a different view in the new language; the same view is swapped here.
-			window.setTimeout(() => {
-				if (keyBefore === null || currentKey !== keyBefore || panel.hidden) return;
-				const definition = definitionForKey(keyBefore);
-				if (!definition) return;
-				void requestB3Payload(definition, { priority: 'high' })
-					.then((payload) => { if (currentKey === keyBefore && LANG_PREFIX === prefix) swapOpenView(keyBefore, payload, 0); })
-					.catch(() => {});
-			}, 0);
+		// Back / Forward (or Back to Works) into an entry recorded before a language switch:
+		// the chosen language stays. The entry's address is rewritten to that language, and the
+		// history handler then opens the view in it.
+		function keepChosenLanguage() {
+			if (languagePrefixOfPath(window.location.pathname) === LANG_PREFIX) return;
+			const state = window.history.state && typeof window.history.state === 'object' ? { ...window.history.state } : window.history.state;
+			if (state && typeof state.portfolioWorkUrl === 'string') state.portfolioWorkUrl = urlInLanguage(state.portfolioWorkUrl, LANG_PREFIX);
+			window.history.replaceState(state, '', urlInLanguage(window.location.href, LANG_PREFIX));
 		}
 
 		window.addEventListener('portfolio:language-request', (event) => {
@@ -1458,6 +1455,9 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 
 			const definition = definitionForKey(key);
 			if (!definition) return;
+			if (definition.kind === 'work-detail' && typeof payload.title === 'string' && payload.title.trim() !== '') {
+				definition.title = payload.title.trim();
+			}
 			applyDocumentSeo(payload.seo);
 			applyDocumentStructuredData(payload.structured_data);
 			if (preservePrerendered && key === 'work') {
@@ -2161,6 +2161,8 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 		// (WORKS covers and list rows, MUSIC COLLECTIONS titles, previous / next), so opening it is instant.
 		let workIntentTimer = 0;
 		function workDefinitionFromLink(anchor) {
+			const cvWorkId = Number.parseInt(anchor.dataset.workId ?? '', 10);
+			if (cvWorkId > 0) return createWorkDefinition(cvWorkId, anchor.dataset.workTitle ?? '', anchor.href);
 			const pagerId = Number.parseInt(anchor.dataset.workPagerId ?? '', 10);
 			if (pagerId > 0) return createWorkDefinition(pagerId, anchor.dataset.workPagerTitle ?? '', anchor.href);
 			const card = anchor.closest('.wp-block-post');
@@ -2188,6 +2190,14 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 					if (anchor instanceof HTMLAnchorElement) prefetchWork(workDefinitionFromLink(anchor));
 				}
 			});
+		}
+
+		// A CV credit that is a Work opens it in the Portal (the music keeps playing).
+		function handleCvWorkClick(event) {
+			if (!isB3Motion || !(event.target instanceof Element)) return;
+			const anchor = event.target.closest('a.cv-experience__link[data-work-id]');
+			if (!(anchor instanceof HTMLAnchorElement) || !content.contains(anchor) || !isUnmodifiedPrimaryClick(event, anchor)) return;
+			if (openWorkPanel(anchor.dataset.workId, anchor.dataset.workTitle, anchor.href, anchor)) event.preventDefault();
 		}
 
 		function handleWorkPagerClick(event) {
@@ -2281,6 +2291,7 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 		closeButton.addEventListener('click', activateHeaderAction);
 		content.addEventListener('click', handleWorkDetailClick);
 		content.addEventListener('click', handleWorkPagerClick);
+		content.addEventListener('click', handleCvWorkClick);
 		content.addEventListener('pointerover', onWorkLinkIntent, { passive: true });
 		content.addEventListener('focusin', onWorkLinkIntent);
 		content.addEventListener('touchstart', onWorkLinkIntent, { passive: true });
@@ -2298,7 +2309,7 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			closePanel({ updateHistory: true, restoreFocus: false });
 		});
 		window.addEventListener('popstate', () => {
-			followAddressLanguage();
+			keepChosenLanguage();
 			const historyState = window.history.state && typeof window.history.state === 'object'
 				? window.history.state
 				: {};

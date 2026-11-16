@@ -88,10 +88,16 @@ function init(root) {
 		// A Portal scroller pads its top; stick to its visible edge instead of below the padding.
 		const pad = scroller ? Number.parseFloat(getComputedStyle(scroller).paddingTop) || 0 : 0;
 		const height = viewHeight();
+		// Whatever follows the timeline in the scroller (section padding, the panel's own end).
+		const total = scroller ? scroller.scrollHeight : document.documentElement.scrollHeight;
+		const trailing = Math.max(0, total - (sectionTopInScroll() + root.offsetHeight));
+		const stage = root.querySelector('.cv-arrangement__stage');
+		const content = stage instanceof HTMLElement ? stage.offsetTop + stage.offsetHeight + 16 : 0;
+		const pinHeight = Math.max(content, height - trailing);
 		pin.style.top = `${-pad}px`;
-		pin.style.height = `${height}px`;
+		pin.style.height = `${pinHeight}px`;
 		distance = Math.max(0, track.scrollWidth - view.clientWidth);
-		root.style.height = `${height + distance}px`;
+		root.style.height = `${pinHeight + distance}px`;
 	}
 
 	function setCurrent(index) {
@@ -129,19 +135,34 @@ function init(root) {
 	const tick = () => { queued = false; layout(); update(); };
 	const schedule = () => { if (!queued) { queued = true; requestAnimationFrame(tick); } };
 
+	let dragged = false;
 	function onPointerDown(event) {
 		if (narrow.matches || event.pointerType !== 'mouse' || event.button !== 0 || event.target.closest('button')) return;
-		drag = { x: event.clientX, top: scrollTop() };
-		view.setPointerCapture(event.pointerId);
-		view.classList.add('is-dragging');
+		drag = { x: event.clientX, top: scrollTop(), id: event.pointerId, active: false };
+		dragged = false;
 	}
 	function onPointerMove(event) {
-		if (drag) scrollToY(drag.top - (event.clientX - drag.x), false);
+		if (!drag) return;
+		if (!drag.active) {
+			if (Math.abs(event.clientX - drag.x) < 5) return;
+			drag.active = true;
+			dragged = true;
+			view.setPointerCapture(drag.id);
+			view.classList.add('is-dragging');
+		}
+		scrollToY(drag.top - (event.clientX - drag.x), false);
 	}
 	function endDrag() {
 		drag = null;
 		view.classList.remove('is-dragging');
 	}
+	// A drag that ends over a clip must not open it.
+	view.addEventListener('click', (event) => {
+		if (!dragged) return;
+		dragged = false;
+		event.preventDefault();
+		event.stopPropagation();
+	}, true);
 	function onWheel(event) {
 		if (narrow.matches || Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return;
 		event.preventDefault();
@@ -185,7 +206,66 @@ function scan(scope) {
 	scope.querySelectorAll?.(ROOT_SELECTOR).forEach((root) => init(root));
 }
 
+// ---- CV credits that are Works: the cover follows the pointer; the whole clip opens the Work ----
+let peek = null;
+function peekElement() {
+	if (peek) return peek;
+	peek = document.createElement('div');
+	peek.className = 'cv-work-peek';
+	peek.setAttribute('aria-hidden', 'true');
+	const image = document.createElement('img');
+	image.alt = '';
+	image.decoding = 'async';
+	peek.append(image);
+	document.body.append(peek);
+	return peek;
+}
+function workLinkOf(target) {
+	const row = target instanceof Element ? target.closest('.cv-experience__row') : null;
+	const link = row?.querySelector('a.cv-experience__link[data-work-cover]');
+	return link instanceof HTMLAnchorElement ? link : null;
+}
+function placePeek(event) {
+	const box = peekElement();
+	const width = box.offsetWidth || 208;
+	const height = box.offsetHeight || 160;
+	const x = event.clientX + 20 + width > window.innerWidth ? event.clientX - 20 - width : event.clientX + 20;
+	const y = Math.min(Math.max(8, event.clientY - height / 2), window.innerHeight - height - 8);
+	box.style.setProperty('--peek-x', `${Math.round(x)}px`);
+	box.style.setProperty('--peek-y', `${Math.round(y)}px`);
+}
+function wireWorkClips() {
+	const hover = window.matchMedia('(hover: hover) and (pointer: fine)');
+	document.addEventListener('pointerover', (event) => {
+		if (!hover.matches) return;
+		const link = workLinkOf(event.target);
+		if (!link || !link.dataset.workCover) return;
+		const box = peekElement();
+		const image = box.querySelector('img');
+		if (image.getAttribute('src') !== link.dataset.workCover) image.src = link.dataset.workCover;
+		placePeek(event);
+		box.classList.add('is-visible');
+	});
+	document.addEventListener('pointermove', (event) => {
+		if (peek?.classList.contains('is-visible')) placePeek(event);
+	}, { passive: true });
+	document.addEventListener('pointerout', (event) => {
+		const from = workLinkOf(event.target);
+		if (from && from !== workLinkOf(event.relatedTarget)) peek?.classList.remove('is-visible');
+	});
+	document.addEventListener('scroll', () => peek?.classList.remove('is-visible'), { capture: true, passive: true });
+	// A press anywhere on the clip opens the Work, through its link (the Portal opens it in place).
+	document.addEventListener('click', (event) => {
+		if (event.defaultPrevented || !(event.target instanceof Element) || event.target.closest('a')) return;
+		const link = workLinkOf(event.target);
+		if (!link) return;
+		peek?.classList.remove('is-visible');
+		link.click();
+	});
+}
+
 function boot() {
+	wireWorkClips();
 	scan(document);
 	new MutationObserver((mutations) => {
 		for (const mutation of mutations) {
