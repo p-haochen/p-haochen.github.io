@@ -101,4 +101,38 @@ if (root) {
 	});
 	root.addEventListener('pointerenter', refreshLink);
 	root.addEventListener('focusin', refreshLink);
+
+	// Phones: the open menu shows the switch along its bottom, outside the menu dialog whose
+	// focus trap would skip it. Put it in the dialog's Tab cycle: … CONTACT → switch → close
+	// button, and back with Shift+Tab. Capture phase, so it runs before the dialog's own trap.
+	const visible = (element) => element instanceof HTMLElement && (typeof element.checkVisibility === 'function'
+		? element.checkVisibility({ checkVisibilityCSS: true })
+		: element.offsetParent !== null);
+	document.addEventListener('keydown', (event) => {
+		if (event.key !== 'Tab' && event.key !== 'Escape') return;
+		const dialog = document.querySelector('.wp-block-navigation__responsive-container.is-menu-open');
+		const option = root.querySelector('a.language-switch__option');
+		if (!(dialog instanceof HTMLElement) || !visible(root) || !visible(option)) return;
+		const active = document.activeElement;
+		if (event.key === 'Escape') {
+			if (active !== option) return;
+			event.preventDefault();
+			const opener = dialog.closest('nav')?.querySelector('.wp-block-navigation__responsive-container-open');
+			dialog.querySelector('.wp-block-navigation__responsive-container-close')?.click();
+			if (opener instanceof HTMLElement) window.requestAnimationFrame(() => opener.focus());
+			return;
+		}
+		const inside = [...dialog.querySelectorAll('a[href], button:not([disabled])')].filter(visible);
+		const first = inside[0];
+		const last = inside[inside.length - 1];
+		let next = null;
+		if (!event.shiftKey && active === last) next = option;
+		else if (!event.shiftKey && active === option) next = first;
+		else if (event.shiftKey && active === first) next = option;
+		else if (event.shiftKey && active === option) next = last;
+		if (!(next instanceof HTMLElement)) return;
+		event.preventDefault();
+		event.stopPropagation();
+		next.focus();
+	}, true);
 }

@@ -456,7 +456,7 @@
 
 	& .works-directory__filter-chips button {
 		height: 1.75rem;
-		max-width: 16rem;
+		max-width: min(28rem, 100%);
 		padding: 0 .75rem;
 		border: 0;
 		border-radius: .875rem;
@@ -539,6 +539,12 @@
 	}
 
 	/* ---------- content area ---------- */
+	/* Active filter tags sit just under the bar (.5rem gap, 1.75rem tall): the works start
+	   below them, not under them. */
+	&:has(.works-directory__filter-chips:not(:empty)) .photo-portal__scroller:has(.works-directory) {
+		padding-top: calc(var(--photo-portal-content-start-gap) + 2.25rem);
+	}
+
 	& .photo-portal__scroller:has(.works-directory) {
 		--photo-portal-works-content-left: var(--ws-left);
 		padding-right: var(--ws-right);
@@ -1292,9 +1298,24 @@
 			bottom: 0;
 			left: 0;
 			max-height: 86dvh;
-			padding: 1rem 1.25rem calc(1rem + env(safe-area-inset-bottom));
+			padding: .75rem 1.25rem calc(1rem + env(safe-area-inset-bottom));
 			border: 0;
 			border-radius: 1.125rem 1.125rem 0 0;
+			/* opaque: the works and the bar's pills must not show through the sheet */
+			background: var(--works-filter-panel-solid);
+		}
+
+		/* The sheet's own divider, with room above and below FILTER and its x. */
+		& .works-filter-panel__header {
+			margin-bottom: 1rem;
+			padding-bottom: .75rem;
+			border-bottom: 1px solid var(--ws-line);
+		}
+
+		/* While the sheet is open the panel header's bottom line would cross it (its height
+		   depends on the screen), so it steps back. */
+		& .photo-portal__header:has([data-work-filter-panel]:not([hidden]))::after {
+			opacity: 0;
 		}
 
 		& .works-filter-panel__group {

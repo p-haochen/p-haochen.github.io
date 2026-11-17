@@ -2359,6 +2359,19 @@ if (shell instanceof HTMLElement && siteHeader instanceof HTMLElement && landing
 			requestPanel(key, { updateHistory: false, restoreTarget: matchingTrigger });
 		});
 
+		// "Skip to content" targets the Homepage landing. With a panel open it moves focus into the
+		// panel's content instead: following the landing hash would read as a route back to the
+		// Homepage and close the panel.
+		document.addEventListener('click', (event) => {
+			if (panel.hidden || !(event.target instanceof Element)) return;
+			const skip = event.target.closest('a.skip-link');
+			if (!(skip instanceof HTMLAnchorElement)) return;
+			const content = panel.querySelector('.photo-portal__scroller');
+			if (!(content instanceof HTMLElement)) return;
+			event.preventDefault();
+			content.focus({ preventScroll: true });
+		});
+
 		configurePortalSemantics();
 		setShellState('landing');
 		if (isB3Motion) {

@@ -1682,7 +1682,8 @@ button:focus-visible,
 .services-prototype {
 	--rate-width: 56rem;
 	--rate-hairline: color-mix(in srgb, currentcolor 16%, transparent);
-	--rate-faint: color-mix(in srgb, currentcolor 46%, transparent);
+	/* 52% on the portal canvas is about 5.1:1 (WCAG AA for the 11-12px units and details). */
+	--rate-faint: color-mix(in srgb, currentcolor 52%, transparent);
 	--rate-muted: color-mix(in srgb, currentcolor 68%, transparent);
 	--rate-accent: #ed661c;
 	--rate-unit: 3.8rem;
